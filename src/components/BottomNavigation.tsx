@@ -1,4 +1,4 @@
-import { Home, Compass, ShoppingBag, Users, User } from 'lucide-react'
+import { Home, Compass, ShoppingBag, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const tabs = [
@@ -6,7 +6,6 @@ const tabs = [
   { to: '/explore', label: 'Explore', icon: Compass },
   { to: '/shop', label: 'Shop', icon: ShoppingBag },
   { to: '/collaborate', label: 'Collaborate', icon: Users },
-  { to: '/profile', label: 'Profile', icon: User },
 ]
 
 export default function BottomNavigation() {
