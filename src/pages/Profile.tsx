@@ -4,6 +4,7 @@ import PageContainer from '../components/PageContainer'
 import Avatar from '../components/Avatar'
 import StatusBadge from '../components/StatusBadge'
 import PrimaryButton from '../components/PrimaryButton'
+import PrototypeTools from '../components/PrototypeTools'
 import { useAuth } from '../state/AuthContext'
 
 export default function Profile() {
@@ -124,6 +125,9 @@ export default function Profile() {
             <ProfileLink icon={<Wallet className="h-5 w-5 shrink-0 text-brand" />} label="Earnings & Payouts" onClick={() => navigate('/creator/earnings')} />
           </>}
         </div>
+
+        {/* Prototype Tools */}
+        <PrototypeTools />
 
         {/* Logout */}
         <button

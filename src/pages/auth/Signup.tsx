@@ -8,16 +8,17 @@ import Divider from '../../components/form/Divider'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
 import { isEmail } from '../../lib/validation'
+import { demoUser, DEMO_PASSWORD } from '../../demo/demoData'
 
 export default function Signup() {
   const navigate = useNavigate()
   const { signup } = useAuth()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [pw, setPw] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [agree, setAgree] = useState(false)
+  const [name, setName] = useState(demoUser.fullName)
+  const [email, setEmail] = useState(demoUser.email)
+  const [pw, setPw] = useState(DEMO_PASSWORD)
+  const [confirm, setConfirm] = useState(DEMO_PASSWORD)
+  const [agree, setAgree] = useState(true)
   const [touched, setTouched] = useState(false)
 
   const errors = {

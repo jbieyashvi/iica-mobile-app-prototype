@@ -3,6 +3,7 @@ import {
   Candidate, CollabPrefs, CollabRequest, Meeting, MeetingSlot, RequestStatus, SwipeSession, COOLDOWN_MS,
 } from '../collab/types'
 import { candidates as allCandidates, seedMeetings, seedRequests, getCandidate } from '../collab/mockCollab'
+import { demoCollaborationPreferences } from '../demo/demoData'
 
 const PKEY = 'iica_collab_prefs_v1'
 const SKEY = 'iica_collab_session_v1'
@@ -19,10 +20,8 @@ const rid = (p: string) => p + Math.random().toString(36).slice(2, 9)
 const now = () => Date.now()
 
 const defaultPrefs: CollabPrefs = {
-  availability: 'Available', lookingFor: [], domains: [], skills: '', genres: '', experience: '',
-  languages: '', cities: '', countries: '', maxTravel: '', remoteOk: true, inPersonPref: false,
-  statement: '', goal: '', timeline: '', compensation: 'Open to Discussion', contactMethod: 'IICA messages',
-  configured: false,
+  ...demoCollaborationPreferences,
+  configured: true,
 }
 
 interface Ctx {

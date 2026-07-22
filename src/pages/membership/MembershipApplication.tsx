@@ -11,6 +11,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { Application, useAuth } from '../../state/AuthContext'
 import { isEmail, isUrl } from '../../lib/validation'
+import { demoMembershipApplication } from '../../demo/demoData'
 
 const STEPS = ['Basic', 'Creative', 'Presence', 'Intent']
 
@@ -76,9 +77,10 @@ export default function MembershipApplication() {
   const [touched, setTouched] = useState(false)
   const [form, setForm] = useState<Application>(() => ({
     ...empty,
+    ...demoMembershipApplication,
     ...state.application,
-    fullName: state.application?.fullName || state.name || '',
-    email: state.application?.email || state.email || '',
+    fullName: state.application?.fullName || state.name || demoMembershipApplication.fullName,
+    email: state.application?.email || state.email || demoMembershipApplication.email,
   }))
 
   const set = <K extends keyof Application>(k: K, v: Application[K]) =>

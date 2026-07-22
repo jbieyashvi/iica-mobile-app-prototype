@@ -11,6 +11,7 @@ import StatusBadge from '../../components/StatusBadge'
 import { useCollab } from '../../state/CollabContext'
 import { getCandidate } from '../../collab/mockCollab'
 import { CollabMode, Compensation, MeetingSlot } from '../../collab/types'
+import { demoCollaborationRequest, futureISO } from '../../demo/demoData'
 
 const TYPES = ['Live Performance', 'Music Collaboration', 'Workshop', 'Recording', 'Content Collaboration', 'Commissioned Work', 'Other']
 const MODES: CollabMode[] = ['In Person', 'Remote', 'Either']
@@ -22,19 +23,23 @@ export default function RequestForm() {
   const collab = useCollab()
   const c = getCandidate(artistId)
 
-  const [purpose, setPurpose] = useState('')
-  const [project, setProject] = useState('')
-  const [type, setType] = useState('')
-  const [desc, setDesc] = useState('')
+  const [purpose, setPurpose] = useState(demoCollaborationRequest.purpose)
+  const [project, setProject] = useState(demoCollaborationRequest.project)
+  const [type, setType] = useState(demoCollaborationRequest.projectType)
+  const [desc, setDesc] = useState(demoCollaborationRequest.description)
   const [why, setWhy] = useState('')
-  const [role, setRole] = useState('')
-  const [mode, setMode] = useState<CollabMode>('Either')
-  const [location, setLocation] = useState('')
-  const [timeline, setTimeline] = useState('')
-  const [comp, setComp] = useState<Compensation>('Open to Discussion')
-  const [slots, setSlots] = useState<MeetingSlot[]>([{ id: 's1', date: '', time: '' }, { id: 's2', date: '', time: '' }, { id: 's3', date: '', time: '' }])
+  const [role, setRole] = useState(demoCollaborationRequest.role)
+  const [mode, setMode] = useState<CollabMode>(demoCollaborationRequest.mode)
+  const [location, setLocation] = useState(demoCollaborationRequest.location)
+  const [timeline, setTimeline] = useState(demoCollaborationRequest.timeline)
+  const [comp, setComp] = useState<Compensation>(demoCollaborationRequest.compensation)
+  const [slots, setSlots] = useState<MeetingSlot[]>([
+    { id: 's1', date: futureISO(9), time: '17:00' },
+    { id: 's2', date: futureISO(12), time: '11:00' },
+    { id: 's3', date: futureISO(15), time: '18:30' },
+  ])
   const [link, setLink] = useState('')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(demoCollaborationRequest.message)
   const [touched, setTouched] = useState(false)
   const [review, setReview] = useState(false)
   const [sent, setSent] = useState(false)

@@ -11,6 +11,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import { usePublicArtist } from '../../data/usePublicArtist'
 import { useAuth } from '../../state/AuthContext'
 import { isEmail } from '../../lib/validation'
+import { demoReview } from '../../demo/demoData'
 
 const RELATIONS = ['Attended an event', 'Worked together', 'Student', 'Purchased their work', 'Fan / Follower', 'Other']
 const OTP = '123456'
@@ -23,13 +24,13 @@ export default function ArtistWriteReview() {
 
   const isGuest = !state.authed
 
-  const [rating, setRating] = useState(0)
-  const [title, setTitle] = useState('')
-  const [text, setText] = useState('')
-  const [relation, setRelation] = useState('')
-  const [name, setName] = useState(state.name || '')
-  const [email, setEmail] = useState(state.email || '')
-  const [honest, setHonest] = useState(false)
+  const [rating, setRating] = useState(demoReview.rating)
+  const [title, setTitle] = useState(demoReview.title)
+  const [text, setText] = useState(demoReview.text)
+  const [relation, setRelation] = useState(demoReview.relation)
+  const [name, setName] = useState(state.name || demoReview.name)
+  const [email, setEmail] = useState(state.email || demoReview.email)
+  const [honest, setHonest] = useState(true)
   const [touched, setTouched] = useState(false)
 
   const [otpSheet, setOtpSheet] = useState(false)
@@ -159,8 +160,9 @@ export default function ArtistWriteReview() {
               <OtpInput value={otp} onChange={(v) => { setOtp(v); setOtpErr('') }} />
               {otpErr && <p className="mt-2 text-[12px] font-medium text-error">{otpErr}</p>}
             </div>
-            <div className="mt-3 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark">
-              Prototype code: <span className="font-bold tracking-wide">123456</span>
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark">
+              <span>Prototype code: <span className="font-bold tracking-wide">123456</span></span>
+              <button onClick={() => { setOtp('123456'); setOtpErr('') }} className="tap shrink-0 rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-white">Use Demo Code</button>
             </div>
             <div className="mt-5">
               <PrimaryButton full disabled={otp.length < 6} onClick={verify}>Verify & Submit</PrimaryButton>

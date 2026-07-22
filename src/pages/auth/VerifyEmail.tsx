@@ -78,8 +78,9 @@ export default function VerifyEmail() {
         )}
       </div>
 
-      <div className="mt-4 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark">
-        Prototype code: <span className="font-bold tracking-wide">123456</span>
+      <div className="mt-4 flex items-center justify-between gap-2 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark">
+        <span>Prototype code: <span className="font-bold tracking-wide">123456</span></span>
+        <button onClick={() => { setCode('123456'); setError('') }} className="tap shrink-0 rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-white">Use Demo Code</button>
       </div>
 
       <div className="mt-6 flex items-center justify-between text-[13px]">

@@ -12,6 +12,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import StatusBadge from '../../components/StatusBadge'
 import { isEmail } from '../../lib/validation'
 import { fmtDate } from '../../events/format'
+import { demoEventAttendee } from '../../demo/demoData'
 
 export default function FreeRegister() {
   const { id } = useParams()
@@ -20,13 +21,13 @@ export default function FreeRegister() {
   const { state } = useAuth()
   const ev = getEvent(id)
 
-  const [name, setName] = useState(state.name || '')
-  const [email, setEmail] = useState(state.email || '')
-  const [phone, setPhone] = useState('')
+  const [name, setName] = useState(state.name || demoEventAttendee.name)
+  const [email, setEmail] = useState(state.email || demoEventAttendee.email)
+  const [phone, setPhone] = useState(demoEventAttendee.phone)
   const [count, setCount] = useState(1)
   const [names, setNames] = useState<string[]>([''])
   const [note, setNote] = useState('')
-  const [agree, setAgree] = useState(false)
+  const [agree, setAgree] = useState(true)
   const [touched, setTouched] = useState(false)
   const [otpSheet, setOtpSheet] = useState(false)
   const [otp, setOtp] = useState('')
@@ -123,7 +124,7 @@ export default function FreeRegister() {
             <p className="mt-1.5 text-[13px] leading-relaxed text-muted">Enter the code sent to {email || 'your email'} to complete registration. Your details are saved.</p>
             <div className="mt-5"><OtpInput value={otp} onChange={(v) => { setOtp(v); setOtpErr('') }} /></div>
             {otpErr && <p className="mt-2 text-[12px] font-medium text-error">{otpErr}</p>}
-            <div className="mt-3 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark">Prototype code: <span className="font-bold tracking-wide">123456</span></div>
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-control border border-dashed border-brand/40 bg-brand-soft px-3 py-2 text-[12px] text-brand-dark"><span>Prototype code: <span className="font-bold tracking-wide">123456</span></span><button onClick={() => { setOtp('123456'); setOtpErr('') }} className="tap shrink-0 rounded-md bg-brand px-2.5 py-1 text-[11px] font-semibold text-white">Use Demo Code</button></div>
             <div className="mt-5"><PrimaryButton full disabled={otp.length < 6} onClick={verify}>Verify & Register</PrimaryButton></div>
           </div>
         </div>

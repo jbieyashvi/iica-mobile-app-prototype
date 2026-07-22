@@ -6,6 +6,7 @@ import TextArea from '../../components/form/TextArea'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
 import { Address } from '../../shop/types'
+import { demoCheckout } from '../../demo/demoData'
 
 const ADDR_KEY = 'iica_checkout_address'
 
@@ -18,7 +19,11 @@ export default function CheckoutAddress() {
   const navigate = useNavigate()
   const { state } = useAuth()
   const saved = loadAddress()
-  const [a, setA] = useState<Address>(saved ?? { name: state.name || '', phone: '', line: '', city: '', state: '', country: 'India', postal: '', instructions: '' })
+  const [a, setA] = useState<Address>(saved ?? {
+    name: state.name || demoCheckout.name, phone: demoCheckout.phone, line: demoCheckout.line,
+    city: demoCheckout.city, state: demoCheckout.state, country: demoCheckout.country,
+    postal: demoCheckout.postal, instructions: demoCheckout.instructions,
+  })
   const [touched, setTouched] = useState(false)
   const set = <K extends keyof Address>(k: K, v: Address[K]) => setA((s) => ({ ...s, [k]: v }))
 

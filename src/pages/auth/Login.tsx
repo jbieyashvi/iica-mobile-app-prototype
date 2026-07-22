@@ -9,13 +9,14 @@ import Divider from '../../components/form/Divider'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
 import { isEmail } from '../../lib/validation'
+import { demoUser, DEMO_PASSWORD } from '../../demo/demoData'
 
 export default function Login() {
   const navigate = useNavigate()
   const { login, continueAsGuest, previewPending, previewActive } = useAuth()
 
-  const [email, setEmail] = useState('')
-  const [pw, setPw] = useState('')
+  const [email, setEmail] = useState(demoUser.email)
+  const [pw, setPw] = useState(DEMO_PASSWORD)
   const [remember, setRemember] = useState(true)
   const [touched, setTouched] = useState(false)
 

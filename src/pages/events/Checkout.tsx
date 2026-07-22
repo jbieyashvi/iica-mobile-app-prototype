@@ -12,6 +12,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { inr } from '../../events/format'
 import { isEmail } from '../../lib/validation'
+import { demoEventAttendee } from '../../demo/demoData'
 
 type Pay = 'Card' | 'UPI' | 'Google Pay'
 
@@ -24,11 +25,11 @@ export default function Checkout() {
   const ev = getEvent(id)
   const selections: PurchaseSelection[] = (location.state as { selections?: PurchaseSelection[] })?.selections ?? []
 
-  const [name, setName] = useState(state.name || '')
-  const [email, setEmail] = useState(state.email || '')
-  const [phone, setPhone] = useState('')
+  const [name, setName] = useState(state.name || demoEventAttendee.name)
+  const [email, setEmail] = useState(state.email || demoEventAttendee.email)
+  const [phone, setPhone] = useState(demoEventAttendee.phone)
   const [country, setCountry] = useState('India')
-  const [agree, setAgree] = useState(false)
+  const [agree, setAgree] = useState(true)
   const [touched, setTouched] = useState(false)
   const [promo, setPromo] = useState('')
   const [promoApplied, setPromoApplied] = useState(false)

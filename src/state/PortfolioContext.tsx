@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 import { Portfolio } from '../portfolio/types'
-import { seedPortfolio } from '../portfolio/mockPortfolio'
+import { demoPortfolio } from '../demo/demoBuilders'
 import { useAuth } from './AuthContext'
 
 const KEY = 'iica_portfolio_v1'
@@ -34,7 +34,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
-    return seedPortfolio(state.name, state.email)
+    return demoPortfolio()
   })
 
   useEffect(() => {
@@ -54,10 +54,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       setPortfolio((s) => ({ ...s, [k]: v })),
     [],
   )
-  const reset = useCallback(
-    () => setPortfolio(seedPortfolio(state.name, state.email)),
-    [state.name, state.email],
-  )
+  const reset = useCallback(() => setPortfolio(demoPortfolio()), [])
+  void state
 
   const value = useMemo(
     () => ({ portfolio, patch, setSection, reset }),

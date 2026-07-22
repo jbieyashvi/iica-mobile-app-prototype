@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { demoUser } from '../demo/demoData'
 
 export type Role = 'guest' | 'pending' | 'active'
 
@@ -109,6 +110,7 @@ interface AuthContextValue {
   saveApplicationDraft: (data: Partial<Application>) => void
   submitApplication: (data: Application) => string
   completePayment: () => void
+  previewRegistered: () => void
   previewPending: () => void
   previewActive: () => void
   logout: () => void
@@ -174,22 +176,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return id
       },
       completePayment: () => patch({ role: 'active', paymentDone: true }),
+      previewRegistered: () => {
+        patch({
+          onboarded: true, authed: true, emailVerified: true, role: 'guest',
+          name: state.name || demoUser.fullName, email: state.email || demoUser.email,
+        })
+      },
       previewPending: () => {
-        const name = state.name || 'Reshma Patra'
+        const name = state.name || demoUser.fullName
         patch({
           onboarded: true,
           authed: true,
           emailVerified: true,
           role: 'pending',
           name,
-          email: state.email || 'reshma.patra@example.com',
-          iicaId: state.iicaId ?? generateIicaId(name),
+          email: state.email || demoUser.email,
+          iicaId: state.iicaId ?? demoUser.memberId,
           submittedAt: state.submittedAt ?? new Date().toISOString(),
           paymentDone: false,
         })
       },
       previewActive: () => {
-        const name = state.name || 'Reshma Patra'
+        const name = state.name || demoUser.fullName
         patch({
           onboarded: true,
           authed: true,
@@ -197,8 +205,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           role: 'active',
           paymentDone: true,
           name,
-          email: state.email || 'reshma.patra@example.com',
-          iicaId: state.iicaId ?? generateIicaId(name),
+          email: state.email || demoUser.email,
+          iicaId: state.iicaId ?? demoUser.memberId,
         })
       },
       logout: () => {
