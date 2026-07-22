@@ -105,10 +105,10 @@ export interface ShopItem {
 }
 
 export const shopPreview: ShopItem[] = [
-  { id: 'p1', kind: 'Masterclass', title: 'Home Studio Production', creator: 'Abhishek Singh Chouhan', price: 1499, image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80&auto=format&fit=crop' },
-  { id: 'p2', kind: 'Digital', title: 'Raga Structure — eBook', creator: 'Kabir Menon', price: 299, image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80&auto=format&fit=crop' },
-  { id: 'p3', kind: 'Physical', title: 'Folk Art Print Set', creator: 'Kavya Sharma', price: 899, image: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600&q=80&auto=format&fit=crop' },
-  { id: 'p4', kind: 'Masterclass', title: 'Bharatanatyam Foundations', creator: 'Ananya Rao', price: 1999, image: 'https://images.unsplash.com/photo-1547153760-18fc86324498?w=600&q=80&auto=format&fit=crop' },
+  { id: 'art-of-songwriting', kind: 'Masterclass', title: 'The Art of Indian Songwriting', creator: 'Abhishek Singh Chouhan', price: 1499, image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80&auto=format&fit=crop' },
+  { id: 'classical-practice-tracks', kind: 'Digital', title: 'Indian Classical Practice Tracks', creator: 'Abhishek Singh Chouhan', price: 499, image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80&auto=format&fit=crop' },
+  { id: 'folk-art-journal', kind: 'Physical', title: 'Handcrafted Folk Art Journal', creator: 'Meera Kulkarni', price: 899, image: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&q=80&auto=format&fit=crop' },
+  { id: 'brush-texture-pack', kind: 'Digital', title: 'Folk Art Brush & Texture Pack', creator: 'Kavya Sharma', price: 649, image: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600&q=80&auto=format&fit=crop' },
 ]
 
 export const getProduct = (id?: string) => shopPreview.find((p) => p.id === id)

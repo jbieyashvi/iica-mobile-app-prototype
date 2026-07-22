@@ -156,6 +156,20 @@
   .tap {
     @apply transition-transform duration-150 active:scale-[0.97];
   }
+  .collab-wheel {
+    animation: collabSpin 8s linear infinite;
+    transform-origin: center;
+  }
+  @keyframes collabSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .collab-wheel {
+      animation: none;
+    }
+  }
   .fade-in {
     animation: fadeIn 0.35s ease both;
   }

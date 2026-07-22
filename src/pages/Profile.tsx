@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { LogOut, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog } from 'lucide-react'
+import { LogOut, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog, Package, Library, Store, ShoppingBag, Wallet } from 'lucide-react'
 import PageContainer from '../components/PageContainer'
 import Avatar from '../components/Avatar'
 import StatusBadge from '../components/StatusBadge'
@@ -114,18 +114,15 @@ export default function Profile() {
 
         {/* Tickets & events links */}
         <div className="mt-4 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-          <button onClick={() => navigate('/my-tickets')} className="tap flex items-center gap-3 px-4 py-3.5 text-left hover:bg-black/[0.015]">
-            <TicketIcon className="h-5 w-5 shrink-0 text-brand" />
-            <span className="flex-1 text-[14px] font-semibold text-ink">My Tickets</span>
-            <ChevronRight className="h-5 w-5 text-muted" />
-          </button>
-          {isActive && (
-            <button onClick={() => navigate('/creator/events')} className="tap flex items-center gap-3 px-4 py-3.5 text-left hover:bg-black/[0.015]">
-              <CalendarCog className="h-5 w-5 shrink-0 text-brand" />
-              <span className="flex-1 text-[14px] font-semibold text-ink">Manage Events</span>
-              <ChevronRight className="h-5 w-5 text-muted" />
-            </button>
-          )}
+          <ProfileLink icon={<TicketIcon className="h-5 w-5 shrink-0 text-brand" />} label="My Tickets" onClick={() => navigate('/my-tickets')} />
+          <ProfileLink icon={<Package className="h-5 w-5 shrink-0 text-brand" />} label="My Orders" onClick={() => navigate('/orders')} />
+          <ProfileLink icon={<Library className="h-5 w-5 shrink-0 text-brand" />} label="My Library" onClick={() => navigate('/library')} />
+          {isActive && <>
+            <ProfileLink icon={<CalendarCog className="h-5 w-5 shrink-0 text-brand" />} label="Manage Events" onClick={() => navigate('/creator/events')} />
+            <ProfileLink icon={<Store className="h-5 w-5 shrink-0 text-brand" />} label="My Products" onClick={() => navigate('/creator/products')} />
+            <ProfileLink icon={<ShoppingBag className="h-5 w-5 shrink-0 text-brand" />} label="Seller Orders" onClick={() => navigate('/creator/orders')} />
+            <ProfileLink icon={<Wallet className="h-5 w-5 shrink-0 text-brand" />} label="Earnings & Payouts" onClick={() => navigate('/creator/earnings')} />
+          </>}
         </div>
 
         {/* Logout */}
@@ -145,5 +142,15 @@ export default function Profile() {
         </p>
       </PageContainer>
     </div>
+  )
+}
+
+function ProfileLink({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="tap flex items-center gap-3 px-4 py-3.5 text-left hover:bg-black/[0.015]">
+      {icon}
+      <span className="flex-1 text-[14px] font-semibold text-ink">{label}</span>
+      <ChevronRight className="h-5 w-5 text-muted" />
+    </button>
   )
 }

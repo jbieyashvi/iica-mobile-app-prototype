@@ -31,16 +31,53 @@ import ExploreArtists from './pages/explore/ExploreArtists'
 import ExploreEvents from './pages/explore/ExploreEvents'
 import ExploreContent from './pages/explore/ExploreContent'
 import ExploreShop from './pages/explore/ExploreShop'
+// Shop module
+import ShopHome from './pages/shop/ShopHome'
+import ShopSearch from './pages/shop/ShopSearch'
+import ShopCategory from './pages/shop/ShopCategory'
+import ShopProductDetail from './pages/shop/ProductDetail'
+import Cart from './pages/shop/Cart'
+import ShopCheckout from './pages/shop/Checkout'
+import CheckoutAddress from './pages/shop/CheckoutAddress'
+import CheckoutPayment from './pages/shop/CheckoutPayment'
+import CheckoutConfirmation from './pages/shop/CheckoutConfirmation'
+import Orders from './pages/shop/Orders'
+import OrderDetails from './pages/shop/OrderDetails'
+import Library from './pages/shop/Library'
+import MasterclassPlayer from './pages/shop/MasterclassPlayer'
+import RefundRequest from './pages/shop/RefundRequest'
+import ProductCreateEntry from './pages/shop/create/ProductCreateEntry'
+import StepPDetails from './pages/shop/create/StepPDetails'
+import StepPContent from './pages/shop/create/StepPContent'
+import StepPPricing from './pages/shop/create/StepPPricing'
+import StepPDelivery from './pages/shop/create/StepPDelivery'
+import StepPMedia from './pages/shop/create/StepPMedia'
+import StepPPreview from './pages/shop/create/StepPPreview'
+import StepPSuccess from './pages/shop/create/StepPSuccess'
+import CreatorProducts from './pages/shop/creator/CreatorProducts'
+import CreatorProductManage from './pages/shop/creator/CreatorProductManage'
+import CreatorShopOrders from './pages/shop/creator/CreatorOrders'
+import CreatorShopOrderDetails from './pages/shop/creator/CreatorOrderDetails'
+import CreatorEarnings from './pages/shop/creator/CreatorEarnings'
+import CreatorPayouts from './pages/shop/creator/CreatorPayouts'
 import ExploreSearch from './pages/explore/ExploreSearch'
 import ExploreCategory from './pages/explore/ExploreCategory'
 import ExploreTrending from './pages/explore/ExploreTrending'
 import ExploreSaved from './pages/explore/ExploreSaved'
 import ContentDetail from './pages/explore/ContentDetail'
-import ProductDetail from './pages/explore/ProductDetail'
 import ShopComing from './pages/explore/ShopComing'
 import Home from './pages/Home'
-import Shop from './pages/Shop'
-import Collaborate from './pages/Collaborate'
+// Collaborate module
+import CollaborateHome from './pages/collaborate/CollaborateHome'
+import CollabPreferences from './pages/collaborate/Preferences'
+import CollabDiscover from './pages/collaborate/Discover'
+import CollabRecommendations from './pages/collaborate/Recommendations'
+import CollabMatchDetails from './pages/collaborate/MatchDetails'
+import CollabRequestForm from './pages/collaborate/RequestForm'
+import CollabRequestsDashboard from './pages/collaborate/RequestsDashboard'
+import CollabRequestDetails from './pages/collaborate/RequestDetails'
+import CollabMeetings from './pages/collaborate/Meetings'
+import CollabMeetingDetails from './pages/collaborate/MeetingDetails'
 import Profile from './pages/Profile'
 import Search from './pages/Search'
 import Notifications from './pages/Notifications'
@@ -102,10 +139,51 @@ export default function App() {
             {/* Main app (with bottom navigation) */}
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/collaborate" element={<Collaborate />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
+
+            {/* Shop module */}
+            <Route path="/shop" element={<ShopHome />} />
+            <Route path="/shop/search" element={<ShopSearch />} />
+            <Route path="/shop/category/:category" element={<ShopCategory />} />
+            <Route path="/product/:id" element={<ShopProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<ShopCheckout />} />
+            <Route path="/checkout/address" element={<CheckoutAddress />} />
+            <Route path="/checkout/payment" element={<CheckoutPayment />} />
+            <Route path="/checkout/confirmation" element={<CheckoutConfirmation />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:orderId" element={<OrderDetails />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/library/:itemId" element={<MasterclassPlayer />} />
+            <Route path="/refunds/:orderId/request" element={<RefundRequest />} />
+            {/* Shop — creator (active only) */}
+            <Route path="/creator/products" element={<EventCreatorGuard><CreatorProducts /></EventCreatorGuard>} />
+            <Route path="/creator/products/create" element={<EventCreatorGuard><ProductCreateEntry /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/details" element={<EventCreatorGuard><StepPDetails /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/content" element={<EventCreatorGuard><StepPContent /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/pricing" element={<EventCreatorGuard><StepPPricing /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/delivery" element={<EventCreatorGuard><StepPDelivery /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/media" element={<EventCreatorGuard><StepPMedia /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/preview" element={<EventCreatorGuard><StepPPreview /></EventCreatorGuard>} />
+            <Route path="/creator/products/create/success" element={<EventCreatorGuard><StepPSuccess /></EventCreatorGuard>} />
+            <Route path="/creator/products/:id" element={<EventCreatorGuard><CreatorProductManage /></EventCreatorGuard>} />
+            <Route path="/creator/orders" element={<EventCreatorGuard><CreatorShopOrders /></EventCreatorGuard>} />
+            <Route path="/creator/orders/:orderId" element={<EventCreatorGuard><CreatorShopOrderDetails /></EventCreatorGuard>} />
+            <Route path="/creator/earnings" element={<EventCreatorGuard><CreatorEarnings /></EventCreatorGuard>} />
+            <Route path="/creator/payouts" element={<EventCreatorGuard><CreatorPayouts /></EventCreatorGuard>} />
+
+            {/* Collaborate module (bottom nav on home/requests/meetings via their own render) */}
+            <Route path="/collaborate" element={<CollaborateHome />} />
+            <Route path="/collaborate/preferences" element={<CollabPreferences />} />
+            <Route path="/collaborate/discover" element={<CollabDiscover />} />
+            <Route path="/collaborate/recommendations" element={<CollabRecommendations />} />
+            <Route path="/collaborate/match/:artistId" element={<CollabMatchDetails />} />
+            <Route path="/collaborate/request/:artistId" element={<CollabRequestForm />} />
+            <Route path="/collaborate/requests" element={<CollabRequestsDashboard />} />
+            <Route path="/collaborate/requests/:requestId" element={<CollabRequestDetails />} />
+            <Route path="/collaborate/meetings" element={<CollabMeetings />} />
+            <Route path="/collaborate/meetings/:meetingId" element={<CollabMeetingDetails />} />
 
             {/* App sub-screens (no bottom nav) */}
             <Route path="/search" element={<Search />} />
@@ -135,7 +213,6 @@ export default function App() {
             <Route path="/explore/saved" element={<ExploreSaved />} />
             <Route path="/explore/category/:slug" element={<ExploreCategory />} />
             <Route path="/content/:id" element={<ContentDetail />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
 
             {/* Events — customer */}
             <Route path="/events" element={<EventsDiscovery />} />
