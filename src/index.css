@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-[#ECEAE7] text-ink font-sans antialiased;
+    margin: 0;
+    /* Only the app screen inside the device scrolls; the outer page never does. */
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  /* Hide scrollbars on horizontal scrollers but keep scroll */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ---------------- Mobile device preview frame ---------------- */
+@layer components {
+  /* Mobile-first: no frame, full-bleed app. */
+  .device-outer {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #fafaf8;
+    box-sizing: border-box;
+  }
+
+  .device-sizer {
+    width: 100%;
+    height: 100dvh;
+  }
+
+  .device-frame {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .device-screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #fafaf8;
+    box-sizing: border-box;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .device-caption,
+  .device-island,
+  .device-home {
+    display: none;
+  }
+
+  /* Desktop / tablet: fixed 402x856 phone, uniformly scaled to fit height. */
+  @media (min-width: 600px) {
+    .device-outer {
+      background: #ecebe7;
+    }
+
+    /* Reserves the scaled footprint so the phone stays centred. */
+    .device-sizer {
+      width: calc(402px * var(--device-scale, 1));
+      height: calc(856px * var(--device-scale, 1));
+    }
+
+    .device-frame {
+      flex: 0 0 auto;
+      width: 402px;
+      height: 856px;
+      padding: 6px;
+      background: #1d1d1f;
+      border-radius: 42px;
+      box-shadow: 0 18px 44px rgba(25, 23, 24, 0.16);
+      transform: scale(var(--device-scale, 1));
+      transform-origin: top left;
+    }
+
+    .device-screen {
+      width: 390px;
+      height: 844px;
+      border-radius: 36px;
+      /* room for the dynamic island / home indicator */
+      --safe-top: 40px;
+      --safe-bottom: 18px;
+    }
+
+    .device-island {
+      display: block;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 112px;
+      height: 28px;
+      border-radius: 999px;
+      background: #0d0d0e;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .device-home {
+      display: block;
+      position: absolute;
+      bottom: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(25, 23, 24, 0.28);
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .device-caption {
+      display: block;
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(25, 23, 24, 0.35);
+      pointer-events: none;
+    }
+  }
+}
+
+@layer utilities {
+  .tap {
+    @apply transition-transform duration-150 active:scale-[0.97];
+  }
+  .fade-in {
+    animation: fadeIn 0.35s ease both;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
