@@ -46,6 +46,9 @@ interface Ctx {
   draft: Partial<EventItem>
   getEvent: (id?: string) => EventItem | undefined
   bookingFor: (eventId: string) => Booking | undefined
+  /** Logical entry point of the Event Builder flow (where step-0 Back / Save Draft return to). */
+  flowOrigin: string
+  setFlowOrigin: (from?: string) => void
   saveDraft: (patch: Partial<EventItem>) => void
   resetDraft: () => void
   loadDraftFrom: (ev: EventItem) => void
@@ -66,6 +69,14 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   const [bookings, setBookings] = useState<Booking[]>(() => load(BKEY, seedBookings))
   const [attendees, setAttendees] = useState<Attendee[]>(() => load(AKEY, seedAttendees))
   const [draft, setDraft] = useState<Partial<EventItem>>(() => load(DKEY, {}))
+  const [flowOrigin, setFlowOriginState] = useState('/home')
+
+  // Only accept a known origin; ignore missing/invalid so the value survives
+  // step-to-step navigation (which carries no route state). Fallback stays /home.
+  const setFlowOrigin = useCallback((from?: string) => {
+    const ALLOWED = ['/home', '/creator/events', '/portfolio/setup', '/profile']
+    if (from && ALLOWED.includes(from)) setFlowOriginState(from)
+  }, [])
 
   useEffect(() => { try { localStorage.setItem(EKEY, JSON.stringify(events)) } catch { /* */ } }, [events])
   useEffect(() => { try { localStorage.setItem(BKEY, JSON.stringify(bookings)) } catch { /* */ } }, [bookings])
@@ -197,10 +208,10 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<Ctx>(() => ({
-    events, bookings, attendees, draft,
+    events, bookings, attendees, draft, flowOrigin, setFlowOrigin,
     getEvent, bookingFor, saveDraft, resetDraft, loadDraftFrom, publishDraft,
     registerFree, purchase, cancelBooking, requestRefund, attendeesFor, setAttendee, cancelEvent,
-  }), [events, bookings, attendees, draft, getEvent, bookingFor, saveDraft, resetDraft, loadDraftFrom, publishDraft, registerFree, purchase, cancelBooking, requestRefund, attendeesFor, setAttendee, cancelEvent])
+  }), [events, bookings, attendees, draft, flowOrigin, setFlowOrigin, getEvent, bookingFor, saveDraft, resetDraft, loadDraftFrom, publishDraft, registerFree, purchase, cancelBooking, requestRefund, attendeesFor, setAttendee, cancelEvent])
 
   return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>
 }

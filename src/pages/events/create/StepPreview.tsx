@@ -35,7 +35,8 @@ export default function StepPreview() {
 
   const publish = () => {
     const ev = publishDraft({ id: portfolio.slug, name: portfolio.basics.fullName || state.name, avatar: portfolio.basics.photo })
-    navigate('/events/create/success', { state: { eventId: ev.id } })
+    // replace so browser Back from Success can't reopen the completed builder steps.
+    navigate('/events/create/success', { replace: true, state: { eventId: ev.id } })
   }
 
   return (

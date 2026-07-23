@@ -12,7 +12,7 @@ export default function CreatorEventEdit() {
   useEffect(() => {
     if (ev) {
       loadDraftFrom(ev)
-      navigate('/events/create/details', { replace: true })
+      navigate('/events/create/details', { replace: true, state: { from: '/creator/events', source: 'event-edit' } })
     }
   }, [ev, loadDraftFrom, navigate])
 

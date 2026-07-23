@@ -33,7 +33,7 @@ export default function CreatorEventDashboard() {
   const isCancelled = ev.status === 'cancelled' || cancelled
   const soldLabel = ev.paid ? 'Sales' : 'Registrations'
 
-  const doEdit = () => { loadDraftFrom(ev); navigate('/events/create/details') }
+  const doEdit = () => { loadDraftFrom(ev); navigate('/events/create/details', { state: { from: '/creator/events', source: 'event-dashboard' } }) }
   const confirmCancel = () => { cancelEvent(ev.id); setCancelSheet(false); setCancelled(true); flash('Event cancelled · attendees notified') }
 
   return (

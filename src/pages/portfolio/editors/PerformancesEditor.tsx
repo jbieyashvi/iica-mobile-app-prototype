@@ -83,7 +83,7 @@ export default function PerformancesEditor() {
         </div>
 
         <button
-          onClick={() => navigate('/events/create')}
+          onClick={() => navigate('/events/create/details', { state: { from: '/portfolio/setup', source: 'portfolio-builder' } })}
           className="tap mt-3 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-control border border-dashed border-brand/40 bg-brand-soft text-[14px] font-semibold text-brand-dark hover:border-brand"
         >
           <Plus className="h-[18px] w-[18px]" />

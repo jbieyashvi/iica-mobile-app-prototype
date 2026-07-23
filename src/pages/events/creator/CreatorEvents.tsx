@@ -47,7 +47,7 @@ export default function CreatorEvents() {
         <div className="flex h-12 items-center justify-between">
           <button onClick={() => navigate('/profile')} aria-label="Back" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><ChevronLeft className="h-6 w-6" /></button>
           <h1 className="font-serif text-[19px] text-ink">My Events</h1>
-          <button onClick={() => { resetDraft(); navigate('/events/create/details') }} aria-label="Create event" className="tap flex h-10 w-10 items-center justify-center rounded-control text-brand hover:bg-black/[0.04]"><Plus className="h-6 w-6" /></button>
+          <button onClick={() => { resetDraft(); navigate('/events/create/details', { state: { from: '/creator/events', source: 'creator-events' } }) }} aria-label="Create event" className="tap flex h-10 w-10 items-center justify-center rounded-control text-brand hover:bg-black/[0.04]"><Plus className="h-6 w-6" /></button>
         </div>
       </header>
 
@@ -72,7 +72,7 @@ export default function CreatorEvents() {
           {filtered.length === 0 ? (
             <div className="rounded-card border border-dashed border-border bg-surface px-4 py-12 text-center">
               <p className="text-[13px] text-muted">No {tab.toLowerCase()} events.</p>
-              {tab !== 'Cancelled' && <div className="mt-4 flex justify-center"><PrimaryButton onClick={() => { resetDraft(); navigate('/events/create/details') }}><Plus className="h-4 w-4" /> Create Event</PrimaryButton></div>}
+              {tab !== 'Cancelled' && <div className="mt-4 flex justify-center"><PrimaryButton onClick={() => { resetDraft(); navigate('/events/create/details', { state: { from: '/creator/events', source: 'creator-events' } }) }}><Plus className="h-4 w-4" /> Create Event</PrimaryButton></div>}
             </div>
           ) : filtered.map((e) => (
             <button key={e.id} onClick={() => navigate(`/creator/events/${e.id}`)} className="tap overflow-hidden rounded-card border border-border bg-surface text-left">

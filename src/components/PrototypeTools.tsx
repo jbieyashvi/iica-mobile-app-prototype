@@ -34,7 +34,7 @@ export default function PrototypeTools() {
 
   const loadEvent = (paid: boolean) => {
     events.resetDraft(); events.saveDraft(paid ? demoPaidEventDraft() : demoFreeWorkshopDraft())
-    navigate('/events/create/details')
+    navigate('/events/create/details', { state: { from: '/home', source: 'prototype-tools' } })
   }
   const loadProduct = (which: 'master' | 'digital' | 'physical') => {
     shop.resetDraft()

@@ -15,12 +15,22 @@ export default function QuickActions() {
   const { requireMember } = useGate()
   const { startCreate } = useCreateGate()
 
+  // Home is the logical origin for these quick actions — Back from the first
+  // step of any flow returns here, not through Profile / My Events.
+  const openAction = (label: string, feature: string, to: string) => {
+    if (label === 'Create Content') return startCreate()
+    if (label === 'Create Event') {
+      return requireMember(feature, () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }))
+    }
+    requireMember(feature, () => navigate(to))
+  }
+
   return (
     <div className="grid grid-cols-4 gap-2 px-[18px]">
       {actions.map(({ label, feature, icon: Icon, to }) => (
         <button
           key={label}
-          onClick={() => (label === 'Create Content' ? startCreate() : requireMember(feature, () => navigate(to)))}
+          onClick={() => openAction(label, feature, to)}
           className="tap flex flex-col items-center gap-2 rounded-card border border-border bg-surface px-1 py-3 text-center transition-colors hover:border-ink/20"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-brand-soft text-brand-dark">

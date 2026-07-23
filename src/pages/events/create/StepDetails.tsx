@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import BuilderShell from '../../../components/events/BuilderShell'
 import TextField from '../../../components/form/TextField'
 import TextArea from '../../../components/form/TextArea'
@@ -11,7 +12,14 @@ const FORMATS: EventFormat[] = ['In person', 'Online', 'Hybrid']
 
 export default function StepDetails() {
   const navigate = useNavigate()
-  const { draft, saveDraft } = useEvents()
+  const location = useLocation()
+  const { draft, saveDraft, setFlowOrigin } = useEvents()
+
+  // Capture the logical entry point once, from the route state passed by the
+  // action that opened Create Event. Ignored if absent (e.g. step nav / refresh).
+  useEffect(() => {
+    setFlowOrigin((location.state as { from?: string } | null)?.from)
+  }, [location.state, setFlowOrigin])
 
   const canContinue = !!draft.title?.trim() && !!draft.category &&
     (draft.category !== 'Others' || !!draft.customCategory?.trim()) && !!draft.summary?.trim()

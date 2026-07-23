@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CheckCircle2, Copy, Check, ExternalLink, Share2, Settings, FolderPlus } from 'lucide-react'
+import { CheckCircle2, Copy, Check, ExternalLink, Share2, Settings, FolderPlus, CalendarPlus } from 'lucide-react'
 import { useEvents } from '../../../state/EventsContext'
 import BackHeader from '../../../components/BackHeader'
 import PrimaryButton from '../../../components/PrimaryButton'
@@ -11,7 +11,7 @@ import { fmtDate } from '../../../events/format'
 export default function CreateSuccess() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { getEvent } = useEvents()
+  const { getEvent, resetDraft } = useEvents()
   const [copied, setCopied] = useState(false)
   const [toast, setToast] = useState('')
 
@@ -25,7 +25,8 @@ export default function CreateSuccess() {
 
   return (
     <div className="flex h-full flex-col bg-bg">
-      <BackHeader title="Event Published" />
+      {/* Final screen — back must not reopen the completed builder. */}
+      <BackHeader title="Event Published" onBack={() => navigate('/home')} />
       <div className="no-scrollbar flex-1 overflow-y-auto px-[22px] pb-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3EE] text-success"><CheckCircle2 className="h-9 w-9" strokeWidth={1.75} /></div>
@@ -57,7 +58,11 @@ export default function CreateSuccess() {
             <SecondaryButton onClick={() => navigate(`/artist/${ev.organiserId}/share`)}><Share2 className="h-4 w-4" /> Share Event</SecondaryButton>
           </div>
           <SecondaryButton full onClick={() => flash('Added to your portfolio')}><FolderPlus className="h-4 w-4" /> Add to Portfolio</SecondaryButton>
-          <button onClick={() => navigate('/creator/events')} className="tap mt-1 min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to My Events</button>
+          <SecondaryButton full onClick={() => { resetDraft(); navigate('/events/create/details', { state: { from: '/creator/events', source: 'creator-events' } }) }}><CalendarPlus className="h-4 w-4" /> Create Another</SecondaryButton>
+          <div className="mt-1 flex items-center justify-center gap-5">
+            <button onClick={() => navigate('/creator/events')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Manage Events</button>
+            <button onClick={() => navigate('/home')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
+          </div>
         </div>
       </div>
 
