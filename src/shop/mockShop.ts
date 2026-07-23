@@ -105,9 +105,9 @@ export const getProduct = (id?: string) => seedProducts.find((p) => p.id === id)
 
 export const seedOrders: Order[] = [
   {
-    id: 'ord-1', orderId: 'IICA-SHOP-7741', buyerName: 'Reshma Patra', buyerEmail: 'reshma@example.com',
+    id: 'ord-1', orderId: 'IICA-ORD-1024', buyerName: 'Reshma Patra', buyerEmail: 'reshma@example.com',
     items: [{ productId: 'classical-practice-tracks', title: 'Indian Classical Practice Tracks', cover: IMG.tracks, type: 'Digital', sellerId: 'abhishek-singh-chouhan', sellerName: 'Abhishek Singh Chouhan', qty: 1, price: 499 }],
-    amount: 499, status: 'Available', createdAt: '2026-07-15', hasDigital: true, hasPhysical: false,
+    amount: 514, status: 'Available', createdAt: '2026-07-23', hasDigital: true, hasPhysical: false,
   },
   {
     id: 'ord-2', orderId: 'IICA-SHOP-7758', buyerName: 'Reshma Patra', buyerEmail: 'reshma@example.com',
