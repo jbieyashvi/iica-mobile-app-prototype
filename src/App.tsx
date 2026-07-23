@@ -3,6 +3,25 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-
 import Layout from './components/Layout'
 import DevicePreview from './components/DevicePreview'
 import { GateProvider } from './state/GateContext'
+import { CreateGateProvider } from './state/CreateGate'
+import ContentCreatorGuard from './components/content/ContentCreatorGuard'
+// Content module
+import ContentCreateEntry from './pages/content/CreateEntry'
+import ContentUpload from './pages/content/Upload'
+import ContentDetailsStep from './pages/content/Details'
+import ContentSettingsStep from './pages/content/Settings'
+import ContentPreviewStep from './pages/content/Preview'
+import ContentSuccess from './pages/content/Success'
+import ContentBulkUpload from './pages/content/BulkUpload'
+import PublicContentDetail from './pages/content/PublicContentDetail'
+import ContentComments from './pages/content/Comments'
+import ContentShare from './pages/content/ContentShare'
+import CreatorContent from './pages/content/creator/CreatorContent'
+import CreatorContentManage from './pages/content/creator/CreatorContentManage'
+import CreatorContentEdit from './pages/content/creator/CreatorContentEdit'
+import CreatorCollections from './pages/content/creator/Collections'
+import CreatorCollectionDetail from './pages/content/creator/CollectionDetail'
+import CreatorContentAnalytics from './pages/content/creator/ContentAnalytics'
 // Events module
 import EventCreatorGuard from './components/events/EventCreatorGuard'
 import EventsDiscovery from './pages/events/EventsDiscovery'
@@ -64,7 +83,6 @@ import ExploreSearch from './pages/explore/ExploreSearch'
 import ExploreCategory from './pages/explore/ExploreCategory'
 import ExploreTrending from './pages/explore/ExploreTrending'
 import ExploreSaved from './pages/explore/ExploreSaved'
-import ContentDetail from './pages/explore/ContentDetail'
 import ShopComing from './pages/explore/ShopComing'
 import Home from './pages/Home'
 // Collaborate module
@@ -136,6 +154,7 @@ export default function App() {
   return (
     <DevicePreview>
       <RootEntryRedirect />
+      <CreateGateProvider>
       <GateProvider>
           <Routes>
             {/* Main app (with bottom navigation) */}
@@ -214,7 +233,28 @@ export default function App() {
             <Route path="/explore/trending" element={<ExploreTrending />} />
             <Route path="/explore/saved" element={<ExploreSaved />} />
             <Route path="/explore/category/:slug" element={<ExploreCategory />} />
-            <Route path="/content/:id" element={<ContentDetail />} />
+
+            {/* Content module — public */}
+            <Route path="/content/:id" element={<PublicContentDetail />} />
+            <Route path="/content/:id/comments" element={<ContentComments />} />
+            <Route path="/content/:id/share" element={<ContentShare />} />
+
+            {/* Content module — create flow (active creators only) */}
+            <Route path="/content/create" element={<ContentCreatorGuard><ContentCreateEntry /></ContentCreatorGuard>} />
+            <Route path="/content/create/upload" element={<ContentCreatorGuard><ContentUpload /></ContentCreatorGuard>} />
+            <Route path="/content/create/details" element={<ContentCreatorGuard><ContentDetailsStep /></ContentCreatorGuard>} />
+            <Route path="/content/create/settings" element={<ContentCreatorGuard><ContentSettingsStep /></ContentCreatorGuard>} />
+            <Route path="/content/create/preview" element={<ContentCreatorGuard><ContentPreviewStep /></ContentCreatorGuard>} />
+            <Route path="/content/create/success" element={<ContentCreatorGuard><ContentSuccess /></ContentCreatorGuard>} />
+            <Route path="/content/create/bulk" element={<ContentCreatorGuard><ContentBulkUpload /></ContentCreatorGuard>} />
+
+            {/* Content module — creator dashboard */}
+            <Route path="/creator/content" element={<ContentCreatorGuard><CreatorContent /></ContentCreatorGuard>} />
+            <Route path="/creator/content/analytics" element={<ContentCreatorGuard><CreatorContentAnalytics /></ContentCreatorGuard>} />
+            <Route path="/creator/content/:id" element={<ContentCreatorGuard><CreatorContentManage /></ContentCreatorGuard>} />
+            <Route path="/creator/content/:id/edit" element={<ContentCreatorGuard><CreatorContentEdit /></ContentCreatorGuard>} />
+            <Route path="/creator/collections" element={<ContentCreatorGuard><CreatorCollections /></ContentCreatorGuard>} />
+            <Route path="/creator/collections/:id" element={<ContentCreatorGuard><CreatorCollectionDetail /></ContentCreatorGuard>} />
 
             {/* Events — customer */}
             <Route path="/events" element={<EventsDiscovery />} />
@@ -301,6 +341,7 @@ export default function App() {
           </Routes>
           <FloatingCart />
         </GateProvider>
+      </CreateGateProvider>
     </DevicePreview>
   )
 }

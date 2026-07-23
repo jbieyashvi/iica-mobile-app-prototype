@@ -6,7 +6,8 @@ import ShareSheet from '../../components/explore/ShareSheet'
 import ExploreFilterSheet, { FilterGroup, FilterValues, countActive } from '../../components/explore/ExploreFilterSheet'
 import { useSaveGate } from '../../components/SaveGate'
 import { useLikes } from '../../state/useExplore'
-import { contentItems, ContentItem } from '../../data/exploreData'
+import { ContentItem } from '../../data/exploreData'
+import { useContentStore } from '../../state/ContentContext'
 import { useLoad } from './useLoad'
 
 const groups: FilterGroup[] = [
@@ -18,6 +19,7 @@ const groups: FilterGroup[] = [
 export default function ExploreContent() {
   const { save, isSaved, sheet } = useSaveGate()
   const { isLiked, toggle } = useLikes()
+  const { publicContent } = useContentStore()
   const loading = useLoad(500)
   const [filters, setFilters] = useState<FilterValues>({})
   const [showFilters, setShowFilters] = useState(false)
@@ -27,13 +29,13 @@ export default function ExploreContent() {
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
 
   const results = useMemo(() => {
-    let r = [...contentItems]
+    let r = publicContent() as unknown as ContentItem[]
     if (filters.type) r = r.filter((c) => c.type === filters.type)
     if (filters.category) r = r.filter((c) => c.category === filters.category)
     if (filters.sort === 'Most Popular') r = [...r].sort((a, b) => b.likes - a.likes)
     if (filters.sort === 'Most Recent') r = [...r].sort((a, b) => b.date.localeCompare(a.date))
     return r
-  }, [filters])
+  }, [filters, publicContent])
 
   return (
     <ExploreShell active="content" filterButton={
