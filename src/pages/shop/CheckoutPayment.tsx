@@ -9,6 +9,7 @@ import { useAuth } from '../../state/AuthContext'
 import { inr, unitPrice, shippingFor, platformFee } from '../../shop/pricing'
 import { PROMO_CODE, PROMO_RATE } from '../../shop/types'
 import { loadAddress } from './CheckoutAddress'
+import { loadGuestContact } from './Checkout'
 
 type Pay = 'Card' | 'UPI' | 'Google Pay'
 
@@ -37,7 +38,11 @@ export default function CheckoutPayment() {
   const success = () => {
     setProcessing(true)
     setTimeout(() => {
-      const order = placeOrder({ name: state.name || 'Guest', email: state.email || 'you@example.com' }, total, loadAddress())
+      const guest = loadGuestContact()
+      const buyer = state.authed
+        ? { name: state.name || 'Guest', email: state.email || 'you@example.com' }
+        : { name: guest?.name || 'Guest', email: guest?.email || 'guest@demo.iica.app' }
+      const order = placeOrder(buyer, total, loadAddress())
       clearPurchased(active.map((i) => i.productId))
       setProcessing(false)
       navigate('/checkout/confirmation', { state: { orderId: order.id } })

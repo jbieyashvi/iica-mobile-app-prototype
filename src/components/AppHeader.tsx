@@ -81,10 +81,11 @@ export default function AppHeader() {
           <button aria-label="Close" onClick={() => setGuestSheet(false)} className="tap absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-control text-muted hover:bg-black/[0.04]"><X className="h-5 w-5" /></button>
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand"><Library className="h-6 w-6" strokeWidth={1.75} /></div>
           <h2 className="font-serif text-[23px] leading-tight text-ink">Your Library</h2>
-          <p className="mt-1.5 text-[14px] leading-relaxed text-muted">Sign in to access your courses, downloads and saved content.</p>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-muted">Sign in to access your courses, downloads and saved content — or look up a purchase you made as a guest.</p>
           <div className="mt-5 flex flex-col gap-2.5">
             <PrimaryButton full onClick={() => { setGuestSheet(false); navigate('/login') }}>Sign In</PrimaryButton>
-            <SecondaryButton full onClick={() => { setGuestSheet(false); navigate('/signup') }}>Create Account</SecondaryButton>
+            <SecondaryButton full onClick={() => { setGuestSheet(false); navigate('/signup') }}>Create Free Account</SecondaryButton>
+            <button onClick={() => { setGuestSheet(false); navigate('/orders') }} className="tap min-h-[44px] text-[14px] font-semibold text-brand hover:text-brand-dark">Find a guest purchase</button>
             <button onClick={() => setGuestSheet(false)} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Maybe Later</button>
           </div>
         </div>

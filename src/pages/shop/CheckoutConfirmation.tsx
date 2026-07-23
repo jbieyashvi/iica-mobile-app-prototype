@@ -1,23 +1,30 @@
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CheckCircle2, Download, Truck, Package, Mail } from 'lucide-react'
+import { CheckCircle2, Download, Truck, Package, Mail, BookOpen, Link2, UserPlus, X } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useShop } from '../../state/ShopContext'
+import { useAuth } from '../../state/AuthContext'
 import { inr } from '../../shop/pricing'
 
 export default function CheckoutConfirmation() {
   const navigate = useNavigate()
   const location = useLocation()
   const { orders } = useShop()
+  const { state } = useAuth()
+  const [toast, setToast] = useState('')
+  const [dismissAcct, setDismissAcct] = useState(false)
+  const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
   const orderId = (location.state as { orderId?: string })?.orderId
   const order = orders.find((o) => o.id === orderId) ?? orders[0]
-  if (!order) return <BackHeader title="Confirmation" />
+  if (!order) return <BackHeader title="Confirmation" fallback="/shop" />
+  const isGuest = !state.authed
 
   return (
     <div className="flex h-full flex-col bg-bg">
       {/* Final screen — back must not re-enter the paid checkout flow. */}
-      <BackHeader title="Order Confirmed" onBack={() => navigate('/home')} />
+      <BackHeader title="Order Confirmed" onBack={() => navigate('/home')} fallback="/home" />
       <div className="no-scrollbar flex-1 overflow-y-auto px-[22px] pb-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3EE] text-success"><CheckCircle2 className="h-9 w-9" strokeWidth={1.75} /></div>
@@ -36,20 +43,44 @@ export default function CheckoutConfirmation() {
           <div className="flex items-center justify-between px-3.5 py-3"><span className="text-[13px] font-semibold text-ink">Amount paid</span><span className="text-[15px] font-bold text-ink">{inr(order.amount)}</span></div>
         </div>
 
-        {order.hasDigital && <Info icon={<Download className="h-4 w-4 text-brand" />} text="Your digital items are available now in My Library." />}
+        {order.hasDigital && <Info icon={<Download className="h-4 w-4 text-brand" />} text={isGuest ? 'Your digital items are ready — access is linked to your email and Order ID.' : 'Your digital items are available now in My Library.'} />}
         {order.hasPhysical && <Info icon={<Truck className="h-4 w-4 text-brand" />} text={`Delivery estimate: 5–9 days. Track your order for updates.`} />}
         <Info icon={<Mail className="h-4 w-4 text-brand" />} text={`A confirmation has been emailed to ${order.buyerEmail}.`} />
+        {isGuest && <p className="mt-2 text-[12px] font-medium text-ink">Save your Order ID to view this purchase later.</p>}
 
         <div className="mt-5 flex flex-col gap-2.5">
           <PrimaryButton full onClick={() => navigate(`/orders/${order.id}`)}><Package className="h-4 w-4" /> View Order</PrimaryButton>
-          {order.hasDigital && <SecondaryButton full onClick={() => navigate('/library')}><Download className="h-4 w-4" /> Open My Library</SecondaryButton>}
+          {order.hasDigital && (isGuest ? (
+            <>
+              <SecondaryButton full onClick={() => navigate(`/orders/${order.id}`)}><BookOpen className="h-4 w-4" /> Access Your Purchase</SecondaryButton>
+              <SecondaryButton full onClick={() => flash('Access link sent to ' + order.buyerEmail + ' (prototype)')}><Link2 className="h-4 w-4" /> Send Access Link</SecondaryButton>
+            </>
+          ) : (
+            <SecondaryButton full onClick={() => navigate('/library')}><BookOpen className="h-4 w-4" /> Open in My Library</SecondaryButton>
+          ))}
           {order.hasPhysical && <SecondaryButton full onClick={() => navigate(`/orders/${order.id}`)}><Truck className="h-4 w-4" /> Track Order</SecondaryButton>}
           <div className="mt-1 flex items-center justify-center gap-5">
             <button onClick={() => navigate('/shop')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Continue Shopping</button>
             <button onClick={() => navigate('/home')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
           </div>
         </div>
+
+        {/* Optional post-purchase account — never blocks access. */}
+        {isGuest && !dismissAcct && (
+          <div className="mt-6 rounded-card border border-border bg-brand-soft p-4">
+            <div className="flex items-start justify-between gap-2 text-brand-dark">
+              <div className="flex items-center gap-2"><UserPlus className="h-5 w-5 shrink-0" /><h3 className="font-serif text-[17px] leading-tight text-ink">Want to keep everything in one place?</h3></div>
+              <button aria-label="Dismiss" onClick={() => setDismissAcct(true)} className="tap -mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted hover:bg-black/[0.05]"><X className="h-4 w-4" /></button>
+            </div>
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#6d3357]">Create a free account to access your orders, downloads and learning progress anytime.</p>
+            <div className="mt-3 flex flex-col gap-2.5">
+              <PrimaryButton full onClick={() => navigate('/signup')}>Create Free Account</PrimaryButton>
+              <button onClick={() => setDismissAcct(true)} className="tap min-h-[44px] text-[13px] font-semibold text-muted hover:text-ink">Maybe Later</button>
+            </div>
+          </div>
+        )}
       </div>
+      {toast && <div className="pointer-events-none absolute inset-x-0 bottom-8 z-50 flex justify-center"><span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span></div>}
     </div>
   )
 }

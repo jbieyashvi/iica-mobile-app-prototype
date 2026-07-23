@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  CheckCircle2, BookOpen, Play, FileText, MessageSquare, LifeBuoy, Truck, Check, ChevronRight, ShieldQuestion,
+  CheckCircle2, BookOpen, Play, FileText, MessageSquare, LifeBuoy, Truck, Check, ChevronRight, ShieldQuestion, Send, UserPlus,
 } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import StatusBadge from '../../components/StatusBadge'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useShop } from '../../state/ShopContext'
+import { useAuth } from '../../state/AuthContext'
 import { inr } from '../../shop/pricing'
 import { fmtDate } from '../../events/format'
 
@@ -22,6 +23,8 @@ export default function OrderDetails() {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { orders, refunds } = useShop()
+  const { state } = useAuth()
+  const isGuest = !state.authed
   const scrollRef = useRef<HTMLDivElement>(null)
   const [toast, setToast] = useState('')
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1600) }
@@ -106,13 +109,29 @@ export default function OrderDetails() {
           </Section>
         ) : (
           <Section title="Access">
-            {isMasterclass ? (
-              <PrimaryButton full onClick={() => navigate(`/library/${item?.productId}`)}><Play className="h-4 w-4" /> Start Masterclass</PrimaryButton>
+            {isGuest ? (
+              <>
+                <PrimaryButton full onClick={() => flash('Opening your purchase (prototype)')}>
+                  {isMasterclass ? <><Play className="h-4 w-4" /> Access Your Masterclass</> : <><BookOpen className="h-4 w-4" /> Access Your Purchase</>}
+                </PrimaryButton>
+                <p className="mt-2 text-center text-[12px] text-muted">Access is linked to your email and Order ID.{isMasterclass ? ' A free account saves your progress across devices.' : ''}</p>
+                <div className="mt-2 grid grid-cols-2 gap-2.5">
+                  <SecondaryButton onClick={() => flash('Access link sent (prototype)')}><Send className="h-4 w-4" /> Send Access Link</SecondaryButton>
+                  <SecondaryButton onClick={() => navigate('/signup')}><UserPlus className="h-4 w-4" /> Create Account</SecondaryButton>
+                </div>
+              </>
+            ) : isMasterclass ? (
+              <>
+                <PrimaryButton full onClick={() => navigate(`/library/${item?.productId}`)}><Play className="h-4 w-4" /> Start Masterclass</PrimaryButton>
+                <p className="mt-2 text-center text-[12px] text-muted">Your masterclass is saved in My Library.</p>
+                <div className="mt-2"><SecondaryButton full onClick={() => navigate('/library')}><BookOpen className="h-4 w-4" /> Open My Library</SecondaryButton></div>
+              </>
             ) : (
-              <PrimaryButton full onClick={() => navigate('/library')}><BookOpen className="h-4 w-4" /> Open in My Library</PrimaryButton>
+              <>
+                <PrimaryButton full onClick={() => navigate('/library')}><BookOpen className="h-4 w-4" /> Open in My Library</PrimaryButton>
+                <p className="mt-2 text-center text-[12px] text-muted">Your files are available anytime in My Library.</p>
+              </>
             )}
-            <p className="mt-2 text-center text-[12px] text-muted">Your files are available anytime in My Library.</p>
-            {isMasterclass && <div className="mt-2"><SecondaryButton full onClick={() => navigate('/library')}><BookOpen className="h-4 w-4" /> Open My Library</SecondaryButton></div>}
           </Section>
         )}
 
