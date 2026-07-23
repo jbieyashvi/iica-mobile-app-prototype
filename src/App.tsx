@@ -60,6 +60,7 @@ import CreatorShopOrders from './pages/shop/creator/CreatorOrders'
 import CreatorShopOrderDetails from './pages/shop/creator/CreatorOrderDetails'
 import CreatorEarnings from './pages/shop/creator/CreatorEarnings'
 import CreatorPayouts from './pages/shop/creator/CreatorPayouts'
+import FloatingCart from './components/shop/FloatingCart'
 import ExploreSearch from './pages/explore/ExploreSearch'
 import ExploreCategory from './pages/explore/ExploreCategory'
 import ExploreTrending from './pages/explore/ExploreTrending'
@@ -297,6 +298,7 @@ export default function App() {
             <Route path="/membership/payment-simulation" element={<PaymentSimulation />} />
             <Route path="/membership/success" element={<MembershipSuccess />} />
           </Routes>
+          <FloatingCart />
         </GateProvider>
     </DevicePreview>
   )

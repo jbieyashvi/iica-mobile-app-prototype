@@ -25,6 +25,7 @@ export default function ProductDetail() {
   const [variant, setVariant] = useState<Variant | undefined>()
   const [qty, setQty] = useState(1)
   const [share, setShare] = useState(false)
+  const [added, setAdded] = useState(false)
   const [toast, setToast] = useState('')
 
   const p = getProduct(id)
@@ -41,8 +42,9 @@ export default function ProductDetail() {
 
   const add = (buyNow: boolean) => {
     addToCart(p.id, p.type === 'Physical' ? qty : 1, variant?.id)
-    if (buyNow) navigate('/cart')
-    else flash('Added to cart')
+    if (buyNow) { navigate('/checkout'); return }
+    setAdded(true); setTimeout(() => setAdded(false), 1300)
+    flash('Added to your cart')
   }
 
   return (
@@ -189,13 +191,13 @@ export default function ProductDetail() {
           <div><p className="text-[11px] uppercase tracking-wide text-muted">Price</p><p className="text-[18px] font-bold text-ink">{p.free ? 'Free' : inr(price)}</p></div>
           {soldOut ? (
             <SecondaryButton className="flex-1" disabled>Sold Out</SecondaryButton>
-          ) : p.type === 'Physical' ? (
+          ) : (
             <div className="flex flex-1 gap-2">
-              <SecondaryButton onClick={() => add(false)} className="flex-1">Add to Cart</SecondaryButton>
+              <SecondaryButton onClick={() => add(false)} className={`flex-1 ${added ? '!border-success/50 !text-success' : ''}`}>
+                {added ? <><Check className="h-4 w-4" /> Added</> : 'Add to Cart'}
+              </SecondaryButton>
               <PrimaryButton onClick={() => add(true)} className="flex-1">Buy Now</PrimaryButton>
             </div>
-          ) : (
-            <PrimaryButton className="flex-1" onClick={() => add(true)}>{p.type === 'Masterclass' ? 'Buy Masterclass' : 'Buy Digital Product'}</PrimaryButton>
           )}
         </div>
       </div>
