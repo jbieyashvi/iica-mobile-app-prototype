@@ -22,7 +22,7 @@ export default function MembershipSubmitted() {
             View Payment Instructions
           </PrimaryButton>
           <div className="mt-2.5">
-            <SecondaryButton full onClick={() => navigate('/')}>
+            <SecondaryButton full onClick={() => navigate('/home')}>
               Return to Home
             </SecondaryButton>
           </div>

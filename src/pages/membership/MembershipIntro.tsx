@@ -52,7 +52,7 @@ export default function MembershipIntro() {
           <button
             onClick={() => {
               continueAsGuest()
-              navigate('/')
+              navigate('/home')
             }}
             className="tap mt-2.5 w-full min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink"
           >

@@ -13,7 +13,7 @@ export default function AppHeader() {
     >
       <div className="flex h-14 items-center justify-between px-[14px]">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="tap flex items-center gap-2 pl-1"
           aria-label="IICA home"
         >

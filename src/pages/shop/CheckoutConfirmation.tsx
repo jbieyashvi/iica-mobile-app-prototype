@@ -16,7 +16,8 @@ export default function CheckoutConfirmation() {
 
   return (
     <div className="flex h-full flex-col bg-bg">
-      <BackHeader title="Order Confirmed" />
+      {/* Final screen — back must not re-enter the paid checkout flow. */}
+      <BackHeader title="Order Confirmed" onBack={() => navigate('/home')} />
       <div className="no-scrollbar flex-1 overflow-y-auto px-[22px] pb-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3EE] text-success"><CheckCircle2 className="h-9 w-9" strokeWidth={1.75} /></div>
@@ -43,7 +44,10 @@ export default function CheckoutConfirmation() {
           <PrimaryButton full onClick={() => navigate(`/orders/${order.id}`)}><Package className="h-4 w-4" /> View Order</PrimaryButton>
           {order.hasDigital && <SecondaryButton full onClick={() => navigate('/library')}><Download className="h-4 w-4" /> Open My Library</SecondaryButton>}
           {order.hasPhysical && <SecondaryButton full onClick={() => navigate(`/orders/${order.id}`)}><Truck className="h-4 w-4" /> Track Order</SecondaryButton>}
-          <button onClick={() => navigate('/shop')} className="tap mt-1 min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Continue Shopping</button>
+          <div className="mt-1 flex items-center justify-center gap-5">
+            <button onClick={() => navigate('/shop')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Continue Shopping</button>
+            <button onClick={() => navigate('/home')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
+          </div>
         </div>
       </div>
     </div>

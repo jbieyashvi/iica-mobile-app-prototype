@@ -26,7 +26,8 @@ export default function BookingConfirmation() {
 
   return (
     <div className="flex h-full flex-col bg-bg">
-      <BackHeader title="Confirmation" />
+      {/* Final screen — back must not re-enter the registration/checkout flow. */}
+      <BackHeader title="Confirmation" onBack={() => navigate('/home')} />
       <div className="no-scrollbar flex-1 overflow-y-auto px-[22px] pb-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <div className={`flex h-16 w-16 items-center justify-center rounded-full ${pending ? 'bg-[#F7F0E4] text-warning' : 'bg-[#EAF3EE] text-success'}`}>
@@ -60,7 +61,11 @@ export default function BookingConfirmation() {
           {booking.format !== 'Online' && (
             <SecondaryButton full onClick={() => flash('Opening directions (prototype)')}><MapPin className="h-4 w-4" /> Directions</SecondaryButton>
           )}
-          <button onClick={() => navigate('/events')} className="tap mt-1 min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Return to Events</button>
+          <SecondaryButton full onClick={() => navigate('/my-tickets')}><TicketIcon className="h-4 w-4" /> View My Tickets</SecondaryButton>
+          <div className="mt-1 flex items-center justify-center gap-5">
+            <button onClick={() => navigate('/events')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Explore Events</button>
+            <button onClick={() => navigate('/home')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
+          </div>
         </div>
       </div>
 

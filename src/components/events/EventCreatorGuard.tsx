@@ -11,7 +11,7 @@ export default function EventCreatorGuard({ children }: { children: ReactNode })
 
   useEffect(() => {
     if (state.role !== 'active') {
-      navigate('/', { replace: true })
+      navigate('/home', { replace: true })
       requireMember('Creating events', () => {})
     }
   }, [state.role, navigate, requireMember])

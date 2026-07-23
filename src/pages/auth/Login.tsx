@@ -30,7 +30,7 @@ export default function Login() {
     setTouched(true)
     if (!valid) return
     login(email.trim())
-    navigate('/')
+    navigate('/home')
   }
 
   return (
@@ -93,11 +93,11 @@ export default function Login() {
         <SocialButtons
           onGoogle={() => {
             login('creator@example.com')
-            navigate('/')
+            navigate('/home')
           }}
           onApple={() => {
             login('creator@example.com')
-            navigate('/')
+            navigate('/home')
           }}
         />
       </div>
@@ -113,7 +113,7 @@ export default function Login() {
             label="Continue as Guest"
             onClick={() => {
               continueAsGuest()
-              navigate('/')
+              navigate('/home')
             }}
           />
           <ShortcutRow
@@ -129,7 +129,7 @@ export default function Login() {
             label="Preview Active Creator"
             onClick={() => {
               previewActive()
-              navigate('/')
+              navigate('/home')
             }}
           />
         </div>

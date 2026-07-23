@@ -2,7 +2,7 @@ import { Home, Compass, ShoppingBag, Users, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const tabs = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/home', label: 'Home', icon: Home },
   { to: '/explore', label: 'Explore', icon: Compass },
   { to: '/shop', label: 'Shop', icon: ShoppingBag },
   { to: '/collaborate', label: 'Collaborate', icon: Users },
@@ -20,7 +20,7 @@ export default function BottomNavigation() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/home'}
             className="tap group relative flex flex-1 flex-col items-center justify-center gap-1"
           >
             {({ isActive }) => (

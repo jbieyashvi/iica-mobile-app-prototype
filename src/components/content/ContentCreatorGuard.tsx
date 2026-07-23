@@ -12,7 +12,7 @@ export default function ContentCreatorGuard({ children }: { children: ReactNode 
 
   useEffect(() => {
     if (state.role !== 'active') {
-      navigate('/', { replace: true })
+      navigate('/home', { replace: true })
       startCreate()
     }
   }, [state.role, navigate, startCreate])

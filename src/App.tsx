@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react'
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import DevicePreview from './components/DevicePreview'
 import { GateProvider } from './state/GateContext'
@@ -133,33 +132,18 @@ import PaymentPending from './pages/membership/PaymentPending'
 import PaymentSimulation from './pages/membership/PaymentSimulation'
 import MembershipSuccess from './pages/membership/MembershipSuccess'
 
-// Root entry → Welcome. Fires only on the initial page load (open/refresh) when
-// landing on '/'. Later client-side navigations to '/' (Home tab) are untouched,
-// and refreshing a valid nested route (/explore, /shop, ...) is never redirected.
-function RootEntryRedirect() {
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const initial = useRef(true)
-
-  useEffect(() => {
-    if (!initial.current) return
-    initial.current = false
-    if (pathname === '/') navigate('/welcome', { replace: true })
-  }, [pathname, navigate])
-
-  return null
-}
-
 export default function App() {
   return (
     <DevicePreview>
-      <RootEntryRedirect />
       <CreateGateProvider>
       <GateProvider>
           <Routes>
+            {/* Root shows Welcome; Home is its own explicit route (no ambiguity). */}
+            <Route path="/" element={<Welcome />} />
+
             {/* Main app (with bottom navigation) */}
             <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
 

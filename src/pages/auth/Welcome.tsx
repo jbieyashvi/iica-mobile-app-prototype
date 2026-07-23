@@ -72,7 +72,7 @@ export default function Welcome() {
         <button
           onClick={() => {
             continueAsGuest()
-            navigate('/')
+            navigate('/home')
           }}
           className="tap mt-3.5 min-h-[44px] w-full text-[14px] font-semibold text-muted hover:text-ink"
         >

@@ -20,7 +20,7 @@ export default function MembershipSuccess() {
             Build My Portfolio
           </PrimaryButton>
           <div className="mt-2.5">
-            <SecondaryButton full onClick={() => navigate('/')}>
+            <SecondaryButton full onClick={() => navigate('/home')}>
               Go to Home
             </SecondaryButton>
           </div>

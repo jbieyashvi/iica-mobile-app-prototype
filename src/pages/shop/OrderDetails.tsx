@@ -93,6 +93,13 @@ export default function OrderDetails() {
             <PrimaryButton full onClick={() => navigate(`/refunds/${o.id}/request`)}><RotateCcw className="h-4 w-4" /> Request Refund / Return</PrimaryButton>
           )}
         </div>
+
+        {/* Always-available exits — never a dead end. */}
+        <div className="mt-6 grid grid-cols-2 gap-2.5 border-t border-border pt-5">
+          <SecondaryButton onClick={() => navigate('/orders')}>All Orders</SecondaryButton>
+          <SecondaryButton onClick={() => navigate('/shop')}>Continue Shopping</SecondaryButton>
+        </div>
+        <button onClick={() => navigate('/home')} className="tap mx-auto mt-2 flex min-h-[44px] items-center justify-center text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
       </div>
       {toast && <div className="pointer-events-none absolute inset-x-0 bottom-8 z-50 flex justify-center"><span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span></div>}
     </div>

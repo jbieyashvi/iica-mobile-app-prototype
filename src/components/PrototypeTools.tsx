@@ -70,10 +70,10 @@ export default function PrototypeTools() {
       {open && (
         <div className="mt-2 flex flex-col gap-3 rounded-card border border-border bg-surface p-3">
           <Group title="Continue as">
-            <Chip icon={<UserRound className="h-4 w-4" />} label="Guest" onClick={() => { continueAsGuest(); navigate('/'); flash('Now browsing as Guest') }} />
-            <Chip icon={<UserCheck className="h-4 w-4" />} label="Registered User" onClick={() => { previewRegistered(); navigate('/'); flash('Registered user') }} />
+            <Chip icon={<UserRound className="h-4 w-4" />} label="Guest" onClick={() => { continueAsGuest(); navigate('/home'); flash('Now browsing as Guest') }} />
+            <Chip icon={<UserCheck className="h-4 w-4" />} label="Registered User" onClick={() => { previewRegistered(); navigate('/home'); flash('Registered user') }} />
             <Chip icon={<Clock className="h-4 w-4" />} label="Payment-Pending" onClick={() => { previewPending(); navigate('/membership/payment-pending') }} />
-            <Chip icon={<BadgeCheck className="h-4 w-4" />} label="Active Creator" onClick={() => { previewActive(); navigate('/'); flash('Active creator') }} />
+            <Chip icon={<BadgeCheck className="h-4 w-4" />} label="Active Creator" onClick={() => { previewActive(); navigate('/home'); flash('Active creator') }} />
           </Group>
 
           <Group title="Load demo">

@@ -43,7 +43,7 @@ export default function PaymentPending() {
   }
 
   return (
-    <AuthShell onBack={() => navigate('/')}>
+    <AuthShell onBack={() => navigate('/home')}>
       <div className="mb-1 flex items-center justify-between">
         <h1 className="font-serif text-[26px] leading-tight text-ink">
           Membership status
@@ -118,7 +118,7 @@ export default function PaymentPending() {
           <ActionBtn
             icon={<Home className="h-4 w-4" />}
             label="Return Home"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
           />
         </div>
       </div>

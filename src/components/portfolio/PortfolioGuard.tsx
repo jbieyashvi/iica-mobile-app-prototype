@@ -11,7 +11,7 @@ export default function PortfolioGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (state.role === 'guest') {
-      navigate('/', { replace: true })
+      navigate('/home', { replace: true })
       requireMember('Portfolio', () => {})
     } else if (state.role === 'pending') {
       navigate('/membership/payment-pending', { replace: true })

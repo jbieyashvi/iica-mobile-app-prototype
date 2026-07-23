@@ -70,7 +70,8 @@ export default function RequestForm() {
   if (sent) {
     return (
       <div className="flex h-full flex-col bg-bg">
-        <BackHeader title="Request Sent" />
+        {/* Final screen — back must not re-enter the request form. */}
+        <BackHeader title="Request Sent" onBack={() => navigate('/collaborate')} />
         <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EAF3EE] text-success"><CheckCircle2 className="h-9 w-9" strokeWidth={1.75} /></div>
           <h1 className="mt-5 font-serif text-[26px] leading-tight text-ink">Request sent</h1>
@@ -79,6 +80,10 @@ export default function RequestForm() {
           <div className="mt-7 flex w-full max-w-[300px] flex-col gap-2.5">
             <PrimaryButton full onClick={() => navigate('/collaborate/requests')}>View Request</PrimaryButton>
             <SecondaryButton full onClick={() => navigate('/collaborate/recommendations')}>Continue Discovering</SecondaryButton>
+            <div className="mt-1 flex items-center justify-center gap-5">
+              <button onClick={() => navigate('/collaborate')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Collaborate Home</button>
+              <button onClick={() => navigate('/home')} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
+            </div>
           </div>
         </div>
       </div>

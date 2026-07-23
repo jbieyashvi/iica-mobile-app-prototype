@@ -29,9 +29,10 @@ export default function Discover() {
 
   return (
     <div className="flex h-full flex-col bg-bg">
-      <header className="flex h-14 shrink-0 items-center px-2" style={{ paddingTop: 'var(--safe-top)' }}>
-        {phase !== 'matching' && (
-          <button onClick={() => navigate('/collaborate')} aria-label="Back" className="tap flex h-11 w-11 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><ChevronLeft className="h-6 w-6" /></button>
+      <header className="flex h-14 shrink-0 items-center justify-between px-2" style={{ paddingTop: 'var(--safe-top)' }}>
+        <button onClick={() => navigate('/collaborate')} aria-label={phase === 'matching' ? 'Cancel matching' : 'Back'} className="tap flex h-11 w-11 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><ChevronLeft className="h-6 w-6" /></button>
+        {phase === 'matching' && (
+          <button onClick={() => navigate('/collaborate')} className="tap min-h-[44px] px-3 text-[13px] font-semibold text-muted hover:text-ink">Cancel</button>
         )}
       </header>
 

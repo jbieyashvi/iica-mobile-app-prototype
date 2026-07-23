@@ -66,7 +66,7 @@ export default function PortfolioPublished() {
           <QrIcon className="h-4 w-4" /> Generate QR Code
         </SecondaryButton>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="tap mt-1 min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink"
         >
           Back to Home

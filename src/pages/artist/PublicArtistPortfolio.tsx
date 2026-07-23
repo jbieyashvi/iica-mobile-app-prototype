@@ -115,7 +115,7 @@ export default function PublicArtistPortfolio() {
         <p className="font-serif text-[22px] text-ink">Artist not found</p>
         <p className="mt-1 text-[13px] text-muted">This portfolio doesn't exist yet.</p>
         <div className="mt-5">
-          <PrimaryButton onClick={() => navigate('/')}>Back to Home</PrimaryButton>
+          <PrimaryButton onClick={() => navigate('/home')}>Back to Home</PrimaryButton>
         </div>
       </div>
     )
@@ -134,7 +134,7 @@ export default function PublicArtistPortfolio() {
           style={{ paddingTop: 'var(--safe-top)', height: 'calc(var(--safe-top) + 44px)' }}
         >
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             aria-label="Back"
             className="tap flex h-10 w-10 items-center justify-center rounded-full bg-ink/35 text-white backdrop-blur-sm"
           >

@@ -60,6 +60,7 @@ export default function Success() {
             <SecondaryButton onClick={() => navigate('/content/create')}><Plus className="h-4 w-4" /> Create Another</SecondaryButton>
             <SecondaryButton onClick={() => navigate('/creator/content')}><LayoutGrid className="h-4 w-4" /> Manage Content</SecondaryButton>
           </div>
+          <button onClick={() => navigate('/home')} className="tap mt-1 min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Go to Home</button>
         </div>
       </div>
 
