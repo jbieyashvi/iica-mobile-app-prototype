@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   FlaskConical, UserRound, Clock, BadgeCheck, UserCheck, FolderCheck, CalendarDays,
-  GraduationCap, Download, Package, RotateCcw, ChevronRight, X,
+  GraduationCap, Download, Package, RotateCcw, ChevronRight, X, Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../state/AuthContext'
 import { usePortfolio } from '../state/PortfolioContext'
 import { useEvents } from '../state/EventsContext'
 import { useShop } from '../state/ShopContext'
+import { useCollab } from '../state/CollabContext'
 import {
   demoPaidEventDraft, demoFreeWorkshopDraft, demoMasterclassDraft, demoDigitalDraft, demoPhysicalDraft,
 } from '../demo/demoBuilders'
@@ -20,6 +21,7 @@ export default function PrototypeTools() {
   const portfolio = usePortfolio()
   const events = useEvents()
   const shop = useShop()
+  const collab = useCollab()
   const [open, setOpen] = useState(false)
   const [confirm, setConfirm] = useState(false)
   const [toast, setToast] = useState('')
@@ -38,6 +40,14 @@ export default function PrototypeTools() {
     shop.resetDraft()
     shop.saveDraft(which === 'master' ? demoMasterclassDraft() : which === 'digital' ? demoDigitalDraft() : demoPhysicalDraft())
     navigate('/creator/products/create/details')
+  }
+
+  const loadCollabDemo = () => {
+    previewActive()
+    collab.applyDemoPrefs()
+    collab.resetCooldown()
+    navigate('/collaborate')
+    flash('Collaboration demo is ready')
   }
 
   const resetDemo = () => {
@@ -73,6 +83,7 @@ export default function PrototypeTools() {
             <Chip icon={<GraduationCap className="h-4 w-4" />} label="Masterclass Demo" onClick={() => loadProduct('master')} />
             <Chip icon={<Download className="h-4 w-4" />} label="Digital Product Demo" onClick={() => loadProduct('digital')} />
             <Chip icon={<Package className="h-4 w-4" />} label="Physical Product Demo" onClick={() => loadProduct('physical')} />
+            <Chip icon={<Sparkles className="h-4 w-4" />} label="Load Ready Collaboration Demo" onClick={loadCollabDemo} />
           </Group>
 
           <button onClick={() => setConfirm(true)} className="tap flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-error/30 bg-bg text-[13px] font-semibold text-error hover:bg-[#F7E9EA]">

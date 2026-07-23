@@ -30,7 +30,8 @@ export interface CollabPrefs {
   timeline: string
   compensation: Compensation
   contactMethod: string
-  configured: boolean
+  configured: boolean // single readiness flag: true = saved at least once
+  savedAt?: number // epoch ms of last save
 }
 
 export interface ScoreDim {

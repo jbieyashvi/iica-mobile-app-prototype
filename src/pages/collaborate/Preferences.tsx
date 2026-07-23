@@ -22,6 +22,15 @@ export default function Preferences() {
   const { prefs, savePrefs } = useCollab()
   const [v, setV] = useState<CollabPrefs>(prefs)
   const [preview, setPreview] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  // Save always works (no dirty gating). Persist immediately, confirm, return.
+  const save = () => {
+    if (saving) return
+    setSaving(true)
+    savePrefs(v)
+    setTimeout(() => navigate('/collaborate', { state: { savedPrefs: true } }), 650)
+  }
   const set = <K extends keyof CollabPrefs>(k: K, val: CollabPrefs[K]) => setV((s) => ({ ...s, [k]: val }))
   const toggleArr = (k: 'lookingFor' | 'domains', val: string) =>
     setV((s) => ({ ...s, [k]: s[k].includes(val) ? s[k].filter((x) => x !== val) : [...s[k], val] }))
@@ -82,9 +91,15 @@ export default function Preferences() {
       <div className="shrink-0 border-t border-border bg-bg/95 px-[22px] pt-3 backdrop-blur-md" style={{ paddingBottom: 'calc(14px + var(--safe-bottom))' }}>
         <div className="flex gap-2.5">
           <SecondaryButton onClick={() => setPreview(true)} className="min-w-[120px]">Preview</SecondaryButton>
-          <PrimaryButton full onClick={() => { savePrefs(v); navigate('/collaborate') }}>Save Preferences</PrimaryButton>
+          <PrimaryButton full disabled={saving} onClick={save}>{saving ? 'Saving…' : 'Save Preferences'}</PrimaryButton>
         </div>
       </div>
+
+      {saving && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-24 z-[60] flex justify-center">
+          <span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">Collaboration preferences saved</span>
+        </div>
+      )}
 
       {preview && (
         <div className="absolute inset-0 z-50 flex items-end" role="dialog" aria-modal="true">

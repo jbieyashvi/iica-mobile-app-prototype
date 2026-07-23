@@ -13,6 +13,13 @@ export default function Discover() {
 
   const complete = collab.prefsComplete()
 
+  // Never dead-end: if prefs are somehow unreadable/incomplete, load demo
+  // defaults and mark ready instead of bouncing back to Preferences.
+  useEffect(() => {
+    if (!complete) collab.applyDemoPrefs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [complete])
+
   useEffect(() => {
     if (phase === 'matching') collab.startMatching()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -32,10 +39,9 @@ export default function Discover() {
         {phase === 'check' && (
           !complete ? (
             <>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand"><Sparkles className="h-8 w-8" strokeWidth={1.6} /></div>
-              <h1 className="mt-5 font-serif text-[24px] leading-tight text-ink">Complete your preferences first</h1>
-              <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">Add at least your collaboration intent and a short statement so we can find relevant matches.</p>
-              <div className="mt-6 w-full max-w-[300px]"><PrimaryButton full onClick={() => navigate('/collaborate/preferences')}>Set Preferences</PrimaryButton></div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand"><Sparkles className="h-8 w-8 animate-pulse" strokeWidth={1.6} /></div>
+              <h1 className="mt-5 font-serif text-[24px] leading-tight text-ink">Preparing your profile…</h1>
+              <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">Loading your collaboration preferences.</p>
             </>
           ) : (
             <>

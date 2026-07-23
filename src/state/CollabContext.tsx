@@ -6,6 +6,8 @@ import { candidates as allCandidates, seedMeetings, seedRequests, getCandidate }
 import { demoCollaborationPreferences } from '../demo/demoData'
 
 const PKEY = 'iica_collab_prefs_v1'
+const PVER = 'iica_collab_prefs_ver' // migration marker
+const CURRENT_VER = 2
 const SKEY = 'iica_collab_session_v1'
 const RKEY = 'iica_collab_requests_v1'
 const MKEY = 'iica_collab_meetings_v1'
@@ -22,6 +24,50 @@ const now = () => Date.now()
 const defaultPrefs: CollabPrefs = {
   ...demoCollaborationPreferences,
   configured: true,
+  savedAt: undefined,
+}
+
+// Fill any empty/missing optional field from the demo defaults so a saved
+// profile is always "complete enough" to match. Never blanks a user value.
+function backfill(p: Partial<CollabPrefs>): CollabPrefs {
+  const d = defaultPrefs
+  const arr = (a: unknown, fb: string[]) => (Array.isArray(a) && a.length ? a as string[] : fb)
+  const str = (s: unknown, fb: string) => (typeof s === 'string' && s.trim() ? s : fb)
+  return {
+    availability: (p.availability as CollabPrefs['availability']) ?? d.availability,
+    lookingFor: arr(p.lookingFor, d.lookingFor),
+    domains: arr(p.domains, d.domains),
+    skills: str(p.skills, d.skills),
+    genres: str(p.genres, d.genres),
+    experience: str(p.experience, d.experience),
+    languages: str(p.languages, d.languages),
+    cities: str(p.cities, d.cities),
+    countries: str(p.countries, d.countries),
+    maxTravel: str(p.maxTravel, d.maxTravel),
+    remoteOk: typeof p.remoteOk === 'boolean' ? p.remoteOk : d.remoteOk, // coerce boolean-as-string
+    inPersonPref: typeof p.inPersonPref === 'boolean' ? p.inPersonPref : d.inPersonPref,
+    statement: str(p.statement, d.statement),
+    goal: str(p.goal, d.goal),
+    timeline: str(p.timeline, d.timeline),
+    compensation: (p.compensation as CollabPrefs['compensation']) ?? d.compensation,
+    contactMethod: str(p.contactMethod, d.contactMethod),
+    configured: true,
+    savedAt: typeof p.savedAt === 'number' ? p.savedAt : now(),
+  }
+}
+
+// One-time migration of stale/old-schema prefs into the current structure.
+function loadPrefs(): CollabPrefs {
+  const raw = localStorage.getItem(PKEY)
+  if (!raw) return defaultPrefs // fresh install → prefilled demo defaults
+  const ver = Number(localStorage.getItem(PVER) ?? 0)
+  try {
+    const stored = JSON.parse(raw) as Partial<CollabPrefs>
+    if (ver >= CURRENT_VER && stored.configured && stored.savedAt) return stored as CollabPrefs
+    return backfill(stored) // old key / missing fields / incomplete → repair
+  } catch {
+    return defaultPrefs
+  }
 }
 
 interface Ctx {
@@ -32,6 +78,7 @@ interface Ctx {
   blocked: string[]
   lastRun: number | null
   savePrefs: (p: CollabPrefs) => void
+  applyDemoPrefs: () => void
   prefsComplete: () => boolean
   canMatch: () => boolean
   nextMatchAt: () => number | null
@@ -59,7 +106,7 @@ interface Ctx {
 const CollabContext = createContext<Ctx | null>(null)
 
 export function CollabProvider({ children }: { children: ReactNode }) {
-  const [prefs, setPrefs] = useState<CollabPrefs>(() => load(PKEY, defaultPrefs))
+  const [prefs, setPrefs] = useState<CollabPrefs>(loadPrefs)
   const [session, setSession] = useState<SwipeSession>(() => load(SKEY, {
     active: false, queue: [], index: 0, interested: [], saved: [], skipped: [], history: [], instructionsDismissed: false,
   }))
@@ -68,18 +115,21 @@ export function CollabProvider({ children }: { children: ReactNode }) {
   const [lastRun, setLastRun] = useState<number | null>(() => load<number | null>(CKEY, null))
   const [blocked, setBlocked] = useState<string[]>(() => load(BKEY, []))
 
-  useEffect(() => { try { localStorage.setItem(PKEY, JSON.stringify(prefs)) } catch { /* */ } }, [prefs])
+  useEffect(() => { try { localStorage.setItem(PKEY, JSON.stringify(prefs)); localStorage.setItem(PVER, String(CURRENT_VER)) } catch { /* */ } }, [prefs])
   useEffect(() => { try { localStorage.setItem(SKEY, JSON.stringify(session)) } catch { /* */ } }, [session])
   useEffect(() => { try { localStorage.setItem(RKEY, JSON.stringify(requests)) } catch { /* */ } }, [requests])
   useEffect(() => { try { localStorage.setItem(MKEY, JSON.stringify(meetings)) } catch { /* */ } }, [meetings])
   useEffect(() => { try { localStorage.setItem(CKEY, JSON.stringify(lastRun)) } catch { /* */ } }, [lastRun])
   useEffect(() => { try { localStorage.setItem(BKEY, JSON.stringify(blocked)) } catch { /* */ } }, [blocked])
 
-  const prefsComplete = useCallback(() => prefs.configured && prefs.lookingFor.length > 0 && !!prefs.statement.trim(), [prefs])
+  // Single source of truth: a profile is ready to match once it's been saved.
+  const prefsComplete = useCallback(() => prefs.configured, [prefs])
   const canMatch = useCallback(() => lastRun === null || now() - lastRun >= COOLDOWN_MS, [lastRun])
   const nextMatchAt = useCallback(() => lastRun === null ? null : lastRun + COOLDOWN_MS, [lastRun])
 
-  const savePrefs = useCallback((p: CollabPrefs) => setPrefs({ ...p, configured: true }), [])
+  // Save backfills empty optional fields from demo defaults + stamps savedAt.
+  const savePrefs = useCallback((p: CollabPrefs) => setPrefs(backfill({ ...p, savedAt: now() })), [])
+  const applyDemoPrefs = useCallback(() => setPrefs({ ...defaultPrefs, savedAt: now() }), [])
   const resetCooldown = useCallback(() => setLastRun(null), [])
 
   const startMatching = useCallback(() => {
@@ -169,11 +219,11 @@ export function CollabProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Ctx>(() => ({
     prefs, session, requests, meetings, blocked, lastRun,
-    savePrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown,
+    savePrefs, applyDemoPrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown,
     currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession,
     sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest,
     getMeeting, rescheduleMeeting, cancelMeeting, block,
-  }), [prefs, session, requests, meetings, blocked, lastRun, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown, currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession, sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest, getMeeting, rescheduleMeeting, cancelMeeting, block])
+  }), [prefs, session, requests, meetings, blocked, lastRun, applyDemoPrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown, currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession, sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest, getMeeting, rescheduleMeeting, cancelMeeting, block])
 
   return <CollabContext.Provider value={value}>{children}</CollabContext.Provider>
 }

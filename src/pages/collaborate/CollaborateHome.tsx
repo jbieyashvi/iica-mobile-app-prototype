@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Sparkles, Users, Send, CalendarCheck, Inbox, ChevronRight, Clock, Settings2, Copy, RefreshCw, Compass,
 } from 'lucide-react'
@@ -8,14 +8,24 @@ import SecondaryButton from '../../components/SecondaryButton'
 import StatusBadge from '../../components/StatusBadge'
 import { useAuth } from '../../state/AuthContext'
 import { useCollab } from '../../state/CollabContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function CollaborateHome() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { state } = useAuth()
   const collab = useCollab()
   const [toast, setToast] = useState('')
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
+
+  // Confirm after returning from a Preferences save.
+  useEffect(() => {
+    if ((location.state as { savedPrefs?: boolean } | null)?.savedPrefs) {
+      flash('Collaboration preferences saved')
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
 
   // ---- Non-active states ----
   if (state.role !== 'active') {
