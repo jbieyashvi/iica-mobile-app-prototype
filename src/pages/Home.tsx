@@ -29,26 +29,11 @@ export default function Home() {
   const navigate = useNavigate()
   const { state } = useAuth()
 
-  const firstName = (state.name || 'Reshma').split(' ')[0]
-
   return (
-    <div className="pt-5">
-      {/* Welcome */}
-      <PageContainer className="mb-5">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-brand">
-          Monday · 22 July
-        </p>
-        <h1 className="mt-1 font-serif text-[30px] leading-tight text-ink">
-          Good morning, {firstName}
-        </h1>
-        <p className="mt-1 text-[14px] text-muted">
-          Your creative world, all in one place.
-        </p>
-      </PageContainer>
-
+    <div className="pt-3">
       {/* Membership prompt for non-active members */}
       {state.role !== 'active' && (
-        <PageContainer className="mb-6">
+        <PageContainer className="mb-4">
           {state.role === 'pending' ? (
             <button
               onClick={() => navigate('/membership/payment-pending')}
@@ -87,12 +72,12 @@ export default function Home() {
       )}
 
       {/* Featured carousel */}
-      <div className="mb-7">
+      <div className="mb-4">
         <FeaturedCarousel />
       </div>
 
       {/* Quick actions */}
-      <div className="mb-8">
+      <div className="mb-6">
         <QuickActions />
       </div>
 

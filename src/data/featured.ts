@@ -6,6 +6,8 @@ export interface FeaturedSlide {
   cta: string
   image: string
   to: string
+  /** object-position for the wide landscape crop (per-slide focal point). */
+  focus?: string
 }
 
 export const featured: FeaturedSlide[] = [
@@ -18,6 +20,7 @@ export const featured: FeaturedSlide[] = [
     image:
       'https://images.unsplash.com/photo-1547153760-18fc86324498?w=800&q=80&auto=format&fit=crop',
     to: '/artist/ananya-rao',
+    focus: 'center 30%',
   },
   {
     id: 'festival-monsoon',
@@ -28,6 +31,7 @@ export const featured: FeaturedSlide[] = [
     image:
       'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&q=80&auto=format&fit=crop',
     to: '/event/ragas-of-dusk',
+    focus: 'center 45%',
   },
   {
     id: 'call-collab',
@@ -38,5 +42,6 @@ export const featured: FeaturedSlide[] = [
     image:
       'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=800&q=80&auto=format&fit=crop',
     to: '/collaborate',
+    focus: 'center 40%',
   },
 ]
