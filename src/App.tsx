@@ -1,9 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import DevicePreview from './components/DevicePreview'
 import { GateProvider } from './state/GateContext'
-import { useAuth } from './state/AuthContext'
 // Events module
 import EventCreatorGuard from './components/events/EventCreatorGuard'
 import EventsDiscovery from './pages/events/EventsDiscovery'
@@ -116,17 +115,19 @@ import PaymentPending from './pages/membership/PaymentPending'
 import PaymentSimulation from './pages/membership/PaymentSimulation'
 import MembershipSuccess from './pages/membership/MembershipSuccess'
 
-// Send first-time (not onboarded) visitors to the welcome screen once.
-function OnboardingRedirect() {
-  const { state } = useAuth()
+// Root entry → Welcome. Fires only on the initial page load (open/refresh) when
+// landing on '/'. Later client-side navigations to '/' (Home tab) are untouched,
+// and refreshing a valid nested route (/explore, /shop, ...) is never redirected.
+function RootEntryRedirect() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const initial = useRef(true)
 
   useEffect(() => {
-    if (!state.onboarded && pathname === '/') {
-      navigate('/welcome', { replace: true })
-    }
-  }, [state.onboarded, pathname, navigate])
+    if (!initial.current) return
+    initial.current = false
+    if (pathname === '/') navigate('/welcome', { replace: true })
+  }, [pathname, navigate])
 
   return null
 }
@@ -134,7 +135,7 @@ function OnboardingRedirect() {
 export default function App() {
   return (
     <DevicePreview>
-      <OnboardingRedirect />
+      <RootEntryRedirect />
       <GateProvider>
           <Routes>
             {/* Main app (with bottom navigation) */}

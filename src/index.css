@@ -156,6 +156,21 @@
   .tap {
     @apply transition-transform duration-150 active:scale-[0.97];
   }
+
+  /* Welcome screen: single-viewport, non-scrolling. Collage height is bounded
+     so the copy + actions always stay on-screen; the max clamp protects the
+     desktop device frame (where dvh tracks the browser window). */
+  .welcome-collage {
+    height: clamp(230px, 38dvh, 315px);
+  }
+  @media (max-height: 740px) {
+    .welcome-collage {
+      height: clamp(196px, 30dvh, 250px);
+    }
+    .welcome-headline {
+      font-size: 26px;
+    }
+  }
   .collab-wheel {
     animation: collabSpin 8s linear infinite;
     transform-origin: center;
