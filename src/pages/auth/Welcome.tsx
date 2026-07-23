@@ -10,9 +10,9 @@ const collage = [
   'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&q=80&auto=format&fit=crop',
 ]
 
-// Single-viewport entry screen: logo · collage · copy · actions. No scrolling —
-// height is distributed with flex, the collage is bounded via .welcome-collage,
-// and a flexible spacer absorbs slack so actions sit above the home indicator.
+// Single-viewport entry screen: logo · collage · copy · actions. No scrolling.
+// One vertical stack with explicit gaps (no auto spacer) so the actions stay
+// visually connected to the copy; any slack is left below Continue as Guest.
 export default function Welcome() {
   const navigate = useNavigate()
   const { continueAsGuest } = useAuth()
@@ -59,11 +59,8 @@ export default function Welcome() {
         </p>
       </div>
 
-      {/* Flexible spacer keeps actions low without making them sticky */}
-      <div className="min-h-0 flex-1" />
-
-      {/* Actions */}
-      <div className="shrink-0">
+      {/* Actions — explicit gap keeps them attached to the copy above */}
+      <div className="welcome-actions shrink-0">
         <PrimaryButton full onClick={() => navigate('/signup')}>
           Create an Account
         </PrimaryButton>
@@ -77,7 +74,7 @@ export default function Welcome() {
             continueAsGuest()
             navigate('/')
           }}
-          className="tap mt-2 min-h-[44px] w-full text-[14px] font-semibold text-muted hover:text-ink"
+          className="tap mt-3.5 min-h-[44px] w-full text-[14px] font-semibold text-muted hover:text-ink"
         >
           Continue as Guest
         </button>

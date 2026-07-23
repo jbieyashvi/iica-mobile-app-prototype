@@ -163,12 +163,19 @@
   .welcome-collage {
     height: clamp(230px, 38dvh, 315px);
   }
+  /* Controlled gap between supporting copy and the action group. */
+  .welcome-actions {
+    margin-top: 36px;
+  }
   @media (max-height: 740px) {
     .welcome-collage {
       height: clamp(196px, 30dvh, 250px);
     }
     .welcome-headline {
       font-size: 26px;
+    }
+    .welcome-actions {
+      margin-top: 22px;
     }
   }
   .collab-wheel {
