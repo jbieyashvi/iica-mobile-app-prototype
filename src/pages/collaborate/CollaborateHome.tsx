@@ -1,32 +1,22 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
-  Sparkles, Users, Send, CalendarCheck, Inbox, ChevronRight, Clock, Settings2, Copy, RefreshCw, Compass,
+  Users, CalendarCheck, Inbox, ChevronRight, Clock, Copy, Compass, X,
 } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
 import ProfileAvatarButton from '../../components/ProfileAvatarButton'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
-import StatusBadge from '../../components/StatusBadge'
 import { useAuth } from '../../state/AuthContext'
 import { useCollab } from '../../state/CollabContext'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function CollaborateHome() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { state } = useAuth()
   const collab = useCollab()
   const [toast, setToast] = useState('')
+  const [showHow, setShowHow] = useState(false)
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
-
-  // Confirm after returning from a Preferences save.
-  useEffect(() => {
-    if ((location.state as { savedPrefs?: boolean } | null)?.savedPrefs) {
-      flash('Collaboration preferences saved')
-      navigate(location.pathname, { replace: true, state: {} })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state])
 
   // ---- Non-active states ----
   if (state.role !== 'active') {
@@ -45,8 +35,8 @@ export default function CollaborateHome() {
             </div>
           </div>
           <p className="mt-4 text-[14px] leading-relaxed text-muted">
-            IICA's matching considers creative compatibility, collaboration intent, location and social presence to
-            recommend artists worth working with.
+            IICA suggests creators whose work may complement yours, using your
+            category, skills, location and creative activity.
           </p>
 
           {state.role === 'guest' ? (
@@ -85,67 +75,74 @@ export default function CollaborateHome() {
     )
   }
 
-  // ---- Active creator dashboard ----
-  const received = collab.requests.filter((r) => r.direction === 'received' && r.status === 'Pending')
-  const sent = collab.requests.filter((r) => r.direction === 'sent')
+  // ---- Active creator ----
+  const receivedCount = collab.requests.filter((r) => r.direction === 'received').length
+  const sentCount = collab.requests.filter((r) => r.direction === 'sent').length
   const upcoming = collab.meetings.filter((m) => m.status === 'Upcoming' || m.status === 'Reschedule Requested')
   const canMatch = collab.canMatch()
-  const configured = collab.prefs.configured
   const shortlist = collab.session.interested.length + collab.session.saved.length
+  const hasSession = collab.session.queue.length > 0
+  const newCount = hasSession ? Math.max(0, collab.session.queue.length - collab.session.index) : 0
 
   return (
     <div className="flex h-full flex-col bg-bg">
-      <Header right={
-        <button onClick={() => navigate('/collaborate/preferences')} aria-label="Edit preferences" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Settings2 className="h-5 w-5" /></button>
-      } />
+      <Header />
       <div className="no-scrollbar flex-1 overflow-y-auto px-[18px] pb-[calc(62px+var(--safe-bottom)+16px)] pt-4">
-        <p className="text-[13.5px] leading-relaxed text-muted">Find creators whose skills and intent complement yours.</p>
+        <p className="text-[13.5px] leading-relaxed text-muted">Meet people whose work complements yours.</p>
 
-        {/* Hero */}
+        {/* Primary matching card */}
         <div className="mt-4 rounded-card border border-border bg-surface p-4">
-          <div className="flex items-center gap-2 text-brand"><Sparkles className="h-5 w-5" /><p className="text-[13px] font-semibold">AI Recommendations</p></div>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
-            {!configured ? 'Set your collaboration preferences to generate relevant matches.'
-              : canMatch ? 'Your profile is ready. Generate a fresh set of recommended collaborators.'
-                : 'You have recommendations from your recent session. Next refresh available soon.'}
-          </p>
-          <div className="mt-3">
-            {!configured ? (
-              <PrimaryButton full onClick={() => navigate('/collaborate/preferences')}>Set Collaboration Preferences</PrimaryButton>
-            ) : canMatch ? (
-              <PrimaryButton full onClick={() => navigate('/collaborate/discover')}><Sparkles className="h-4 w-4" /> Find Collaborators</PrimaryButton>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 rounded-control border border-border bg-bg px-3 py-2 text-[12.5px] text-muted"><Clock className="h-4 w-4 text-brand" /> Next recommendations in ~24h</div>
-                <SecondaryButton full onClick={() => collab.session.queue.length ? navigate('/collaborate/recommendations') : navigate('/collaborate/preferences')}>View Current Recommendations</SecondaryButton>
+          {!hasSession ? (
+            <>
+              <h2 className="font-serif text-[20px] leading-tight text-ink">Find your next collaborator</h2>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-muted">We’ll use your IICA profile to recommend relevant people.</p>
+              <div className="mt-3.5">
+                <PrimaryButton full onClick={() => navigate('/collaborate/discover')}>Find Matches</PrimaryButton>
               </div>
-            )}
-          </div>
-          <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-            <span className="text-[12px] text-muted">Availability</span>
-            <StatusBadge tone={collab.prefs.availability === 'Available' ? 'success' : collab.prefs.availability === 'Not Available' ? 'neutral' : 'warning'}>{collab.prefs.availability}</StatusBadge>
-          </div>
+              <button onClick={() => setShowHow(true)} className="tap mt-2.5 w-full text-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">How matching works</button>
+            </>
+          ) : (
+            <>
+              <h2 className="font-serif text-[20px] leading-tight text-ink">Your recommendations are ready</h2>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-muted">Continue exploring people selected for you.</p>
+              <div className="mt-3.5">
+                <PrimaryButton full onClick={() => navigate('/collaborate/recommendations')}>View Recommendations</PrimaryButton>
+              </div>
+              {canMatch ? (
+                <button onClick={() => navigate('/collaborate/discover')} className="tap mt-2.5 w-full text-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">Refresh Matches</button>
+              ) : (
+                <p className="mt-2.5 text-center text-[12px] text-muted">New matches will be available tomorrow.</p>
+              )}
+            </>
+          )}
         </div>
 
-        {/* quick links */}
+        {/* Simplified destinations */}
         <div className="mt-4 flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-          <Row icon={<Users className="h-5 w-5" />} label="New recommendations" count={collab.session.active ? collab.session.queue.length - collab.session.index : 0} onClick={() => navigate(collab.session.queue.length ? '/collaborate/recommendations' : '/collaborate/discover')} />
-          <Row icon={<Inbox className="h-5 w-5" />} label="Incoming requests" count={received.length} onClick={() => navigate('/collaborate/requests')} />
-          <Row icon={<Send className="h-5 w-5" />} label="Sent requests" count={sent.length} onClick={() => navigate('/collaborate/requests')} />
-          <Row icon={<CalendarCheck className="h-5 w-5" />} label="Upcoming meetings" count={upcoming.length} onClick={() => navigate('/collaborate/meetings')} />
-          <Row icon={<Compass className="h-5 w-5" />} label="Shortlist & saved" count={shortlist} onClick={() => navigate('/collaborate/recommendations')} />
-        </div>
-
-        {/* prototype shortcuts */}
-        <div className="mt-6 rounded-card border border-dashed border-border bg-surface p-3">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted">Prototype shortcuts</p>
-          <button onClick={() => { collab.resetCooldown(); flash('Cooldown reset') }} className="tap flex min-h-[44px] w-full items-center gap-2 rounded-control border border-border bg-bg px-3 text-[13px] font-semibold text-ink hover:border-ink/25">
-            <RefreshCw className="h-4 w-4 text-brand" /> Reset Recommendation Cooldown
-          </button>
+          <Row icon={<Users className="h-5 w-5" />} label="Recommendations" count={newCount} onClick={() => navigate(hasSession ? '/collaborate/recommendations' : '/collaborate/discover')} />
+          <Row icon={<Inbox className="h-5 w-5" />} label="Requests" sub={`${receivedCount} received · ${sentCount} sent`} onClick={() => navigate('/collaborate/requests')} />
+          <Row icon={<CalendarCheck className="h-5 w-5" />} label="Meetings" count={upcoming.length} onClick={() => navigate('/collaborate/meetings')} />
+          <Row icon={<Compass className="h-5 w-5" />} label="Saved Profiles" count={shortlist} onClick={() => navigate('/collaborate/recommendations')} />
         </div>
       </div>
       <BottomNavigation />
       {toast && <Toast msg={toast} />}
+      {showHow && <HowSheet onClose={() => setShowHow(false)} />}
+    </div>
+  )
+}
+
+function HowSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="absolute inset-0 z-50 flex items-end" role="dialog" aria-modal="true">
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-ink/40" />
+      <div className="fade-in relative w-full rounded-t-[20px] border-t border-border bg-surface p-5" style={{ paddingBottom: 'calc(20px + var(--safe-bottom))' }}>
+        <button aria-label="Close" onClick={onClose} className="tap absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-control text-muted hover:bg-black/[0.04]"><X className="h-5 w-5" /></button>
+        <h2 className="font-serif text-[22px] leading-tight text-ink">How matching works</h2>
+        <p className="mt-2 text-[14px] leading-relaxed text-muted">We consider your category, creative work, location, skills and activity to suggest relevant IICA profiles.</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted">Recommendations are suggestions, not a measure of artistic ability.</p>
+        <div className="mt-5"><PrimaryButton full onClick={onClose}>Got It</PrimaryButton></div>
+      </div>
     </div>
   )
 }
@@ -163,13 +160,16 @@ function Header({ right }: { right?: React.ReactNode }) {
     </header>
   )
 }
-function Row({ icon, label, count, onClick }: { icon: React.ReactNode; label: string; count: number; onClick: () => void }) {
+function Row({ icon, label, count = 0, sub, onClick }: { icon: React.ReactNode; label: string; count?: number; sub?: string; onClick: () => void }) {
   return (
     <button onClick={onClick} className="tap flex items-center gap-3 px-4 py-3.5 text-left hover:bg-black/[0.015]">
       <span className="text-brand">{icon}</span>
-      <span className="flex-1 text-[14px] font-semibold text-ink">{label}</span>
-      {count > 0 && <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-soft px-2 text-[12px] font-bold text-brand-dark">{count}</span>}
-      <ChevronRight className="h-5 w-5 text-muted" />
+      <span className="min-w-0 flex-1">
+        <span className="block text-[14px] font-semibold text-ink">{label}</span>
+        {sub && <span className="mt-0.5 block text-[12px] text-muted">{sub}</span>}
+      </span>
+      {!sub && count > 0 && <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-soft px-2 text-[12px] font-bold text-brand-dark">{count}</span>}
+      <ChevronRight className="h-5 w-5 shrink-0 text-muted" />
     </button>
   )
 }

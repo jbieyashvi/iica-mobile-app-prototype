@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, CheckCircle2, Sparkles } from 'lucide-react'
+import { ChevronLeft, CheckCircle2 } from 'lucide-react'
 import MatchWheel from '../../components/collab/MatchWheel'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
@@ -9,21 +9,15 @@ import { useCollab } from '../../state/CollabContext'
 export default function Discover() {
   const navigate = useNavigate()
   const collab = useCollab()
-  const [phase, setPhase] = useState<'check' | 'matching' | 'done'>('check')
+  const [phase, setPhase] = useState<'matching' | 'done'>('matching')
 
-  const complete = collab.prefsComplete()
-
-  // Never dead-end: if prefs are somehow unreadable/incomplete, load demo
-  // defaults and mark ready instead of bouncing back to Preferences.
+  // Start matching immediately — no preference validation, no dead-end. If the
+  // profile is thin, load demo defaults so broad recommendations still return.
   useEffect(() => {
-    if (!complete) collab.applyDemoPrefs()
+    if (!collab.prefsComplete()) collab.applyDemoPrefs()
+    collab.startMatching()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complete])
-
-  useEffect(() => {
-    if (phase === 'matching') collab.startMatching()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase])
+  }, [])
 
   const found = collab.session.queue.length
 
@@ -37,23 +31,6 @@ export default function Discover() {
       </header>
 
       <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
-        {phase === 'check' && (
-          !complete ? (
-            <>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand"><Sparkles className="h-8 w-8 animate-pulse" strokeWidth={1.6} /></div>
-              <h1 className="mt-5 font-serif text-[24px] leading-tight text-ink">Preparing your profile…</h1>
-              <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">Loading your collaboration preferences.</p>
-            </>
-          ) : (
-            <>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand"><Sparkles className="h-8 w-8" strokeWidth={1.6} /></div>
-              <h1 className="mt-5 font-serif text-[26px] leading-tight text-ink">Ready to find collaborators</h1>
-              <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">We'll analyse your profile against the IICA community and recommend creators who complement you.</p>
-              <div className="mt-6 w-full max-w-[300px]"><PrimaryButton full onClick={() => setPhase('matching')}><Sparkles className="h-4 w-4" /> Start Matching</PrimaryButton></div>
-            </>
-          )
-        )}
-
         {phase === 'matching' && <MatchWheel onDone={() => setPhase('done')} />}
 
         {phase === 'done' && (

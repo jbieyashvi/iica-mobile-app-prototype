@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 
 const DISCIPLINES = ['Music', 'Dance', 'Theatre', 'Visual Arts', 'Film', 'Photography', 'Literature', 'Cultural Education']
 const MESSAGES = [
-  'Reading your creative profile',
-  'Comparing collaboration intent',
-  'Finding complementary skills',
-  'Considering location and availability',
-  'Preparing your recommendations',
+  'Understanding your profile',
+  'Exploring the IICA community',
+  'Preparing your matches',
 ]
 
 export default function MatchWheel({ onDone, durationMs = 2600 }: { onDone: () => void; durationMs?: number }) {
@@ -61,7 +59,7 @@ export default function MatchWheel({ onDone, durationMs = 2600 }: { onDone: () =
         </svg>
         {/* center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-          <p className="font-serif text-[17px] leading-tight text-ink">Finding your creative matches</p>
+          <p className="font-serif text-[15px] leading-tight text-ink">Finding people who complement your work</p>
           <p className="mt-1 text-[11px] font-semibold text-brand">{Math.round(progress * 100)}%</p>
         </div>
       </div>
