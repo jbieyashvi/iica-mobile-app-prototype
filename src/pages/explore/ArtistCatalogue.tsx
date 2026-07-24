@@ -4,25 +4,16 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
 import { useSaveGate } from '../../components/SaveGate'
 import { FeaturedProfileCard, CatalogueListItem } from '../../components/explore/catalogueCards'
-import CatalogueFilterSheet, { CatalogueFilters } from '../../components/explore/CatalogueFilterSheet'
+import CatalogueFilterSheet from '../../components/explore/CatalogueFilterSheet'
+import { PublicArtist } from '../../data/publicArtists'
 import {
-  publicArtists, PublicArtist,
-  effectiveCity, profileCategory, profileGenres,
-} from '../../data/publicArtists'
-import { featuredScore, FEATURED_BLURB } from '../../config/catalogue'
+  CatalogueFilters, CatalogueState, NO_FILTERS, CATALOGUE_POOL,
+  initialOf, activeFilterCount as countFilters, filterProfiles, deriveLetters,
+  applyLetter, topFeatured, fromCatalogueParams,
+} from '../../data/catalogueFilter'
+import { FEATURED_BLURB } from '../../config/catalogue'
 
 const KEY = 'iica_catalogue_v1'
-const NO_FILTERS: CatalogueFilters = { category: '', location: '', genre: '', verified: false }
-
-interface Saved { q: string; filters: CatalogueFilters; letter: string }
-
-function initialOf(name: string): string {
-  const s = name.trim().replace(/^[^A-Za-z0-9]+/, '')
-  const c = (s.charAt(0) || '').toUpperCase()
-  if (c >= 'A' && c <= 'Z') return c
-  if (c >= '0' && c <= '9') return '#'
-  return c || '#'
-}
 
 export default function ArtistCatalogue() {
   const navigate = useNavigate()
@@ -30,17 +21,16 @@ export default function ArtistCatalogue() {
   const [params] = useSearchParams()
   const searchRef = useRef<HTMLInputElement>(null)
 
-  // ---- initial state: URL intent (category/q) wins, else restore session ----
+  // ---- initial state: URL intent wins, else restore session ----
   // Computed once, synchronously, so returning from a profile restores state
   // before the persist effect can overwrite it.
-  const seed = useMemo<Saved>(() => {
-    const qp = params.get('q')
-    const cat = params.get('category')
-    if (qp || cat) return { q: qp ?? '', filters: { ...NO_FILTERS, category: cat ?? '' }, letter: 'All' }
+  const seed = useMemo<CatalogueState>(() => {
+    const fromUrl = fromCatalogueParams(params)
+    if (fromUrl) return fromUrl
     try {
       const raw = sessionStorage.getItem(KEY)
       if (raw) {
-        const s = JSON.parse(raw) as Saved
+        const s = JSON.parse(raw) as CatalogueState
         return { q: s.q ?? '', filters: { ...NO_FILTERS, ...s.filters }, letter: s.letter ?? 'All' }
       }
     } catch { /* ignore */ }
@@ -65,46 +55,21 @@ export default function ArtistCatalogue() {
     try { sessionStorage.setItem(KEY, JSON.stringify({ q, filters, letter })) } catch { /* ignore */ }
   }, [q, filters, letter])
 
-  const pool = useMemo(() => publicArtists, [])
+  const pool = CATALOGUE_POOL
 
-  const activeFilterCount =
-    (filters.category ? 1 : 0) + (filters.location ? 1 : 0) + (filters.genre ? 1 : 0) + (filters.verified ? 1 : 0)
+  const activeFilterCount = countFilters(filters)
   const anyActive = activeFilterCount > 0 || debouncedQ.trim().length > 0
 
-  // ---- filter pipeline (search → category → location → genre → verified) ----
-  const filtered = useMemo(() => {
-    let r = pool
-    const query = debouncedQ.trim().toLowerCase()
-    if (query) {
-      r = r.filter((a) =>
-        (a.name + ' ' + profileCategory(a) + ' ' + profileGenres(a).join(' ') + ' ' + effectiveCity(a) + ' ' + a.headline + ' ' + a.primaryDomain)
-          .toLowerCase().includes(query),
-      )
-    }
-    if (filters.category) r = r.filter((a) => profileCategory(a) === filters.category)
-    if (filters.location) r = r.filter((a) => effectiveCity(a).toLowerCase() === filters.location.toLowerCase())
-    if (filters.genre) r = r.filter((a) => profileGenres(a).some((g) => g.toLowerCase() === filters.genre.toLowerCase()))
-    if (filters.verified) r = r.filter((a) => a.verified)
-    return r
-  }, [pool, debouncedQ, filters])
-
-  // ---- dynamic alphabet from filtered results ----
-  const availableLetters = useMemo(() => {
-    const set = new Set<string>()
-    filtered.forEach((a) => set.add(initialOf(a.name)))
-    return Array.from(set).sort()
-  }, [filtered])
+  // ---- shared filter pipeline + dynamic alphabet ----
+  const filtered = useMemo(() => filterProfiles(pool, debouncedQ, filters), [pool, debouncedQ, filters])
+  const availableLetters = useMemo(() => deriveLetters(filtered), [filtered])
 
   // reset a stale selected letter that no longer exists
   useEffect(() => {
     if (letter !== 'All' && !availableLetters.includes(letter)) setLetter('All')
   }, [availableLetters, letter])
 
-  // ---- apply letter + sort alphabetically ----
-  const displayed = useMemo(() => {
-    const r = letter === 'All' ? filtered : filtered.filter((a) => initialOf(a.name) === letter)
-    return [...r].sort((a, b) => a.name.localeCompare(b.name))
-  }, [filtered, letter])
+  const displayed = useMemo(() => applyLetter(filtered, letter), [filtered, letter])
 
   const grouped = useMemo(() => {
     const map = new Map<string, PublicArtist[]>()
@@ -117,10 +82,7 @@ export default function ArtistCatalogue() {
   }, [displayed])
 
   // ---- featured (activity score, hidden while filtering/searching) ----
-  const featured = useMemo(
-    () => [...pool].sort((a, b) => featuredScore(b.activity) - featuredScore(a.activity)).slice(0, 5),
-    [pool],
-  )
+  const featured = useMemo(() => topFeatured(pool, 5), [pool])
 
   const openProfile = (a: PublicArtist) =>
     navigate(`/artist/${a.slug}`, { state: { from: '/explore/artists' } })

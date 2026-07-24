@@ -11,9 +11,8 @@ import PageContainer from '../components/PageContainer'
 import FeaturedCarousel from '../components/FeaturedCarousel'
 import QuickActions from '../components/QuickActions'
 import SectionHeader from '../components/SectionHeader'
-import ArtistCard from '../components/ArtistCard'
+import HomeCatalogue from '../components/home/HomeCatalogue'
 import EventCard from '../components/EventCard'
-import { artists } from '../data/artists'
 import { events } from '../data/events'
 import { whatsNew, UpdateKind } from '../data/whatsNew'
 import { useAuth } from '../state/AuthContext'
@@ -81,20 +80,9 @@ export default function Home() {
         <QuickActions />
       </div>
 
-      {/* Discover Artists */}
+      {/* Explore the Catalogue (compact catalogue entry point) */}
       <div className="mb-8">
-        <PageContainer>
-          <SectionHeader
-            title="Discover Artists"
-            action="See all"
-            onAction={() => navigate('/explore/artists')}
-          />
-        </PageContainer>
-        <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
-          {artists.map((a) => (
-            <ArtistCard key={a.id} artist={a} />
-          ))}
-        </div>
+        <HomeCatalogue />
       </div>
 
       {/* What's New */}

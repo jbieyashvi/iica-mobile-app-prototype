@@ -3,13 +3,9 @@ import { X, Search, Check } from 'lucide-react'
 import PrimaryButton from '../PrimaryButton'
 import SecondaryButton from '../SecondaryButton'
 import { MEMBERSHIP_CATEGORIES, CATALOGUE_LOCATIONS, CATALOGUE_GENRES } from '../../config/catalogue'
+import { CatalogueFilters } from '../../data/catalogueFilter'
 
-export interface CatalogueFilters {
-  category: string
-  location: string
-  genre: string
-  verified: boolean
-}
+export type { CatalogueFilters }
 
 interface Props {
   value: CatalogueFilters
