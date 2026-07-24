@@ -7,6 +7,7 @@ const TABS = [
   { id: 'foryou', label: 'For You', to: '/explore' },
   { id: 'artists', label: 'Artists', to: '/explore/artists' },
   { id: 'events', label: 'Events', to: '/explore/events' },
+  { id: 'archive', label: 'Archive', to: '/explore/archive' },
   { id: 'shop', label: 'Shop', to: '/explore/shop' },
 ]
 

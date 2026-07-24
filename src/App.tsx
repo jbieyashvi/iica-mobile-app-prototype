@@ -26,6 +26,8 @@ import CreatorAttendees from './pages/events/creator/CreatorAttendees'
 // Explore module
 import ExploreHome from './pages/explore/ExploreHome'
 import ArtistCatalogue from './pages/explore/ArtistCatalogue'
+import ArchiveHome from './pages/explore/ArchiveHome'
+import ArchiveVideoDetail from './pages/explore/ArchiveVideoDetail'
 import ExploreEvents from './pages/explore/ExploreEvents'
 import ExploreShop from './pages/explore/ExploreShop'
 // Shop module
@@ -190,6 +192,13 @@ export default function App() {
             <Route path="/explore/artists" element={<ArtistCatalogue />} />
             <Route path="/catalogue" element={<ArtistCatalogue />} />
             <Route path="/explore/events" element={<ExploreEvents />} />
+            {/* Archive (YouTube videos from creator Portfolio Watch) */}
+            <Route path="/explore/archive" element={<ArchiveHome />} />
+            <Route path="/archive" element={<ArchiveHome />} />
+            <Route path="/archive/video/:id" element={<ArchiveVideoDetail />} />
+            {/* Old Content routes → redirect to Archive */}
+            <Route path="/explore/content" element={<Navigate to="/explore/archive" replace />} />
+            <Route path="/content/:id" element={<Navigate to="/explore/archive" replace />} />
             <Route path="/explore/shop" element={<ExploreShop />} />
             <Route path="/explore/shop/coming" element={<ShopComing />} />
             <Route path="/explore/search" element={<ExploreSearch />} />

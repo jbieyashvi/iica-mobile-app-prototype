@@ -3,21 +3,29 @@ import RepeatableEditor, { FieldDef } from '../../../components/portfolio/Repeat
 import MediaEmbed from '../../../components/portfolio/MediaEmbed'
 import { usePortfolio } from '../../../state/PortfolioContext'
 import { Entry, MediaItem } from '../../../portfolio/types'
+import { VIDEO_CATEGORIES } from '../../../lib/youtube'
 import { useEditorNav } from './common'
 
 const MEDIA_TYPES = [
   'YouTube Video', 'Spotify Track', 'Spotify Album', 'Audio', 'Video', 'Other External Media',
 ]
 
+const isYouTube = (e: Entry) => String(e.type || '').includes('YouTube')
+
 const fields: FieldDef[] = [
   { key: 'type', label: 'Media type', type: 'select', options: MEDIA_TYPES },
   { key: 'title', label: 'Title', type: 'text' },
-  { key: 'url', label: 'URL', type: 'url', placeholder: 'https://…' },
+  { key: 'url', label: 'URL', type: 'url', placeholder: 'youtube.com/watch?v=… or youtu.be/…' },
+  { key: 'category', label: 'Video category', type: 'select', options: [...VIDEO_CATEGORIES], showIf: isYouTube },
+  { key: 'customCategory', label: 'Custom category label', type: 'text', showIf: (e) => isYouTube(e) && e.category === 'Other' },
   { key: 'thumbnail', label: 'Thumbnail', type: 'image', optional: true },
-  { key: 'releaseDate', label: 'Release date', type: 'date', optional: true },
+  { key: 'releaseDate', label: 'Publish / release date', type: 'date', optional: true },
+  { key: 'duration', label: 'Duration (e.g. 6:12)', type: 'text', optional: true, showIf: isYouTube },
   { key: 'description', label: 'Short description', type: 'textarea', maxLength: 300, optional: true },
-  { key: 'credits', label: 'Credits', type: 'text', optional: true },
+  { key: 'credits', label: 'Credits / collaborators', type: 'text', optional: true },
+  { key: 'tags', label: 'Tags (comma separated)', type: 'text', optional: true, showIf: isYouTube },
   { key: 'featured', label: 'Feature this media', type: 'toggle' },
+  { key: 'showInArchive', label: 'Show in IICA Archive', type: 'toggle', default: true, showIf: isYouTube },
 ]
 
 export default function MediaEditor() {
@@ -41,8 +49,9 @@ export default function MediaEditor() {
   return (
     <EditorShell title="Watch & Listen" revision={rev} onSaveContinue={goNext}>
       <p className="mb-4 text-[12.5px] leading-relaxed text-muted">
-        Showcase videos and tracks. YouTube and Spotify links get a preview.
-        Only one item can be featured.
+        Add YouTube videos and Spotify tracks. Paste a YouTube link to get a
+        preview. YouTube videos with “Show in IICA Archive” enabled appear in
+        the public Archive. Only one item can be featured.
       </p>
 
       {featured && (

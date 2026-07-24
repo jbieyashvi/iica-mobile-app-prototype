@@ -6,7 +6,7 @@ import ProductCard from '../../components/shop/ProductCard'
 import { useShop } from '../../state/ShopContext'
 import { useSavedArtists } from '../../state/useSavedArtists'
 
-type Tab = 'Masterclasses' | 'Digital Downloads' | 'Saved Content'
+type Tab = 'Masterclasses' | 'Digital Downloads' | 'Saved Products'
 
 export default function Library() {
   const navigate = useNavigate()
@@ -37,7 +37,7 @@ export default function Library() {
           <span className="h-10 w-10" />
         </div>
         <div className="no-scrollbar -mx-2 flex gap-1.5 overflow-x-auto px-2 pb-2">
-          {(['Masterclasses', 'Digital Downloads', 'Saved Content'] as Tab[]).map((t) => (
+          {(['Masterclasses', 'Digital Downloads', 'Saved Products'] as Tab[]).map((t) => (
             <button key={t} onClick={() => setTab(t)} className={`tap shrink-0 rounded-control border px-3 py-1.5 text-[12px] font-semibold ${tab === t ? 'border-brand bg-brand text-white' : 'border-border bg-surface text-muted'}`}>{t}</button>
           ))}
         </div>
@@ -80,7 +80,7 @@ export default function Library() {
           </div>
         ))}
 
-        {tab === 'Saved Content' && (savedProducts.length === 0 ? <Empty text="No saved products." onGo={() => navigate('/shop')} icon /> : (
+        {tab === 'Saved Products' && (savedProducts.length === 0 ? <Empty text="No saved products." onGo={() => navigate('/shop')} icon /> : (
           <div className="grid grid-cols-2 gap-3">{savedProducts.map((p) => <ProductCard key={p.id} product={p} wide />)}</div>
         ))}
       </div>

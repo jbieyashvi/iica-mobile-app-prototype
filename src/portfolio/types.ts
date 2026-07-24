@@ -76,6 +76,12 @@ export interface MediaItem {
   description: string
   credits: string
   featured: boolean
+  // ---- Archive (Watch → Archive) ----
+  category?: string // VIDEO_CATEGORIES value (video classification)
+  customCategory?: string // used when category === 'Other'
+  showInArchive?: boolean // publish this video to the IICA Archive
+  tags?: string // comma-separated, optional
+  duration?: string // e.g. "6:12", optional
 }
 
 export interface Collaboration {

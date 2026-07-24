@@ -9,14 +9,17 @@ import { useSavedArtists } from '../../state/useSavedArtists'
 import { publicArtists } from '../../data/publicArtists'
 import { getProduct } from '../../data/exploreData'
 import { useEvents } from '../../state/EventsContext'
+import { useArchive } from '../../data/useArchive'
+import { getArchiveVideo } from '../../data/archive'
 import { fmtDate, inr } from '../../events/format'
 
-type Tab = 'Artists' | 'Events' | 'Products'
+type Tab = 'Artists' | 'Events' | 'Videos' | 'Products'
 
 export default function ExploreSaved() {
   const navigate = useNavigate()
   const { saved, toggle } = useSavedArtists()
   const { getEvent } = useEvents()
+  const archive = useArchive()
   const [tab, setTab] = useState<Tab>('Artists')
   const [share, setShare] = useState<{ title: string; url: string } | null>(null)
   const [toast, setToast] = useState('')
@@ -24,9 +27,10 @@ export default function ExploreSaved() {
 
   const artistKeys = saved.filter((k) => k.startsWith('artist:') || publicArtists.some((a) => a.slug === k))
   const eventKeys = saved.filter((k) => k.startsWith('event:'))
+  const videoKeys = saved.filter((k) => k.startsWith('video:'))
   const productKeys = saved.filter((k) => k.startsWith('product:'))
 
-  const counts: Record<Tab, number> = { Artists: artistKeys.length, Events: eventKeys.length, Products: productKeys.length }
+  const counts: Record<Tab, number> = { Artists: artistKeys.length, Events: eventKeys.length, Videos: videoKeys.length, Products: productKeys.length }
 
   const artistFor = (k: string) => publicArtists.find((a) => a.slug === k.replace('artist:', ''))
   const remove = (k: string) => { toggle(k); flash('Removed from saved') }
@@ -40,7 +44,7 @@ export default function ExploreSaved() {
           <span className="h-10 w-10" />
         </div>
         <div className="no-scrollbar flex gap-4 overflow-x-auto px-[6px] pb-1">
-          {(['Artists', 'Events', 'Products'] as Tab[]).map((t) => (
+          {(['Artists', 'Events', 'Videos', 'Products'] as Tab[]).map((t) => (
             <button key={t} onClick={() => setTab(t)} className="tap relative shrink-0 pb-2">
               <span className={`text-[14px] font-semibold ${tab === t ? 'text-ink' : 'text-muted'}`}>{t} <span className="font-normal text-muted">{counts[t]}</span></span>
               {tab === t && <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-brand" />}
@@ -65,6 +69,14 @@ export default function ExploreSaved() {
             ) })}
           </div>
         ) : <Empty icon={<Bookmark className="h-6 w-6" />} text="No saved events yet" hint="Save events to find them quickly later." />)}
+
+        {tab === 'Videos' && (videoKeys.length ? (
+          <div className="flex flex-col gap-3">
+            {videoKeys.map((k) => { const v = getArchiveVideo(archive, k.replace('video:', '')); if (!v) return null; return (
+              <SavedRow key={k} image={v.thumbnail} title={v.title} sub={`${v.category} · ${v.creatorName}`} onOpen={() => navigate(`/archive/video/${v.id}`)} onRemove={() => remove(k)} onShare={() => setShare({ title: v.title, url: `https://iica.app/archive/video/${v.id}` })} />
+            ) })}
+          </div>
+        ) : <Empty icon={<Bookmark className="h-6 w-6" />} text="No saved videos yet" hint="Save Archive videos to watch them later." />)}
 
         {tab === 'Products' && (productKeys.length ? (
           <div className="flex flex-col gap-3">

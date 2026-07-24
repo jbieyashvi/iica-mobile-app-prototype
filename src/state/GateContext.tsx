@@ -56,8 +56,8 @@ export function GateProvider({ children }: { children: ReactNode }) {
               {feature} is for creators
             </h2>
             <p className="mt-2 text-[14px] leading-relaxed text-muted">
-              Creator tools like portfolios, content, events and collaboration
-              unlock with IICA Creator Membership.
+              Creator tools like portfolios, Archive videos, events and
+              collaboration unlock with IICA Creator Membership.
             </p>
 
             <div className="mt-5 flex flex-col gap-2.5">

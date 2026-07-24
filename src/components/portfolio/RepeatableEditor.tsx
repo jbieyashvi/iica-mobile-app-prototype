@@ -20,6 +20,7 @@ export interface FieldDef {
   optional?: boolean
   placeholder?: string
   half?: boolean
+  default?: boolean // default value for toggles on new entries
   showIf?: (draft: Entry) => boolean
 }
 
@@ -50,7 +51,7 @@ export default function RepeatableEditor({
 
   const blank = (): Entry => {
     const e: Entry = { id: newId() }
-    fields.forEach((f) => (e[f.key] = f.type === 'toggle' ? false : ''))
+    fields.forEach((f) => (e[f.key] = f.type === 'toggle' ? (f.default ?? false) : ''))
     return e
   }
 

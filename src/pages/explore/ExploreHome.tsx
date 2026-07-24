@@ -5,9 +5,12 @@ import ExploreShell from '../../components/explore/ExploreShell'
 import { ArtistListCard, CategoryCard, CollectionCard, ShopCard, SkeletonCard } from '../../components/explore/cards'
 import TuneSheet from './TuneSheet'
 import EventCard from '../../components/events/EventCard'
+import ArchiveVideoCard from '../../components/archive/ArchiveVideoCard'
 import { useSaveGate } from '../../components/SaveGate'
 import { useInterests } from '../../state/useExplore'
 import { useEvents } from '../../state/EventsContext'
+import { useArchive } from '../../data/useArchive'
+import { archiveFeaturedScore } from '../../data/archive'
 import { publicArtists } from '../../data/publicArtists'
 import { exploreCategories, collections, trendingFeed, shopPreview } from '../../data/exploreData'
 import { useLoad } from './useLoad'
@@ -19,8 +22,14 @@ export default function ExploreHome() {
   const { save, isSaved, sheet } = useSaveGate()
   const { interests } = useInterests()
   const { events } = useEvents()
+  const archive = useArchive()
   const loading = useLoad(600)
   const [tune, setTune] = useState(false)
+
+  const archivePreview = useMemo(
+    () => [...archive].sort((a, b) => archiveFeaturedScore(b) - archiveFeaturedScore(a)).slice(0, 4),
+    [archive],
+  )
 
   const trendingArtists = useMemo(() => {
     const base = TRENDING_SLUGS.map((s) => publicArtists.find((a) => a.slug === s)).filter(Boolean) as typeof publicArtists
@@ -86,6 +95,21 @@ export default function ExploreHome() {
           ))}
         </div>
       </Section>
+
+      {/* E. From the Archive */}
+      {archivePreview.length > 0 && (
+        <Section title="From the Archive" onAll={() => navigate('/explore/archive')} allLabel="View Archive">
+          <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
+            {archivePreview.map((v) => (
+              <ArchiveVideoCard key={v.id} video={v} variant="rail" saved={isSaved('video:' + v.id)}
+                onOpen={() => navigate(`/archive/video/${v.id}`, { state: { from: '/explore' } })}
+                onCreator={() => navigate(`/artist/${v.creatorSlug}`, { state: { from: '/explore' } })}
+                onSave={() => save('video:' + v.id)}
+                onShare={() => navigator.clipboard?.writeText(`https://iica.app/archive/video/${v.id}`)} />
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* F. Featured Collections */}
       <Section title="Featured Collections">

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { LogOut, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog, Package, Library, Store, ShoppingBag, Wallet } from 'lucide-react'
+import { LogOut, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog, Package, Library, Store, ShoppingBag, Wallet, PlaySquare } from 'lucide-react'
 import PageContainer from '../components/PageContainer'
 import Avatar from '../components/Avatar'
 import StatusBadge from '../components/StatusBadge'
@@ -67,7 +67,7 @@ export default function Profile() {
               <h3 className="font-serif text-[18px]">Become a creator</h3>
             </div>
             <p className="mt-1.5 text-[13px] leading-relaxed text-[#6d3357]">
-              Unlock portfolios, content, events and AI collaboration.
+              Unlock portfolios, Archive videos, events and AI collaboration.
             </p>
             <div className="mt-3">
               <PrimaryButton full onClick={() => navigate('/membership')}>
@@ -119,6 +119,7 @@ export default function Profile() {
           <ProfileLink icon={<Package className="h-5 w-5 shrink-0 text-brand" />} label="My Orders" onClick={() => navigate('/orders')} />
           <ProfileLink icon={<Library className="h-5 w-5 shrink-0 text-brand" />} label="My Library" onClick={() => navigate('/library')} />
           {isActive && <>
+            <ProfileLink icon={<PlaySquare className="h-5 w-5 shrink-0 text-brand" />} label="Manage Watch Videos" onClick={() => navigate('/portfolio/edit/media')} />
             <ProfileLink icon={<CalendarCog className="h-5 w-5 shrink-0 text-brand" />} label="Manage Events" onClick={() => navigate('/creator/events')} />
             <ProfileLink icon={<Store className="h-5 w-5 shrink-0 text-brand" />} label="My Products" onClick={() => navigate('/creator/products')} />
             <ProfileLink icon={<ShoppingBag className="h-5 w-5 shrink-0 text-brand" />} label="Seller Orders" onClick={() => navigate('/creator/orders')} />

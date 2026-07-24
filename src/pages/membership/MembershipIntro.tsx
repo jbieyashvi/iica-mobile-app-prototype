@@ -23,8 +23,8 @@ const benefits = [
   },
   {
     icon: PenLine,
-    title: 'Publish original content',
-    body: 'Share music, art and writing with the IICA community.',
+    title: 'Showcase videos in your Portfolio and IICA Archive',
+    body: 'Add YouTube performances and conversations to your Watch section and the Archive.',
   },
   {
     icon: Sparkles,

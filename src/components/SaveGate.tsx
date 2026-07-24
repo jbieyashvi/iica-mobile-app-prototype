@@ -43,7 +43,7 @@ export function useSaveGate() {
         <button aria-label="Close" onClick={() => setOpen(false)} className="tap absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-control text-muted hover:bg-black/[0.04]"><X className="h-5 w-5" /></button>
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand"><Bookmark className="h-6 w-6" strokeWidth={1.75} /></div>
         <h2 className="font-serif text-[23px] leading-tight text-ink">Save to your collection</h2>
-        <p className="mt-1.5 text-[14px] leading-relaxed text-muted">Create a free account to save artists, events and content. We'll keep this item for you.</p>
+        <p className="mt-1.5 text-[14px] leading-relaxed text-muted">Create a free account to save artists, events and videos. We'll keep this item for you.</p>
         <div className="mt-5 flex flex-col gap-2.5">
           <PrimaryButton full onClick={() => { setOpen(false); navigate('/signup') }}>Create an Account</PrimaryButton>
           <button onClick={() => { setOpen(false); navigate('/login') }} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Sign In</button>

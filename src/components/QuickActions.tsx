@@ -1,9 +1,10 @@
-import { FolderOpen, CalendarPlus, Sparkles } from 'lucide-react'
+import { FolderOpen, CalendarPlus, Sparkles, PlaySquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useGate } from '../state/GateContext'
 
 const actions = [
   { label: 'My Portfolio', feature: 'Portfolio', icon: FolderOpen, to: '/portfolio/setup' },
+  { label: 'Add Video', feature: 'Adding videos', icon: PlaySquare, to: '/portfolio/edit/media' },
   { label: 'Create Event', feature: 'Creating events', icon: CalendarPlus, to: '/events/create' },
   { label: 'Find Collaborators', feature: 'Finding collaborators', icon: Sparkles, to: '/collaborate' },
 ]
@@ -18,11 +19,12 @@ export default function QuickActions() {
     if (label === 'Create Event') {
       return requireMember(feature, () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }))
     }
+    // Add Video → Portfolio Watch section (creators only, via the gate).
     requireMember(feature, () => navigate(to))
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 px-[18px]">
+    <div className="grid grid-cols-4 gap-2 px-[18px]">
       {actions.map(({ label, feature, icon: Icon, to }) => (
         <button
           key={label}
