@@ -1,20 +1,29 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, Play, Download, Bookmark } from 'lucide-react'
+import { Play, Download, Bookmark, PlaySquare, LogIn, UserPlus, Search } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
+import ProfileAvatarButton from '../../components/ProfileAvatarButton'
 import ProductCard from '../../components/shop/ProductCard'
+import PrimaryButton from '../../components/PrimaryButton'
+import SecondaryButton from '../../components/SecondaryButton'
 import { useShop } from '../../state/ShopContext'
 import { useSavedArtists } from '../../state/useSavedArtists'
+import { useAuth } from '../../state/AuthContext'
+import { useArchive } from '../../data/useArchive'
+import { getArchiveVideo } from '../../data/archive'
 
-type Tab = 'Masterclasses' | 'Digital Downloads' | 'Saved Products'
+type Tab = 'Masterclasses' | 'Digital Downloads' | 'Saved Videos' | 'Saved Products'
 
 export default function Library() {
   const navigate = useNavigate()
   const { orders, products, progress } = useShop()
   const { saved } = useSavedArtists()
+  const { state } = useAuth()
+  const archive = useArchive()
   const [tab, setTab] = useState<Tab>('Masterclasses')
   const [toast, setToast] = useState('')
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1600) }
+  const savedVideos = saved.filter((k) => k.startsWith('video:')).map((k) => getArchiveVideo(archive, k.replace('video:', ''))).filter(Boolean) as ReturnType<typeof getArchiveVideo>[]
 
   const purchasedIds = [...new Set(orders.filter((o) => o.status !== 'Cancelled' && o.status !== 'Refunded').flatMap((o) => o.items.map((i) => i.productId)))]
   const purchased = purchasedIds.map((id) => products.find((p) => p.id === id)).filter(Boolean) as typeof products
@@ -28,16 +37,41 @@ export default function Library() {
     return Math.round((lessons.filter((l) => progress[l.id]).length / lessons.length) * 100)
   }
 
+  // Guest entry — useful "Access Your Purchases" screen (never a forced signup).
+  if (!state.authed) {
+    return (
+      <div className="flex h-full flex-col bg-bg">
+        <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-[18px] backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
+          <div className="flex h-12 items-center justify-between">
+            <h1 className="font-serif text-[19px] text-ink">My Library</h1>
+            <div className="flex items-center -mr-1"><ProfileAvatarButton /></div>
+          </div>
+        </header>
+        <div className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-6" style={{ paddingBottom: 'calc(62px + var(--safe-bottom) + 16px)' }}>
+          <div className="mx-auto mt-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-soft text-brand"><PlaySquare className="h-7 w-7" strokeWidth={1.6} /></div>
+          <h2 className="mt-4 text-center font-serif text-[24px] leading-tight text-ink">Access Your Purchases</h2>
+          <p className="mx-auto mt-1.5 max-w-[280px] text-center text-[13.5px] leading-relaxed text-muted">Find a purchase you made as a guest, or sign in to see your full library.</p>
+          <div className="mt-6 flex flex-col gap-2.5">
+            <PrimaryButton full onClick={() => navigate('/orders')}><Search className="h-4 w-4" /> Find Guest Purchase</PrimaryButton>
+            <SecondaryButton full onClick={() => navigate('/login')}><LogIn className="h-4 w-4" /> Sign In</SecondaryButton>
+            <button onClick={() => navigate('/signup')} className="tap flex min-h-[46px] items-center justify-center gap-2 rounded-control text-[14px] font-semibold text-brand hover:text-brand-dark"><UserPlus className="h-4 w-4" /> Create Free Account</button>
+          </div>
+          <p className="mt-4 text-center text-[12px] text-muted">Guest lookup uses your Order ID, email and OTP <span className="font-semibold text-ink">123456</span>.</p>
+        </div>
+        <BottomNavigation />
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-full flex-col bg-bg">
-      <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-2 backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
+      <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-[18px] backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
         <div className="flex h-12 items-center justify-between">
-          <button onClick={() => navigate('/profile')} aria-label="Back" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><ChevronLeft className="h-6 w-6" /></button>
           <h1 className="font-serif text-[19px] text-ink">My Library</h1>
-          <span className="h-10 w-10" />
+          <div className="flex items-center -mr-1"><ProfileAvatarButton /></div>
         </div>
-        <div className="no-scrollbar -mx-2 flex gap-1.5 overflow-x-auto px-2 pb-2">
-          {(['Masterclasses', 'Digital Downloads', 'Saved Products'] as Tab[]).map((t) => (
+        <div className="no-scrollbar -mx-[18px] flex gap-1.5 overflow-x-auto px-[18px] pb-2">
+          {(['Masterclasses', 'Digital Downloads', 'Saved Videos', 'Saved Products'] as Tab[]).map((t) => (
             <button key={t} onClick={() => setTab(t)} className={`tap shrink-0 rounded-control border px-3 py-1.5 text-[12px] font-semibold ${tab === t ? 'border-brand bg-brand text-white' : 'border-border bg-surface text-muted'}`}>{t}</button>
           ))}
         </div>
@@ -76,6 +110,17 @@ export default function Library() {
                   <button onClick={() => flash('Downloading ' + p.title + ' (prototype)')} className="tap flex items-center gap-1.5 rounded-control bg-brand px-3 py-1.5 text-[12px] font-semibold text-white"><Download className="h-3.5 w-3.5" /> Download</button>
                 </div>
               </div>
+            ))}
+          </div>
+        ))}
+
+        {tab === 'Saved Videos' && (savedVideos.length === 0 ? <Empty text="No saved videos yet." onGo={() => navigate('/explore/archive')} icon /> : (
+          <div className="flex flex-col gap-3">
+            {savedVideos.map((v) => v && (
+              <button key={v.id} onClick={() => navigate(`/archive/video/${v.id}`)} className="tap flex gap-3 rounded-card border border-border bg-surface p-3 text-left hover:border-ink/20">
+                <div className="relative h-[54px] w-[92px] shrink-0 overflow-hidden rounded-[8px] bg-brand-soft"><img src={v.thumbnail} alt="" className="h-full w-full object-cover" /><span className="absolute inset-0 flex items-center justify-center"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-ink"><Play className="ml-0.5 h-3.5 w-3.5 fill-ink" /></span></span></div>
+                <div className="min-w-0 flex-1"><p className="truncate font-serif text-[14px] text-ink">{v.title}</p><p className="truncate text-[12px] text-muted">{v.category} · {v.creatorName}</p></div>
+              </button>
             ))}
           </div>
         ))}

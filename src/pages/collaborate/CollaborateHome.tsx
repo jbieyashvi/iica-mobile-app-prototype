@@ -3,6 +3,7 @@ import {
   Sparkles, Users, Send, CalendarCheck, Inbox, ChevronRight, Clock, Settings2, Copy, RefreshCw, Compass,
 } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
+import ProfileAvatarButton from '../../components/ProfileAvatarButton'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import StatusBadge from '../../components/StatusBadge'
@@ -154,7 +155,10 @@ function Header({ right }: { right?: React.ReactNode }) {
     <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
       <div className="flex h-12 items-center justify-between px-[18px]">
         <h1 className="font-serif text-[22px] text-ink">Collaborate</h1>
-        {right}
+        <div className="flex items-center -mr-1">
+          {right}
+          <ProfileAvatarButton />
+        </div>
       </div>
     </header>
   )

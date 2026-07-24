@@ -123,11 +123,12 @@ export default function App() {
             {/* Root shows Welcome; Home is its own explicit route (no ambiguity). */}
             <Route path="/" element={<Welcome />} />
 
-            {/* Main app (with bottom navigation) */}
+            {/* Home (main header + bottom navigation) */}
             <Route element={<Layout />}>
               <Route path="/home" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
             </Route>
+            {/* Profile — focused screen opened from the avatar (own Back) */}
+            <Route path="/profile" element={<Profile />} />
 
             {/* Shop module */}
             <Route path="/shop" element={<ShopHome />} />

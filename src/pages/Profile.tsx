@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'
-import { LogOut, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog, Package, Library, Store, ShoppingBag, Wallet, PlaySquare } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { LogOut, ChevronLeft, ChevronRight, Clock, BadgeCheck, UserPlus, Ticket as TicketIcon, CalendarCog, Package, Library, Store, ShoppingBag, Wallet, PlaySquare } from 'lucide-react'
 import PageContainer from '../components/PageContainer'
 import Avatar from '../components/Avatar'
 import StatusBadge from '../components/StatusBadge'
@@ -9,6 +9,8 @@ import { useAuth } from '../state/AuthContext'
 
 export default function Profile() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const backTo = (location.state as { from?: string } | null)?.from ?? '/home'
   const { state, logout } = useAuth()
 
   const isGuest = state.role === 'guest'
@@ -19,15 +21,15 @@ export default function Profile() {
   const email = state.email || (isGuest ? 'Browsing as guest' : '')
 
   return (
-    <div className="pt-5">
+    <div className="flex h-full flex-col bg-bg">
+      <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-2 backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
+        <div className="flex h-12 items-center gap-1">
+          <button onClick={() => navigate(backTo)} aria-label="Back" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><ChevronLeft className="h-6 w-6" /></button>
+          <h1 className="font-serif text-[19px] text-ink">Profile</h1>
+        </div>
+      </header>
+      <div className="no-scrollbar flex-1 overflow-y-auto pt-5" style={{ paddingBottom: 'calc(20px + var(--safe-bottom))' }}>
       <PageContainer>
-        <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-brand">
-          You
-        </p>
-        <h1 className="mt-1 font-serif text-[30px] leading-tight text-ink">
-          Profile
-        </h1>
-
         {/* Identity card */}
         <div className="mt-5 flex items-center gap-3.5 rounded-card border border-border bg-surface p-4">
           <Avatar
@@ -146,6 +148,7 @@ export default function Profile() {
           The full profile & portfolio experience will be built next.
         </p>
       </PageContainer>
+      </div>
     </div>
   )
 }
