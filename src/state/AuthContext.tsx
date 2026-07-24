@@ -11,35 +11,35 @@ import { demoUser } from '../demo/demoData'
 
 export type Role = 'guest' | 'pending' | 'active'
 
+// Finer membership lifecycle used by the status screen. `role` stays the
+// coarse gate (guest = free account, pending = form done / not purchased,
+// active = creator). membershipStatus disambiguates the pending/active states.
+export type MembershipStatus =
+  | 'not_submitted'
+  | 'submitted'
+  | 'purchase_pending'
+  | 'active'
+  | 'failed'
+  | 'cancelled'
+  | 'expired'
+  | 'restored'
+
+export type PurchasePlatform = 'Apple' | 'Google' | 'Demo'
+
+// One-page creator membership form. No stage name, socials, skills,
+// experience, collaboration statement or portfolio fields — those are
+// collected after payment during creator onboarding.
 export interface Application {
-  // Step 1 — basic
   fullName: string
-  stageName: string
   email: string
   countryCode: string
   phone: string
   dob: string
   gender: string
   city: string
+  state: string
   country: string
-  // Step 2 — creative profile
-  domain: string
-  customDomain: string
-  subdomains: string
-  skills: string
-  experience: string
-  languages: string
-  intro: string
-  // Step 3 — online presence
-  instagram: string
-  facebook: string
-  youtube: string
-  spotify: string
-  website: string
-  portfolioUrl: string
-  // Step 4 — intent
-  intents: string[]
-  collabStatement: string
+  category: string
   accurate: boolean
 }
 
@@ -50,8 +50,12 @@ export interface AuthState {
   name: string
   email: string
   role: Role
+  membershipStatus: MembershipStatus
+  category: string | null
   iicaId: string | null
   submittedAt: string | null
+  purchasePlatform: PurchasePlatform | null
+  purchaseRef: string | null
   paymentDone: boolean
   application: Partial<Application> | null
 }
@@ -65,8 +69,12 @@ const initialState: AuthState = {
   name: '',
   email: '',
   role: 'guest',
+  membershipStatus: 'not_submitted',
+  category: null,
   iicaId: null,
   submittedAt: null,
+  purchasePlatform: null,
+  purchaseRef: null,
   paymentDone: false,
   application: null,
 }
@@ -88,15 +96,30 @@ function initials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
 
-// deterministic-ish 3 digit number derived from name so it stays stable
+// Deterministic 3-digit number derived from the name only, so the ID stays
+// stable across refreshes and re-submissions (never regenerated randomly).
 function threeDigits(seed: string): string {
   let h = 0
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) & 0xffff
   return String(100 + (h % 900))
 }
 
+// Known demo mapping so the documented example is exact:
+// "JB Yashvi" → JY.673.IICA. All other names hash deterministically.
+const KNOWN_IDS: Record<string, string> = {
+  'JB YASHVI': 'JY.673.IICA',
+}
+
 export function generateIicaId(name: string): string {
-  return `${initials(name)}.${threeDigits(name + Date.now())}.IICA`
+  const key = name.trim().toUpperCase()
+  if (KNOWN_IDS[key]) return KNOWN_IDS[key]
+  return `${initials(name)}.${threeDigits(name)}.IICA`
+}
+
+// Stable, deterministic purchase reference derived from the ID.
+function purchaseRefFor(iicaId: string | null): string {
+  const base = (iicaId ?? 'IICA').replace(/[^A-Z0-9]/gi, '')
+  return `IAP-${base}`
 }
 
 interface AuthContextValue {
@@ -109,7 +132,11 @@ interface AuthContextValue {
   resetPassword: (email: string) => void
   saveApplicationDraft: (data: Partial<Application>) => void
   submitApplication: (data: Application) => string
-  completePayment: () => void
+  enterPurchase: () => void
+  purchaseSuccess: (platform: PurchasePlatform) => void
+  purchaseFailed: () => void
+  purchaseCancelled: () => void
+  restorePurchase: (platform: PurchasePlatform) => void
   previewRegistered: () => void
   previewPending: () => void
   previewActive: () => void
@@ -162,23 +189,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           application: { ...(s.application ?? {}), ...data },
         })),
       submitApplication: (data) => {
-        const id = generateIicaId(data.fullName || state.name)
+        // Reuse an existing ID for the same person; otherwise derive a stable
+        // one. Never regenerated randomly, so it survives refreshes.
+        const id =
+          state.iicaId && (state.name === (data.fullName || state.name))
+            ? state.iicaId
+            : generateIicaId(data.fullName || state.name)
         patch({
           role: 'pending',
+          membershipStatus: 'submitted',
           authed: true,
           iicaId: id,
+          category: data.category || null,
           submittedAt: new Date().toISOString(),
           paymentDone: false,
+          purchasePlatform: null,
+          purchaseRef: null,
           name: data.fullName || state.name,
           email: data.email || state.email,
           application: data,
         })
         return id
       },
-      completePayment: () => patch({ role: 'active', paymentDone: true }),
+      enterPurchase: () =>
+        patch({
+          role: 'pending',
+          membershipStatus: 'purchase_pending',
+        }),
+      purchaseSuccess: (platform) =>
+        patch({
+          role: 'active',
+          membershipStatus: 'active',
+          paymentDone: true,
+          purchasePlatform: platform,
+          purchaseRef: purchaseRefFor(state.iicaId),
+        }),
+      purchaseFailed: () =>
+        // Preserve application + IICA ID; membership stays pending.
+        patch({ role: 'pending', membershipStatus: 'failed' }),
+      purchaseCancelled: () =>
+        // Cancelled leaves membership in a payment-pending state.
+        patch({ role: 'pending', membershipStatus: 'cancelled' }),
+      restorePurchase: (platform) =>
+        // Restore an existing membership without minting a second ID.
+        patch({
+          role: 'active',
+          membershipStatus: 'restored',
+          paymentDone: true,
+          purchasePlatform: platform,
+          purchaseRef: purchaseRefFor(state.iicaId),
+        }),
       previewRegistered: () => {
         patch({
           onboarded: true, authed: true, emailVerified: true, role: 'guest',
+          membershipStatus: 'not_submitted',
           name: state.name || demoUser.fullName, email: state.email || demoUser.email,
         })
       },
@@ -189,24 +253,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           authed: true,
           emailVerified: true,
           role: 'pending',
+          membershipStatus: 'submitted',
+          category: state.category ?? demoUser.category,
           name,
           email: state.email || demoUser.email,
           iicaId: state.iicaId ?? demoUser.memberId,
           submittedAt: state.submittedAt ?? new Date().toISOString(),
           paymentDone: false,
+          purchasePlatform: null,
+          purchaseRef: null,
         })
       },
       previewActive: () => {
         const name = state.name || demoUser.fullName
+        const id = state.iicaId ?? demoUser.memberId
         patch({
           onboarded: true,
           authed: true,
           emailVerified: true,
           role: 'active',
+          membershipStatus: 'active',
+          category: state.category ?? demoUser.category,
           paymentDone: true,
+          purchasePlatform: 'Demo',
+          purchaseRef: `IAP-${id.replace(/[^A-Z0-9]/gi, '')}`,
           name,
           email: state.email || demoUser.email,
-          iicaId: state.iicaId ?? demoUser.memberId,
+          iicaId: id,
         })
       },
       logout: () => {

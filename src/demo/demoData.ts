@@ -29,7 +29,7 @@ export const demoUser = {
   email: 'yashvi.demo@iica.app',
   phone: '+91 98765 43210',
   dob: '1998-08-15',
-  gender: 'Woman',
+  gender: 'Female',
   city: 'Bengaluru',
   state: 'Karnataka',
   country: 'India',
@@ -37,6 +37,7 @@ export const demoUser = {
   secondaryDomains: 'UI/UX Design, Creative Direction',
   experience: '5',
   languages: 'English, Hindi',
+  category: 'Artist',
   memberId: 'JY.673.IICA',
   photo: PHOTO,
   cover: COVER,
@@ -45,40 +46,29 @@ export const demoUser = {
   slug: 'jb-yashvi',
 }
 
+// One-page creator membership form demo values (compact — see Application).
 export const demoMembershipApplication = {
   fullName: demoUser.fullName,
-  stageName: demoUser.stageName,
   email: demoUser.email,
   countryCode: '+91',
   phone: '98765 43210',
   dob: demoUser.dob,
   gender: demoUser.gender,
   city: demoUser.city,
+  state: demoUser.state,
   country: demoUser.country,
-  domain: 'Visual Arts',
-  customDomain: '',
-  subdomains: 'Digital Art, UI/UX Design',
-  skills: 'Visual Design, Creative Direction, Storytelling',
-  experience: '5',
-  languages: 'English, Hindi',
-  intro: 'Multidisciplinary creator designing thoughtful digital and cultural experiences.',
+  category: demoUser.category,
+  accurate: true,
+}
+
+// Social links are collected after payment (creator onboarding / portfolio),
+// not during membership registration. Kept here for portfolio demo builders.
+export const demoSocial = {
   instagram: 'https://instagram.com/yashvi.creates',
   facebook: 'https://facebook.com/yashvi.creates',
   youtube: 'https://youtube.com/@yashvicreates',
   spotify: 'https://open.spotify.com/artist/demo-yashvi',
   website: 'https://yashvi.design',
-  portfolioUrl: 'https://yashvi.design/work',
-  intents: ['Build my portfolio', 'Find collaborators', 'Promote events', 'Share content'],
-  collabStatement: 'I’m interested in collaborating with musicians, performers and cultural organisations to create meaningful visual experiences.',
-  accurate: true,
-}
-
-export const demoSocial = {
-  instagram: demoMembershipApplication.instagram,
-  facebook: demoMembershipApplication.facebook,
-  youtube: demoMembershipApplication.youtube,
-  spotify: demoMembershipApplication.spotify,
-  website: demoMembershipApplication.website,
 }
 
 export const demoCollaborationPreferences = {

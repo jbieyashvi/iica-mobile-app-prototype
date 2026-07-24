@@ -47,7 +47,7 @@ export default function MembershipIntro() {
       footer={
         <>
           <PrimaryButton full onClick={() => navigate('/membership/application')}>
-            Apply for Membership
+            Become an IICA Creator
           </PrimaryButton>
           <button
             onClick={() => {
@@ -85,8 +85,8 @@ export default function MembershipIntro() {
       </div>
 
       <p className="mt-6 rounded-control bg-surface px-3.5 py-3 text-[12.5px] leading-relaxed text-muted ring-1 ring-border">
-        Membership payment is completed securely through a link sent to your
-        email — never inside the app.
+        Fill a short form to get your IICA identity, then complete membership
+        with an in-app purchase through the App Store or Play Store.
       </p>
     </AuthShell>
   )

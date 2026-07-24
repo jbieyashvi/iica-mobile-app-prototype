@@ -79,7 +79,7 @@ export default function Profile() {
 
         {isPending && (
           <button
-            onClick={() => navigate('/membership/payment-pending')}
+            onClick={() => navigate('/membership/status')}
             className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left"
           >
             <Clock className="h-5 w-5 shrink-0 text-warning" />

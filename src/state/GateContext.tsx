@@ -53,11 +53,11 @@ export function GateProvider({ children }: { children: ReactNode }) {
               <Lock className="h-6 w-6" strokeWidth={1.75} />
             </div>
             <h2 className="font-serif text-[24px] leading-tight text-ink">
-              {feature} is for members
+              {feature} is for creators
             </h2>
             <p className="mt-2 text-[14px] leading-relaxed text-muted">
               Creator tools like portfolios, content, events and collaboration
-              are available to IICA members. Become a member to unlock them.
+              unlock with IICA Creator Membership.
             </p>
 
             <div className="mt-5 flex flex-col gap-2.5">
@@ -65,10 +65,10 @@ export function GateProvider({ children }: { children: ReactNode }) {
                 full
                 onClick={() => {
                   close()
-                  navigate('/membership')
+                  navigate(state.role === 'pending' ? '/membership/status' : '/membership')
                 }}
               >
-                Become a Member
+                Activate Creator Membership
               </PrimaryButton>
               <button
                 onClick={close}

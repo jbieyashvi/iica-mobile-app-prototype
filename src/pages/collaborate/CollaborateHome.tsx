@@ -57,13 +57,13 @@ export default function CollaborateHome() {
           ) : state.role === 'pending' ? (
             <div className="mt-6 rounded-card border border-warning/30 bg-[#F7F0E4] p-4">
               <div className="flex items-center gap-2"><Clock className="h-5 w-5 text-warning" /><p className="font-serif text-[18px] text-ink">Application complete</p></div>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-[#7a5412]">Your membership is awaiting payment. Complete it to unlock AI matching.</p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[#7a5412]">Your membership is awaiting purchase. Complete it to unlock AI matching.</p>
               <div className="mt-2 flex items-center justify-between rounded-control border border-border bg-surface px-3 py-2">
-                <span className="font-mono text-[13px] font-semibold text-ink">{state.iicaId ?? 'RP.266.IICA'}</span>
+                <span className="font-mono text-[13px] font-semibold text-ink">{state.iicaId ?? 'JY.673.IICA'}</span>
                 <button onClick={() => { navigator.clipboard?.writeText(state.iicaId ?? ''); flash('IICA ID copied') }} className="tap flex items-center gap-1 text-[12px] font-semibold text-brand"><Copy className="h-3.5 w-3.5" /> Copy</button>
               </div>
               <div className="mt-3 flex flex-col gap-2.5">
-                <PrimaryButton full onClick={() => navigate('/membership/payment-pending')}>Complete Payment</PrimaryButton>
+                <PrimaryButton full onClick={() => navigate('/membership/status')}>Complete Membership</PrimaryButton>
                 <SecondaryButton full onClick={() => navigate('/explore/artists')}>Explore Artists</SecondaryButton>
               </div>
             </div>

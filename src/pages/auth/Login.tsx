@@ -118,10 +118,10 @@ export default function Login() {
           />
           <ShortcutRow
             icon={<Clock className="h-4 w-4" />}
-            label="Preview Payment Pending Member"
+            label="Preview Purchase Pending Member"
             onClick={() => {
               previewPending()
-              navigate('/membership/payment-pending')
+              navigate('/membership/status')
             }}
           />
           <ShortcutRow

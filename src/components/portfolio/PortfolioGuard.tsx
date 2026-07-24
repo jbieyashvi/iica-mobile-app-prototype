@@ -14,7 +14,7 @@ export default function PortfolioGuard({ children }: { children: ReactNode }) {
       navigate('/home', { replace: true })
       requireMember('Portfolio', () => {})
     } else if (state.role === 'pending') {
-      navigate('/membership/payment-pending', { replace: true })
+      navigate('/membership/status', { replace: true })
     }
   }, [state.role, navigate, requireMember])
 

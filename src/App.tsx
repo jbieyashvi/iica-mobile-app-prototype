@@ -107,9 +107,11 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 import MembershipIntro from './pages/membership/MembershipIntro'
 import MembershipApplication from './pages/membership/MembershipApplication'
 import MembershipSubmitted from './pages/membership/MembershipSubmitted'
-import PaymentPending from './pages/membership/PaymentPending'
-import PaymentSimulation from './pages/membership/PaymentSimulation'
+import MembershipPurchase from './pages/membership/MembershipPurchase'
+import MembershipStatus from './pages/membership/MembershipStatus'
 import MembershipSuccess from './pages/membership/MembershipSuccess'
+// Creator onboarding (post-payment)
+import CreatorOnboarding from './pages/creator/CreatorOnboarding'
 
 export default function App() {
   return (
@@ -273,9 +275,15 @@ export default function App() {
             <Route path="/membership" element={<MembershipIntro />} />
             <Route path="/membership/application" element={<MembershipApplication />} />
             <Route path="/membership/submitted" element={<MembershipSubmitted />} />
-            <Route path="/membership/payment-pending" element={<PaymentPending />} />
-            <Route path="/membership/payment-simulation" element={<PaymentSimulation />} />
+            <Route path="/membership/purchase" element={<MembershipPurchase />} />
+            <Route path="/membership/status" element={<MembershipStatus />} />
             <Route path="/membership/success" element={<MembershipSuccess />} />
+            {/* Obsolete external-payment routes → redirect to in-app flow */}
+            <Route path="/membership/payment-pending" element={<Navigate to="/membership/status" replace />} />
+            <Route path="/membership/payment-simulation" element={<Navigate to="/membership/purchase" replace />} />
+
+            {/* Creator onboarding (post-payment) */}
+            <Route path="/creator/onboarding" element={<CreatorOnboarding />} />
           </Routes>
           <FloatingCart />
         </GateProvider>
