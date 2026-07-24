@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   ChevronLeft, Share2, Bookmark, BookmarkCheck, BadgeCheck, MapPin, Handshake,
   Pencil, Star, ChevronRight, ArrowRight, Play, CalendarDays, Ticket, Lock, X,
@@ -31,6 +31,8 @@ const NAV: NavItem[] = [
 export default function PublicArtistPortfolio() {
   const { slug } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  const backTo = (location.state as { from?: string } | null)?.from ?? '/home'
   const { artist, isOwn } = usePublicArtist(slug)
   const { state } = useAuth()
   const { requireMember } = useGate()
@@ -134,7 +136,7 @@ export default function PublicArtistPortfolio() {
           style={{ paddingTop: 'var(--safe-top)', height: 'calc(var(--safe-top) + 44px)' }}
         >
           <button
-            onClick={() => navigate('/home')}
+            onClick={() => navigate(backTo)}
             aria-label="Back"
             className="tap flex h-10 w-10 items-center justify-center rounded-full bg-ink/35 text-white backdrop-blur-sm"
           >

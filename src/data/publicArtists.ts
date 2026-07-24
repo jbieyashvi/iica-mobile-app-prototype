@@ -1,5 +1,7 @@
 // ---- Public / published artist portfolio data (typed, reusable) ----
 
+import { MembershipCategory, ProfileActivity } from '../config/catalogue'
+
 export type Availability = 'Available' | 'Selectively Available' | 'Not Available'
 export type ArtistVisibility = 'Public' | 'Members Only'
 
@@ -145,6 +147,11 @@ export interface PublicArtist {
   availabilityLabel: string
   followers?: number
   saves?: number
+  // ---- Catalogue fields ----
+  category?: MembershipCategory // membership category; defaults to 'Artist'
+  genresOrSpecialisations?: string[] // flexible: genre / discipline / venue type / industry
+  adminCorrectedLocation?: string // if set, overrides self-reported location in catalogue
+  activity?: ProfileActivity // in-app activity → featured scoring (never follower counts)
   visibility: ArtistVisibility
   socials: ArtistSocials
   whatsNew: ArtistUpdate[]
@@ -192,6 +199,9 @@ const abhishek: PublicArtist = {
   availabilityLabel: 'Available for selected collaborations',
   followers: 12400,
   saves: 860,
+  category: 'Artist',
+  genresOrSpecialisations: ['Contemporary Music', 'Folk Music'],
+  activity: { productsListed: 4, profileViews: 2100, contentPublished: 9, eventsCreated: 3, collaborationAttempts: 6, profileCompleteness: 0.95, lastActiveLabel: 'Active this week' },
   visibility: 'Public',
   socials: {
     instagram: 'https://instagram.com/abhishek.chouhan',
@@ -330,6 +340,11 @@ function makeArtist(
     verified: boolean
     availability?: PublicArtist['availability']
     experienceYears?: number
+    // catalogue fields
+    category?: MembershipCategory
+    genresOrSpecialisations?: string[]
+    adminCorrectedLocation?: string
+    activity?: ProfileActivity
   },
 ): PublicArtist {
   const availability = base.availability ?? 'Available'
@@ -345,6 +360,13 @@ function makeArtist(
     verified: base.verified,
     followers: 3200,
     saves: 210,
+    category: base.category ?? 'Artist',
+    genresOrSpecialisations: base.genresOrSpecialisations ?? base.tags,
+    adminCorrectedLocation: base.adminCorrectedLocation,
+    activity: base.activity ?? {
+      productsListed: 1, profileViews: 480, contentPublished: 2, eventsCreated: 1,
+      collaborationAttempts: 2, profileCompleteness: 0.7, lastActiveLabel: 'Active recently',
+    },
     availability,
     availabilityLabel:
       availability === 'Not Available' ? 'Not accepting collaborations right now'
@@ -355,26 +377,109 @@ function makeArtist(
   }
 }
 
+const PIC = {
+  woman1: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80&auto=format&fit=crop',
+  woman2: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&auto=format&fit=crop',
+  woman3: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&q=80&auto=format&fit=crop',
+  woman4: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80&auto=format&fit=crop',
+  woman5: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80&auto=format&fit=crop',
+  man1: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&auto=format&fit=crop',
+  man2: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&auto=format&fit=crop',
+  man3: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&q=80&auto=format&fit=crop',
+  man4: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80&auto=format&fit=crop',
+  man5: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=400&q=80&auto=format&fit=crop',
+  venue1: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&q=80&auto=format&fit=crop',
+  venue2: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&q=80&auto=format&fit=crop',
+  brand1: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&q=80&auto=format&fit=crop',
+  brand2: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&q=80&auto=format&fit=crop',
+  fit1: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80&auto=format&fit=crop',
+  fit2: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&q=80&auto=format&fit=crop',
+  yoga1: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&q=80&auto=format&fit=crop',
+  sport1: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&q=80&auto=format&fit=crop',
+}
+
+// modest / recent activity presets to keep featured scoring transparent
+const A_LOW: ProfileActivity = { productsListed: 0, profileViews: 260, contentPublished: 1, eventsCreated: 0, collaborationAttempts: 1, profileCompleteness: 0.6, lastActiveLabel: 'Active this month' }
+const A_MID: ProfileActivity = { productsListed: 2, profileViews: 820, contentPublished: 3, eventsCreated: 1, collaborationAttempts: 3, profileCompleteness: 0.8, lastActiveLabel: 'Active recently' }
+const A_HIGH: ProfileActivity = { productsListed: 5, profileViews: 1900, contentPublished: 7, eventsCreated: 4, collaborationAttempts: 6, profileCompleteness: 0.95, lastActiveLabel: 'Active this week' }
+
 const others: PublicArtist[] = [
-  makeArtist({ slug: 'ananya-rao', name: 'Ananya Rao', headline: 'Bharatanatyam dancer', location: 'Bengaluru, India', photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Dance', tags: ['Bharatanatyam', 'Choreography', 'Contemporary'], verified: true, availability: 'Selectively Available', experienceYears: 12 }),
-  makeArtist({ slug: 'kabir-menon', name: 'Kabir Menon', headline: 'Sitarist & composer', location: 'Mumbai, India', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Music', tags: ['Sitar', 'Composition', 'Fusion'], verified: true, experienceYears: 15 }),
-  makeArtist({ slug: 'meera-iyer', name: 'Meera Iyer', headline: 'Contemporary painter', location: 'Bengaluru, India', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Visual Arts', tags: ['Oil', 'Pigment', 'Abstract'], verified: false, availability: 'Not Available', experienceYears: 6 }),
-  makeArtist({ slug: 'devraj-singh', name: 'Devraj Singh', headline: 'Tabla virtuoso', location: 'Jaipur, India', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Music', tags: ['Tabla', 'Percussion', 'Hindustani'], verified: true, experienceYears: 20 }),
-  makeArtist({ slug: 'nisha-pillai', name: 'Nisha Pillai', headline: 'Documentary photographer', location: 'Kochi, India', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Photography', tags: ['Documentary', 'Portrait', 'Craft'], verified: false, experienceYears: 5 }),
-  makeArtist({ slug: 'arjun-desai', name: 'Arjun Desai', headline: 'Vocalist & ghazal artist', location: 'Ahmedabad, India', photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Music', tags: ['Vocals', 'Ghazal', 'Playback'], verified: true, experienceYears: 10 }),
-  makeArtist({ slug: 'meera-kulkarni', name: 'Meera Kulkarni', headline: 'Visual artist & muralist', location: 'Pune, India', photo: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Visual Arts', tags: ['Murals', 'Mixed Media', 'Public Art'], verified: true, availability: 'Available', experienceYears: 9 }),
-  makeArtist({ slug: 'arjun-mehta', name: 'Arjun Mehta', headline: 'Percussionist & producer', location: 'Mumbai, India', photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Music', tags: ['Percussion', 'Production', 'Live'], verified: false, availability: 'Selectively Available', experienceYears: 7 }),
-  makeArtist({ slug: 'kavya-sharma', name: 'Kavya Sharma', headline: 'Folk artist & illustrator', location: 'Jaipur, India', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Visual Arts', tags: ['Folk Art', 'Illustration', 'Miniature'], verified: true, availability: 'Available', experienceYears: 4 }),
-  makeArtist({ slug: 'rohan-sen', name: 'Rohan Sen', headline: 'Independent filmmaker', location: 'Kolkata, India', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Film & Media', tags: ['Direction', 'Editing', 'Documentary'], verified: true, availability: 'Selectively Available', experienceYears: 11 }),
-  makeArtist({ slug: 'zoya-khan', name: 'Zoya Khan', headline: 'Theatre performer & director', location: 'Delhi, India', photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Theatre', tags: ['Acting', 'Direction', 'Devised Theatre'], verified: false, availability: 'Available', experienceYears: 8 }),
-  makeArtist({ slug: 'dev-malhotra', name: 'Dev Malhotra', headline: 'Music producer & mixing engineer', location: 'Chandigarh, India', photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Music', tags: ['Production', 'Mixing', 'Electronic'], verified: true, availability: 'Available', experienceYears: 9 }),
-  makeArtist({ slug: 'nandini-iyer', name: 'Nandini Iyer', headline: 'Cultural educator & vocalist', location: 'Chennai, India', photo: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&q=80&auto=format&fit=crop', primaryDomain: 'Cultural Education', tags: ['Teaching', 'Carnatic', 'Workshops'], verified: true, availability: 'Selectively Available', experienceYears: 16 }),
+  // ---- Artists ----
+  makeArtist({ slug: 'ananya-rao', name: 'Ananya Rao', headline: 'Bharatanatyam dancer', location: 'Chennai, India', photo: PIC.woman1, primaryDomain: 'Dance', tags: ['Bharatanatyam', 'Choreography', 'Contemporary'], verified: true, availability: 'Selectively Available', experienceYears: 12, category: 'Artist', genresOrSpecialisations: ['Bharatanatyam', 'Contemporary Dance'], activity: A_HIGH }),
+  makeArtist({ slug: 'kabir-menon', name: 'Kabir Menon', headline: 'Sitarist & composer', location: 'Mumbai, India', photo: PIC.man1, primaryDomain: 'Music', tags: ['Sitar', 'Composition', 'Fusion'], verified: true, experienceYears: 15, category: 'Artist', genresOrSpecialisations: ['Classical Music', 'Contemporary Music'], activity: A_MID }),
+  makeArtist({ slug: 'meera-iyer', name: 'Meera Iyer', headline: 'Contemporary painter', location: 'Bengaluru, India', photo: PIC.woman2, primaryDomain: 'Visual Arts', tags: ['Oil', 'Pigment', 'Abstract'], verified: false, availability: 'Not Available', experienceYears: 6, category: 'Artist', genresOrSpecialisations: ['Visual Arts'], activity: A_LOW }),
+  makeArtist({ slug: 'devraj-singh', name: 'Devraj Singh', headline: 'Tabla virtuoso', location: 'Jaipur, India', photo: PIC.man2, primaryDomain: 'Music', tags: ['Tabla', 'Percussion', 'Hindustani'], verified: true, experienceYears: 20, category: 'Artist', genresOrSpecialisations: ['Classical Music'], activity: A_MID }),
+  makeArtist({ slug: 'nisha-pillai', name: 'Nisha Pillai', headline: 'Documentary photographer', location: 'Kochi, India', photo: PIC.woman3, primaryDomain: 'Photography', tags: ['Documentary', 'Portrait', 'Craft'], verified: false, experienceYears: 5, category: 'Artist', genresOrSpecialisations: ['Photography'], activity: A_LOW }),
+  makeArtist({ slug: 'arjun-desai', name: 'Arjun Desai', headline: 'Vocalist & ghazal artist', location: 'Delhi, India', photo: PIC.man4, primaryDomain: 'Music', tags: ['Vocals', 'Ghazal', 'Playback'], verified: true, experienceYears: 10, category: 'Artist', genresOrSpecialisations: ['Devotional', 'Contemporary Music'], activity: A_MID }),
+  makeArtist({ slug: 'meera-kulkarni', name: 'Meera Kulkarni', headline: 'Visual artist & muralist', location: 'Pune, India', photo: PIC.woman2, primaryDomain: 'Visual Arts', tags: ['Murals', 'Mixed Media', 'Public Art'], verified: true, availability: 'Available', experienceYears: 9, category: 'Artist', genresOrSpecialisations: ['Visual Arts', 'Folk Art'], activity: A_MID }),
+  makeArtist({ slug: 'arjun-mehta', name: 'Arjun Mehta', headline: 'Percussionist & producer', location: 'Mumbai, India', photo: PIC.man3, primaryDomain: 'Music', tags: ['Percussion', 'Production', 'Live'], verified: false, availability: 'Selectively Available', experienceYears: 7, category: 'Artist', genresOrSpecialisations: ['Contemporary Music'], activity: A_LOW }),
+  makeArtist({ slug: 'kavya-sharma', name: 'Kavya Sharma', headline: 'Folk artist & illustrator', location: 'Jaipur, India', photo: PIC.woman4, primaryDomain: 'Visual Arts', tags: ['Folk Art', 'Illustration', 'Miniature'], verified: true, availability: 'Available', experienceYears: 4, category: 'Artist', genresOrSpecialisations: ['Folk Art', 'Visual Arts'], activity: A_MID }),
+  makeArtist({ slug: 'rohan-sen', name: 'Rohan Sen', headline: 'Independent filmmaker', location: 'Kolkata, India', photo: PIC.man2, primaryDomain: 'Film & Media', tags: ['Direction', 'Editing', 'Documentary'], verified: true, availability: 'Selectively Available', experienceYears: 11, category: 'Artist', genresOrSpecialisations: ['Film'], activity: A_MID }),
+  makeArtist({ slug: 'zoya-khan', name: 'Zoya Khan', headline: 'Theatre performer & director', location: 'Delhi, India', photo: PIC.woman5, primaryDomain: 'Theatre', tags: ['Acting', 'Direction', 'Devised Theatre'], verified: false, availability: 'Available', experienceYears: 8, category: 'Artist', genresOrSpecialisations: ['Theatre'], activity: A_LOW }),
+  makeArtist({ slug: 'nandini-iyer', name: 'Nandini Iyer', headline: 'Cultural educator & vocalist', location: 'Chennai, India', photo: PIC.woman3, primaryDomain: 'Cultural Education', tags: ['Teaching', 'Carnatic', 'Workshops'], verified: true, availability: 'Selectively Available', experienceYears: 16, category: 'Artist', genresOrSpecialisations: ['Classical Music', 'Cultural Experiences'], activity: A_MID }),
+  makeArtist({ slug: 'brij-kishore', name: 'Brij Kishore', headline: 'Folk musician & dholak player', location: 'Ujjain, India', photo: PIC.man5, primaryDomain: 'Music', tags: ['Folk', 'Dholak', 'Percussion'], verified: false, availability: 'Available', experienceYears: 13, category: 'Artist', genresOrSpecialisations: ['Folk Music'], activity: A_LOW }),
+
+  // ---- Model ----
+  makeArtist({ slug: 'naina-kapoor', name: 'Naina Kapoor', headline: 'Runway & editorial model', location: 'Mumbai, India', photo: PIC.woman1, primaryDomain: 'Fashion', tags: ['Runway', 'Editorial', 'Campaigns'], verified: true, availability: 'Available', experienceYears: 6, category: 'Model', genresOrSpecialisations: ['Cultural Experiences'], activity: A_MID }),
+  makeArtist({ slug: 'ishaan-roy', name: 'Ishaan Roy', headline: 'Fashion & print model', location: 'Delhi, India', photo: PIC.man4, primaryDomain: 'Fashion', tags: ['Print', 'Ramp'], verified: false, availability: 'Available', experienceYears: 3, category: 'Model', genresOrSpecialisations: ['Cultural Experiences'], activity: A_LOW }),
+
+  // ---- Legacy Brand of Impact ----
+  makeArtist({ slug: 'aarav-fitness-collective', name: 'Aarav Fitness Collective', headline: 'Community fitness brand & studio', location: 'Mumbai, India', photo: PIC.brand1, primaryDomain: 'Fitness', tags: ['Studio', 'Community', 'Wellness'], verified: true, availability: 'Available', experienceYears: 8, category: 'Legacy Brand of Impact', genresOrSpecialisations: ['Fitness'], activity: A_HIGH }),
+  makeArtist({ slug: 'kalagram-handlooms', name: 'Kalagram Handlooms', headline: 'Heritage handloom & craft house', location: 'Jaipur, India', photo: PIC.brand2, primaryDomain: 'Folk Art', tags: ['Handloom', 'Craft', 'Heritage'], verified: true, availability: 'Selectively Available', experienceYears: 25, category: 'Legacy Brand of Impact', genresOrSpecialisations: ['Folk Art'], activity: A_MID }),
+
+  // ---- Fitness Champion ----
+  makeArtist({ slug: 'rehan-sheikh', name: 'Rehan Sheikh', headline: 'National-level fitness champion', location: 'Pune, India', photo: PIC.fit1, primaryDomain: 'Fitness', tags: ['Strength', 'Bodybuilding'], verified: true, availability: 'Available', experienceYears: 9, category: 'Fitness Champion', genresOrSpecialisations: ['Fitness'], activity: A_MID }),
+  makeArtist({ slug: 'priya-nair', name: 'Priya Nair', headline: 'CrossFit athlete & coach', location: 'Bengaluru, India', photo: PIC.fit2, primaryDomain: 'Fitness', tags: ['CrossFit', 'Endurance'], verified: false, availability: 'Available', experienceYears: 5, category: 'Fitness Champion', genresOrSpecialisations: ['Fitness'], activity: A_MID }),
+  makeArtist({ slug: 'bhavna-shah', name: 'Bhavna Shah', headline: 'Marathon runner & fitness mentor', location: 'Kolkata, India', photo: PIC.woman4, primaryDomain: 'Fitness', tags: ['Running', 'Endurance'], verified: false, availability: 'Selectively Available', experienceYears: 7, category: 'Fitness Champion', genresOrSpecialisations: ['Fitness'], activity: A_LOW }),
+
+  // ---- Yoga Coach ----
+  makeArtist({ slug: 'neha-kapoor', name: 'Neha Kapoor', headline: 'Hatha & wellness yoga coach', location: 'Bengaluru, India', photo: PIC.yoga1, primaryDomain: 'Yoga', tags: ['Hatha', 'Wellness', 'Meditation'], verified: true, availability: 'Available', experienceYears: 10, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_HIGH }),
+  makeArtist({ slug: 'anil-menon', name: 'Anil Menon', headline: 'Ashtanga yoga instructor', location: 'Goa, India', photo: PIC.man5, primaryDomain: 'Yoga', tags: ['Ashtanga', 'Breathwork'], verified: false, availability: 'Selectively Available', experienceYears: 12, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_MID }),
+
+  // ---- Athlete ----
+  makeArtist({ slug: 'vikram-rathore', name: 'Vikram Rathore', headline: 'State cricket all-rounder', location: 'Delhi, India', photo: PIC.man3, primaryDomain: 'Sports', tags: ['Cricket', 'All-rounder'], verified: true, availability: 'Available', experienceYears: 8, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID }),
+  makeArtist({ slug: 'sara-dsouza', name: "Sara D'Souza", headline: 'National badminton player', location: 'Hyderabad, India', photo: PIC.woman5, primaryDomain: 'Sports', tags: ['Badminton', 'Singles'], verified: true, availability: 'Selectively Available', experienceYears: 6, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID }),
+
+  // ---- Sports Coach/Trainer/Enthusiast ----
+  makeArtist({ slug: 'gopal-iyer', name: 'Gopal Iyer', headline: 'Athletics coach & sprint trainer', location: 'Chennai, India', photo: PIC.man2, primaryDomain: 'Sports', tags: ['Athletics', 'Sprint', 'Coaching'], verified: false, availability: 'Available', experienceYears: 18, category: 'Sports Coach/Trainer/Enthusiast', genresOrSpecialisations: ['Sports'], activity: A_LOW }),
+
+  // ---- VIP Host ----
+  makeArtist({ slug: 'tara-malhotra', name: 'Tara Malhotra', headline: 'Cultural events host & anchor', location: 'Mumbai, India', photo: PIC.woman1, primaryDomain: 'Cultural Experiences', tags: ['Hosting', 'Anchoring'], verified: true, availability: 'Available', experienceYears: 9, category: 'VIP Host', genresOrSpecialisations: ['Cultural Experiences'], activity: A_MID }),
+
+  // ---- VIP Venue ----
+  makeArtist({ slug: 'royal-courtyard', name: 'Royal Courtyard', headline: 'Heritage venue for cultural events', location: 'Jaipur, India', photo: PIC.venue1, primaryDomain: 'Cultural Experiences', tags: ['Heritage Venue', 'Events'], verified: true, availability: 'Available', experienceYears: 15, category: 'VIP Venue', genresOrSpecialisations: ['Cultural Experiences'], adminCorrectedLocation: 'Jaipur, India', activity: A_HIGH }),
+  makeArtist({ slug: 'the-banyan-estate', name: 'The Banyan Estate', headline: 'Boutique hospitality & retreat venue', location: 'Goa, India', photo: PIC.venue2, primaryDomain: 'Hospitality', tags: ['Retreat', 'Hospitality'], verified: false, availability: 'Selectively Available', experienceYears: 7, category: 'VIP Venue', genresOrSpecialisations: ['Hospitality'], activity: A_MID }),
+
+  // ---- VIP Connoisseur ----
+  makeArtist({ slug: 'farhan-qureshi', name: 'Farhan Qureshi', headline: 'Art & culture connoisseur', location: 'Hyderabad, India', photo: PIC.man1, primaryDomain: 'Cultural Experiences', tags: ['Curation', 'Patron'], verified: false, availability: 'Selectively Available', experienceYears: 20, category: 'VIP Connoisseur', genresOrSpecialisations: ['Cultural Experiences'], activity: A_LOW }),
+
+  // ---- VIP Manager ----
+  makeArtist({ slug: 'sneha-reddy', name: 'Sneha Reddy', headline: 'Artist & venue relationship manager', location: 'Hyderabad, India', photo: PIC.woman3, primaryDomain: 'Hospitality', tags: ['Management', 'Bookings'], verified: true, availability: 'Available', experienceYears: 11, category: 'VIP Manager', genresOrSpecialisations: ['Hospitality'], activity: A_MID }),
 ]
 
 export const publicArtists: PublicArtist[] = [abhishek, ...others]
 
 export function getMockArtist(slug?: string): PublicArtist | undefined {
   return publicArtists.find((a) => a.slug === slug)
+}
+
+// ---- Catalogue helpers ----
+// effectiveLocation = adminCorrectedLocation ?? selfReportedLocation
+export function effectiveLocation(a: PublicArtist): string {
+  return a.adminCorrectedLocation ?? a.location
+}
+// City portion of the effective location (before the first comma).
+export function effectiveCity(a: PublicArtist): string {
+  return effectiveLocation(a).split(',')[0].trim()
+}
+export function profileCategory(a: PublicArtist): string {
+  return a.category ?? 'Artist'
+}
+export function profileGenres(a: PublicArtist): string[] {
+  return a.genresOrSpecialisations ?? a.tags
+}
+export function primaryGenre(a: PublicArtist): string {
+  return profileGenres(a)[0] ?? a.primaryDomain
 }
 
 export const SAMPLE_SLUG = 'abhishek-singh-chouhan'

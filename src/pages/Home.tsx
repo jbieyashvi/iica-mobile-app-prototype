@@ -87,7 +87,7 @@ export default function Home() {
           <SectionHeader
             title="Discover Artists"
             action="See all"
-            onAction={() => navigate('/explore')}
+            onAction={() => navigate('/explore/artists')}
           />
         </PageContainer>
         <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">

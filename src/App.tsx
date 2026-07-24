@@ -25,7 +25,7 @@ import CreatorEventEdit from './pages/events/creator/CreatorEventEdit'
 import CreatorAttendees from './pages/events/creator/CreatorAttendees'
 // Explore module
 import ExploreHome from './pages/explore/ExploreHome'
-import ExploreArtists from './pages/explore/ExploreArtists'
+import ArtistCatalogue from './pages/explore/ArtistCatalogue'
 import ExploreEvents from './pages/explore/ExploreEvents'
 import ExploreShop from './pages/explore/ExploreShop'
 // Shop module
@@ -187,7 +187,8 @@ export default function App() {
             <Route path="/event/:id" element={<EventDetails />} />
             {/* Explore discovery */}
             <Route path="/explore" element={<ExploreHome />} />
-            <Route path="/explore/artists" element={<ExploreArtists />} />
+            <Route path="/explore/artists" element={<ArtistCatalogue />} />
+            <Route path="/catalogue" element={<ArtistCatalogue />} />
             <Route path="/explore/events" element={<ExploreEvents />} />
             <Route path="/explore/shop" element={<ExploreShop />} />
             <Route path="/explore/shop/coming" element={<ShopComing />} />
