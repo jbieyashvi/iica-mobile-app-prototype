@@ -22,43 +22,6 @@ export const exploreCategories: ExploreCategory[] = [
 
 export const getCategory = (slug?: string) => exploreCategories.find((c) => c.slug === slug)
 
-export type ContentType = 'Video' | 'Image' | 'Audio' | 'PDF' | 'Artist Update'
-
-export interface ContentItem {
-  id: string
-  type: ContentType
-  title: string
-  description: string
-  thumbnail: string
-  creator: string
-  creatorSlug: string
-  creatorAvatar: string
-  category: string
-  tags: string[]
-  likes: number
-  comments: number
-  date: string
-}
-
-const AV = {
-  abhishek: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80&auto=format&fit=crop',
-  ananya: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80&auto=format&fit=crop',
-  meera: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=200&q=80&auto=format&fit=crop',
-  kabir: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80&auto=format&fit=crop',
-  kavya: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80&auto=format&fit=crop',
-}
-
-export const contentItems: ContentItem[] = [
-  { id: 'c1', type: 'Audio', title: 'Tere Naal — New Single', description: 'A soft acoustic single, out now on all platforms.', thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80&auto=format&fit=crop', creator: 'Abhishek Singh Chouhan', creatorSlug: 'abhishek-singh-chouhan', creatorAvatar: AV.abhishek, category: 'Music', tags: ['Fusion', 'Acoustic'], likes: 1240, comments: 86, date: '2026-08-02' },
-  { id: 'c2', type: 'Video', title: 'Bharatanatyam — Varnam in Kalyani', description: 'A full varnam performance filmed live.', thumbnail: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&q=80&auto=format&fit=crop', creator: 'Ananya Rao', creatorSlug: 'ananya-rao', creatorAvatar: AV.ananya, category: 'Dance', tags: ['Classical', 'Live'], likes: 980, comments: 54, date: '2026-07-28' },
-  { id: 'c3', type: 'Image', title: 'Mural in progress — Pune', description: 'Work-in-progress shots from a new public mural.', thumbnail: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80&auto=format&fit=crop', creator: 'Meera Kulkarni', creatorSlug: 'meera-kulkarni', creatorAvatar: AV.meera, category: 'Visual Arts', tags: ['Mural', 'Public Art'], likes: 640, comments: 31, date: '2026-07-25' },
-  { id: 'c4', type: 'Artist Update', title: 'Selected for the 50 Hour Music Challenge', description: 'One of a few artists chosen nationally.', thumbnail: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600&q=80&auto=format&fit=crop', creator: 'Abhishek Singh Chouhan', creatorSlug: 'abhishek-singh-chouhan', creatorAvatar: AV.abhishek, category: 'Music', tags: ['Recognition'], likes: 2100, comments: 140, date: '2026-07-20' },
-  { id: 'c5', type: 'PDF', title: 'Beginner’s Guide to Raga Structure', description: 'A free downloadable primer for new students.', thumbnail: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80&auto=format&fit=crop', creator: 'Kabir Menon', creatorSlug: 'kabir-menon', creatorAvatar: AV.kabir, category: 'Music', tags: ['Theory', 'Resource'], likes: 410, comments: 22, date: '2026-07-18' },
-  { id: 'c6', type: 'Image', title: 'Miniature folk illustration series', description: 'A set of hand-painted miniatures.', thumbnail: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600&q=80&auto=format&fit=crop', creator: 'Kavya Sharma', creatorSlug: 'kavya-sharma', creatorAvatar: AV.kavya, category: 'Visual Arts', tags: ['Folk Art', 'Illustration'], likes: 720, comments: 40, date: '2026-07-15' },
-]
-
-export const getContent = (id?: string) => contentItems.find((c) => c.id === id)
-
 // Mixed editorial "Trending Now" feed
 export interface TrendingItem {
   id: string
@@ -71,11 +34,11 @@ export interface TrendingItem {
 }
 
 export const trendingFeed: TrendingItem[] = [
-  { id: 't1', kind: 'release', label: 'New Release', title: 'Tere Naal', meta: 'Abhishek Singh Chouhan', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80&auto=format&fit=crop', to: '/content/c1' },
-  { id: 't2', kind: 'video', label: 'Performance', title: 'Varnam in Kalyani', meta: 'Ananya Rao', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&q=80&auto=format&fit=crop', to: '/content/c2' },
-  { id: 't3', kind: 'award', label: 'Award', title: '50 Hour Music Challenge', meta: 'Abhishek Singh Chouhan', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600&q=80&auto=format&fit=crop', to: '/content/c4' },
+  { id: 't1', kind: 'release', label: 'New Release', title: 'Tere Naal', meta: 'Abhishek Singh Chouhan', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80&auto=format&fit=crop', to: '/artist/abhishek-singh-chouhan' },
+  { id: 't2', kind: 'video', label: 'Performance', title: 'Varnam in Kalyani', meta: 'Ananya Rao', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&q=80&auto=format&fit=crop', to: '/artist/ananya-rao' },
+  { id: 't3', kind: 'award', label: 'Award', title: '50 Hour Music Challenge', meta: 'Abhishek Singh Chouhan', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600&q=80&auto=format&fit=crop', to: '/artist/abhishek-singh-chouhan' },
   { id: 't4', kind: 'workshop', label: 'Workshop', title: 'Intro to Classical Composition', meta: 'Free · Online', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80&auto=format&fit=crop', to: '/events/intro-classical-composition' },
-  { id: 't5', kind: 'artwork', label: 'Featured Artwork', title: 'Miniature folk series', meta: 'Kavya Sharma', image: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600&q=80&auto=format&fit=crop', to: '/content/c6' },
+  { id: 't5', kind: 'artwork', label: 'Featured Artwork', title: 'Miniature folk series', meta: 'Kavya Sharma', image: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600&q=80&auto=format&fit=crop', to: '/artist/kavya-sharma' },
   { id: 't6', kind: 'timeline', label: 'Milestone', title: 'Launched Mid Town Music', meta: 'Abhishek Singh Chouhan', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80&auto=format&fit=crop', to: '/artist/abhishek-singh-chouhan' },
 ]
 

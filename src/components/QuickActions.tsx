@@ -1,11 +1,9 @@
-import { FolderOpen, PenLine, CalendarPlus, Sparkles } from 'lucide-react'
+import { FolderOpen, CalendarPlus, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useGate } from '../state/GateContext'
-import { useCreateGate } from '../state/CreateGate'
 
 const actions = [
   { label: 'My Portfolio', feature: 'Portfolio', icon: FolderOpen, to: '/portfolio/setup' },
-  { label: 'Create Content', feature: 'Creating content', icon: PenLine, to: '/content/create' },
   { label: 'Create Event', feature: 'Creating events', icon: CalendarPlus, to: '/events/create' },
   { label: 'Find Collaborators', feature: 'Finding collaborators', icon: Sparkles, to: '/collaborate' },
 ]
@@ -13,12 +11,10 @@ const actions = [
 export default function QuickActions() {
   const navigate = useNavigate()
   const { requireMember } = useGate()
-  const { startCreate } = useCreateGate()
 
   // Home is the logical origin for these quick actions — Back from the first
   // step of any flow returns here, not through Profile / My Events.
   const openAction = (label: string, feature: string, to: string) => {
-    if (label === 'Create Content') return startCreate()
     if (label === 'Create Event') {
       return requireMember(feature, () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }))
     }
@@ -26,7 +22,7 @@ export default function QuickActions() {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-2 px-[18px]">
+    <div className="grid grid-cols-3 gap-2 px-[18px]">
       {actions.map(({ label, feature, icon: Icon, to }) => (
         <button
           key={label}

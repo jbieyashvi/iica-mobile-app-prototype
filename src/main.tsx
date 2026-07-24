@@ -7,7 +7,6 @@ import { PortfolioProvider } from './state/PortfolioContext'
 import { EventsProvider } from './state/EventsContext'
 import { CollabProvider } from './state/CollabContext'
 import { ShopProvider } from './state/ShopContext'
-import { ContentProvider } from './state/ContentContext'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -18,9 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <EventsProvider>
             <CollabProvider>
               <ShopProvider>
-                <ContentProvider>
-                  <App />
-                </ContentProvider>
+                <App />
               </ShopProvider>
             </CollabProvider>
           </EventsProvider>

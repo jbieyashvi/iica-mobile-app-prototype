@@ -2,25 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import DevicePreview from './components/DevicePreview'
 import { GateProvider } from './state/GateContext'
-import { CreateGateProvider } from './state/CreateGate'
-import ContentCreatorGuard from './components/content/ContentCreatorGuard'
-// Content module
-import ContentCreateEntry from './pages/content/CreateEntry'
-import ContentUpload from './pages/content/Upload'
-import ContentDetailsStep from './pages/content/Details'
-import ContentSettingsStep from './pages/content/Settings'
-import ContentPreviewStep from './pages/content/Preview'
-import ContentSuccess from './pages/content/Success'
-import ContentBulkUpload from './pages/content/BulkUpload'
-import PublicContentDetail from './pages/content/PublicContentDetail'
-import ContentComments from './pages/content/Comments'
-import ContentShare from './pages/content/ContentShare'
-import CreatorContent from './pages/content/creator/CreatorContent'
-import CreatorContentManage from './pages/content/creator/CreatorContentManage'
-import CreatorContentEdit from './pages/content/creator/CreatorContentEdit'
-import CreatorCollections from './pages/content/creator/Collections'
-import CreatorCollectionDetail from './pages/content/creator/CollectionDetail'
-import CreatorContentAnalytics from './pages/content/creator/ContentAnalytics'
 // Events module
 import EventCreatorGuard from './components/events/EventCreatorGuard'
 import EventsDiscovery from './pages/events/EventsDiscovery'
@@ -46,7 +27,6 @@ import CreatorAttendees from './pages/events/creator/CreatorAttendees'
 import ExploreHome from './pages/explore/ExploreHome'
 import ExploreArtists from './pages/explore/ExploreArtists'
 import ExploreEvents from './pages/explore/ExploreEvents'
-import ExploreContent from './pages/explore/ExploreContent'
 import ExploreShop from './pages/explore/ExploreShop'
 // Shop module
 import ShopHome from './pages/shop/ShopHome'
@@ -99,7 +79,6 @@ import Profile from './pages/Profile'
 import Search from './pages/Search'
 import Notifications from './pages/Notifications'
 import Portfolio from './pages/Portfolio'
-import CreateContent from './pages/CreateContent'
 import CreateEvent from './pages/CreateEvent'
 import EventDetails from './pages/EventDetails'
 // Public artist portfolio
@@ -135,7 +114,6 @@ import MembershipSuccess from './pages/membership/MembershipSuccess'
 export default function App() {
   return (
     <DevicePreview>
-      <CreateGateProvider>
       <GateProvider>
           <Routes>
             {/* Root shows Welcome; Home is its own explicit route (no ambiguity). */}
@@ -194,7 +172,6 @@ export default function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/create/content" element={<CreateContent />} />
             <Route path="/create/event" element={<CreateEvent />} />
             {/* Public artist portfolio + subflows */}
             <Route path="/artist/:slug" element={<PublicArtistPortfolio />} />
@@ -210,35 +187,12 @@ export default function App() {
             <Route path="/explore" element={<ExploreHome />} />
             <Route path="/explore/artists" element={<ExploreArtists />} />
             <Route path="/explore/events" element={<ExploreEvents />} />
-            <Route path="/explore/content" element={<ExploreContent />} />
             <Route path="/explore/shop" element={<ExploreShop />} />
             <Route path="/explore/shop/coming" element={<ShopComing />} />
             <Route path="/explore/search" element={<ExploreSearch />} />
             <Route path="/explore/trending" element={<ExploreTrending />} />
             <Route path="/explore/saved" element={<ExploreSaved />} />
             <Route path="/explore/category/:slug" element={<ExploreCategory />} />
-
-            {/* Content module — public */}
-            <Route path="/content/:id" element={<PublicContentDetail />} />
-            <Route path="/content/:id/comments" element={<ContentComments />} />
-            <Route path="/content/:id/share" element={<ContentShare />} />
-
-            {/* Content module — create flow (active creators only) */}
-            <Route path="/content/create" element={<ContentCreatorGuard><ContentCreateEntry /></ContentCreatorGuard>} />
-            <Route path="/content/create/upload" element={<ContentCreatorGuard><ContentUpload /></ContentCreatorGuard>} />
-            <Route path="/content/create/details" element={<ContentCreatorGuard><ContentDetailsStep /></ContentCreatorGuard>} />
-            <Route path="/content/create/settings" element={<ContentCreatorGuard><ContentSettingsStep /></ContentCreatorGuard>} />
-            <Route path="/content/create/preview" element={<ContentCreatorGuard><ContentPreviewStep /></ContentCreatorGuard>} />
-            <Route path="/content/create/success" element={<ContentCreatorGuard><ContentSuccess /></ContentCreatorGuard>} />
-            <Route path="/content/create/bulk" element={<ContentCreatorGuard><ContentBulkUpload /></ContentCreatorGuard>} />
-
-            {/* Content module — creator dashboard */}
-            <Route path="/creator/content" element={<ContentCreatorGuard><CreatorContent /></ContentCreatorGuard>} />
-            <Route path="/creator/content/analytics" element={<ContentCreatorGuard><CreatorContentAnalytics /></ContentCreatorGuard>} />
-            <Route path="/creator/content/:id" element={<ContentCreatorGuard><CreatorContentManage /></ContentCreatorGuard>} />
-            <Route path="/creator/content/:id/edit" element={<ContentCreatorGuard><CreatorContentEdit /></ContentCreatorGuard>} />
-            <Route path="/creator/collections" element={<ContentCreatorGuard><CreatorCollections /></ContentCreatorGuard>} />
-            <Route path="/creator/collections/:id" element={<ContentCreatorGuard><CreatorCollectionDetail /></ContentCreatorGuard>} />
 
             {/* Events — customer */}
             <Route path="/events" element={<EventsDiscovery />} />
@@ -325,7 +279,6 @@ export default function App() {
           </Routes>
           <FloatingCart />
         </GateProvider>
-      </CreateGateProvider>
     </DevicePreview>
   )
 }

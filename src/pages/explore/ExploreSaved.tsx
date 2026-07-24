@@ -7,11 +7,11 @@ import Avatar from '../../components/Avatar'
 import StatusBadge from '../../components/StatusBadge'
 import { useSavedArtists } from '../../state/useSavedArtists'
 import { publicArtists } from '../../data/publicArtists'
-import { getContent, getProduct } from '../../data/exploreData'
+import { getProduct } from '../../data/exploreData'
 import { useEvents } from '../../state/EventsContext'
 import { fmtDate, inr } from '../../events/format'
 
-type Tab = 'Artists' | 'Events' | 'Content' | 'Products'
+type Tab = 'Artists' | 'Events' | 'Products'
 
 export default function ExploreSaved() {
   const navigate = useNavigate()
@@ -24,10 +24,9 @@ export default function ExploreSaved() {
 
   const artistKeys = saved.filter((k) => k.startsWith('artist:') || publicArtists.some((a) => a.slug === k))
   const eventKeys = saved.filter((k) => k.startsWith('event:'))
-  const contentKeys = saved.filter((k) => k.startsWith('content:'))
   const productKeys = saved.filter((k) => k.startsWith('product:'))
 
-  const counts: Record<Tab, number> = { Artists: artistKeys.length, Events: eventKeys.length, Content: contentKeys.length, Products: productKeys.length }
+  const counts: Record<Tab, number> = { Artists: artistKeys.length, Events: eventKeys.length, Products: productKeys.length }
 
   const artistFor = (k: string) => publicArtists.find((a) => a.slug === k.replace('artist:', ''))
   const remove = (k: string) => { toggle(k); flash('Removed from saved') }
@@ -41,7 +40,7 @@ export default function ExploreSaved() {
           <span className="h-10 w-10" />
         </div>
         <div className="no-scrollbar flex gap-4 overflow-x-auto px-[6px] pb-1">
-          {(['Artists', 'Events', 'Content', 'Products'] as Tab[]).map((t) => (
+          {(['Artists', 'Events', 'Products'] as Tab[]).map((t) => (
             <button key={t} onClick={() => setTab(t)} className="tap relative shrink-0 pb-2">
               <span className={`text-[14px] font-semibold ${tab === t ? 'text-ink' : 'text-muted'}`}>{t} <span className="font-normal text-muted">{counts[t]}</span></span>
               {tab === t && <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-brand" />}
@@ -66,14 +65,6 @@ export default function ExploreSaved() {
             ) })}
           </div>
         ) : <Empty icon={<Bookmark className="h-6 w-6" />} text="No saved events yet" hint="Save events to find them quickly later." />)}
-
-        {tab === 'Content' && (contentKeys.length ? (
-          <div className="flex flex-col gap-3">
-            {contentKeys.map((k) => { const c = getContent(k.replace('content:', '')); if (!c) return null; return (
-              <SavedRow key={k} image={c.thumbnail} title={c.title} sub={`${c.type} · ${c.creator}`} onOpen={() => navigate(`/content/${c.id}`)} onRemove={() => remove(k)} onShare={() => setShare({ title: c.title, url: `https://iica.app/content/${c.id}` })} />
-            ) })}
-          </div>
-        ) : <Empty icon={<Bookmark className="h-6 w-6" />} text="No saved content yet" hint="Save posts, videos and releases to revisit." />)}
 
         {tab === 'Products' && (productKeys.length ? (
           <div className="flex flex-col gap-3">

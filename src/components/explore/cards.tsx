@@ -1,12 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import {
-  BadgeCheck, MapPin, Bookmark, BookmarkCheck, Heart, MessageCircle, Share2,
-  Play, FileText, Image as ImageIcon, Music2, Megaphone,
-} from 'lucide-react'
+import { BadgeCheck, MapPin, Bookmark, BookmarkCheck } from 'lucide-react'
 import { PublicArtist } from '../../data/publicArtists'
-import { ContentItem, ContentType, Collection, ExploreCategory, ShopItem } from '../../data/exploreData'
+import { Collection, ExploreCategory, ShopItem } from '../../data/exploreData'
 import StatusBadge from '../StatusBadge'
-import Avatar from '../Avatar'
 import { inr } from '../../events/format'
 
 /* ---------- Artist ---------- */
@@ -50,42 +46,6 @@ export function ArtistListCard({ artist, saved, onSave, list }: { artist: Public
       <button aria-label={saved ? 'Unsave' : 'Save'} onClick={() => onSave(key)} className="tap absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-ink/40 text-white backdrop-blur-sm">
         {saved ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
       </button>
-    </div>
-  )
-}
-
-/* ---------- Content ---------- */
-const typeIcon: Record<ContentType, typeof Play> = { Video: Play, Image: ImageIcon, Audio: Music2, PDF: FileText, 'Artist Update': Megaphone }
-
-export function ContentCard({ item, saved, liked, onSave, onLike, onShare }: {
-  item: ContentItem; saved: boolean; liked: boolean; onSave: (k: string) => void; onLike: (id: string) => void; onShare: (item: ContentItem) => void
-}) {
-  const navigate = useNavigate()
-  const Icon = typeIcon[item.type]
-  const key = 'content:' + item.id
-  return (
-    <div className="overflow-hidden rounded-card border border-border bg-surface">
-      <button onClick={() => navigate(`/content/${item.id}`)} className="tap block w-full text-left">
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-brand-soft">
-          <img src={item.thumbnail} alt="" loading="lazy" className="h-full w-full object-cover" />
-          <span className="absolute left-2 top-2 flex items-center gap-1 rounded-md bg-ink/60 px-2 py-0.5 text-[10.5px] font-semibold text-white backdrop-blur-sm"><Icon className="h-3 w-3" /> {item.type}</span>
-        </div>
-      </button>
-      <div className="p-3">
-        <div className="flex items-center gap-2">
-          <Avatar name={item.creator} src={item.creatorAvatar} size={26} />
-          <button onClick={() => navigate(`/artist/${item.creatorSlug}`)} className="tap truncate text-[12px] font-semibold text-ink">{item.creator}</button>
-        </div>
-        <h3 className="mt-2 font-serif text-[16px] leading-snug text-ink">{item.title}</h3>
-        <p className="mt-0.5 line-clamp-2 text-[12.5px] leading-relaxed text-muted">{item.description}</p>
-        {item.tags.length > 0 && <p className="mt-1.5 text-[11.5px] text-brand-dark">{item.tags.map((t) => '#' + t.replace(/\s+/g, '')).join(' ')}</p>}
-        <div className="mt-2.5 flex items-center gap-4 border-t border-border pt-2.5 text-[12px] text-muted">
-          <button onClick={() => onLike(item.id)} aria-label="Like" className="tap flex items-center gap-1.5 min-h-[36px]"><Heart className={`h-[18px] w-[18px] ${liked ? 'fill-error text-error' : ''}`} /> {item.likes + (liked ? 1 : 0)}</button>
-          <span className="flex items-center gap-1.5"><MessageCircle className="h-[18px] w-[18px]" /> {item.comments}</span>
-          <button onClick={() => onSave(key)} aria-label="Save" className="tap ml-auto flex h-9 w-9 items-center justify-center">{saved ? <BookmarkCheck className="h-[18px] w-[18px] text-brand" /> : <Bookmark className="h-[18px] w-[18px]" />}</button>
-          <button onClick={() => onShare(item)} aria-label="Share" className="tap flex h-9 w-9 items-center justify-center"><Share2 className="h-[18px] w-[18px]" /></button>
-        </div>
-      </div>
     </div>
   )
 }

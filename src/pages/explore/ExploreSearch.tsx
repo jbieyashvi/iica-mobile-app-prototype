@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, X, Clock, TrendingUp, Loader2, ChevronRight, BadgeCheck, MapPin, Globe } from 'lucide-react'
 import { useRecentSearches } from '../../state/useExplore'
 import { publicArtists } from '../../data/publicArtists'
-import { exploreCategories, contentItems, shopPreview, suggestedSearches, trendingSearches } from '../../data/exploreData'
+import { exploreCategories, shopPreview, suggestedSearches, trendingSearches } from '../../data/exploreData'
 import { useEvents } from '../../state/EventsContext'
 import { inr, startingPrice } from '../../events/format'
 import Avatar from '../../components/Avatar'
@@ -28,10 +28,9 @@ export default function ExploreSearch() {
 
   const artists = useMemo(() => query ? publicArtists.filter((a) => a.slug !== 'reshma-patra' && has(a.name + a.headline + a.primaryDomain + a.location + a.tags.join(' '))) : [], [query])
   const evs = useMemo(() => query ? events.filter((e) => e.status === 'published' && has(e.title + e.category + (e.city ?? '') + e.organiserName)) : [], [query, events])
-  const content = useMemo(() => query ? contentItems.filter((c) => has(c.title + c.creator + c.category + c.tags.join(' '))) : [], [query])
   const cats = useMemo(() => query ? exploreCategories.filter((c) => has(c.name)) : [], [query])
   const prods = useMemo(() => query ? shopPreview.filter((p) => has(p.title + p.creator + p.kind)) : [], [query])
-  const totalResults = artists.length + evs.length + content.length + cats.length + prods.length
+  const totalResults = artists.length + evs.length + cats.length + prods.length
 
   const runSearch = (term: string) => { setQ(term); add(term) }
 
@@ -40,7 +39,7 @@ export default function ExploreSearch() {
       <header className="sticky top-0 z-30 flex shrink-0 items-center gap-2 border-b border-border bg-bg/92 px-3 backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)', height: 'calc(var(--safe-top) + 56px)' }}>
         <div className="flex h-10 flex-1 items-center gap-2 rounded-control border border-border bg-surface px-3">
           <Search className="h-4 w-4 text-muted" />
-          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && q.trim()) add(q) }} placeholder="Search artists, events, content…" className="w-full bg-transparent text-[14px] text-ink placeholder:text-muted focus:outline-none" />
+          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && q.trim()) add(q) }} placeholder="Search artists, events…" className="w-full bg-transparent text-[14px] text-ink placeholder:text-muted focus:outline-none" />
           {q && <button onClick={() => setQ('')} aria-label="Clear"><X className="h-4 w-4 text-muted" /></button>}
         </div>
         <button onClick={() => navigate('/explore')} className="tap min-h-[44px] px-1 text-[14px] font-semibold text-brand">Cancel</button>
@@ -95,16 +94,6 @@ export default function ExploreSearch() {
                     <img src={e.cover} alt="" className="h-11 w-11 rounded-[9px] object-cover" />
                     <div className="min-w-0 flex-1"><p className="truncate text-[14px] font-semibold text-ink">{e.title}</p><p className="flex items-center gap-1 truncate text-[12px] text-muted">{e.format === 'Online' ? <Globe className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}{e.format === 'Online' ? 'Online' : e.city}</p></div>
                     {e.paid ? <span className="text-[12px] font-bold text-ink">{inr(startingPrice(e))}+</span> : <StatusBadge tone="success">Free</StatusBadge>}
-                  </button>
-                ))}
-              </Group>
-            )}
-            {content.length > 0 && (
-              <Group title="Content" count={content.length}>
-                {content.slice(0, 3).map((c) => (
-                  <button key={c.id} onClick={() => { add(q); navigate(`/content/${c.id}`) }} className="tap flex items-center gap-3 py-2.5 text-left">
-                    <img src={c.thumbnail} alt="" className="h-11 w-11 rounded-[9px] object-cover" />
-                    <div className="min-w-0 flex-1"><p className="truncate text-[14px] font-semibold text-ink">{c.title}</p><p className="truncate text-[12px] text-muted">{c.type} · {c.creator}</p></div>
                   </button>
                 ))}
               </Group>

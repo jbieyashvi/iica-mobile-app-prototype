@@ -7,7 +7,6 @@ const TABS = [
   { id: 'foryou', label: 'For You', to: '/explore' },
   { id: 'artists', label: 'Artists', to: '/explore/artists' },
   { id: 'events', label: 'Events', to: '/explore/events' },
-  { id: 'content', label: 'Content', to: '/explore/content' },
   { id: 'shop', label: 'Shop', to: '/explore/shop' },
 ]
 
@@ -34,7 +33,7 @@ export default function ExploreShell({ active, children, filterButton }: Props) 
         {/* search field */}
         <button onClick={() => navigate('/explore/search')} className="tap mb-2 flex h-11 w-full items-center gap-2 rounded-control border border-border bg-surface px-3 text-left">
           <Search className="h-4 w-4 text-muted" />
-          <span className="text-[13.5px] text-muted">Search artists, events, content and products</span>
+          <span className="text-[13.5px] text-muted">Search artists, events and products</span>
         </button>
 
         {/* discovery nav + optional filter */}

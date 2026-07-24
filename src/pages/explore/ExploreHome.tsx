@@ -1,16 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Sparkles, Info, ChevronRight } from 'lucide-react'
+import { ArrowRight, Sparkles, ChevronRight } from 'lucide-react'
 import ExploreShell from '../../components/explore/ExploreShell'
-import { ArtistListCard, CategoryCard, CollectionCard, ContentCard, ShopCard, SkeletonCard } from '../../components/explore/cards'
-import ShareSheet from '../../components/explore/ShareSheet'
+import { ArtistListCard, CategoryCard, CollectionCard, ShopCard, SkeletonCard } from '../../components/explore/cards'
 import TuneSheet from './TuneSheet'
 import EventCard from '../../components/events/EventCard'
 import { useSaveGate } from '../../components/SaveGate'
-import { useLikes, useInterests } from '../../state/useExplore'
+import { useInterests } from '../../state/useExplore'
 import { useEvents } from '../../state/EventsContext'
 import { publicArtists } from '../../data/publicArtists'
-import { exploreCategories, collections, contentItems, trendingFeed, shopPreview, ContentItem } from '../../data/exploreData'
+import { exploreCategories, collections, trendingFeed, shopPreview } from '../../data/exploreData'
 import { useLoad } from './useLoad'
 
 const TRENDING_SLUGS = ['abhishek-singh-chouhan', 'ananya-rao', 'meera-kulkarni', 'arjun-mehta', 'kavya-sharma']
@@ -18,15 +17,10 @@ const TRENDING_SLUGS = ['abhishek-singh-chouhan', 'ananya-rao', 'meera-kulkarni'
 export default function ExploreHome() {
   const navigate = useNavigate()
   const { save, isSaved, sheet } = useSaveGate()
-  const { isLiked, toggle: toggleLike } = useLikes()
   const { interests } = useInterests()
   const { events } = useEvents()
   const loading = useLoad(600)
   const [tune, setTune] = useState(false)
-  const [share, setShare] = useState<ContentItem | null>(null)
-  const [toast, setToast] = useState('')
-
-  const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
 
   const trendingArtists = useMemo(() => {
     const base = TRENDING_SLUGS.map((s) => publicArtists.find((a) => a.slug === s)).filter(Boolean) as typeof publicArtists
@@ -93,18 +87,6 @@ export default function ExploreHome() {
         </div>
       </Section>
 
-      {/* E. Recommended For You */}
-      <Section title="Recommended For You" right={
-        <button onClick={() => setTune(true)} className="tap flex items-center gap-1 text-[12px] font-semibold text-brand"><Info className="h-3.5 w-3.5" /> Why this?</button>
-      }>
-        <p className="-mt-1 mb-2.5 px-[18px] text-[12px] text-muted">Based on your interest in {interests.topics.length ? interests.topics.slice(0, 3).join(', ') : 'Music, Visual Arts & Workshops'}.</p>
-        <div className="flex flex-col gap-2.5 px-[18px]">
-          {contentItems.slice(0, 2).map((c) => (
-            <ContentCard key={c.id} item={c} saved={isSaved('content:' + c.id)} liked={isLiked(c.id)} onSave={save} onLike={toggleLike} onShare={setShare} />
-          ))}
-        </div>
-      </Section>
-
       {/* F. Featured Collections */}
       <Section title="Featured Collections">
         <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
@@ -123,8 +105,6 @@ export default function ExploreHome() {
 
       {sheet}
       {tune && <TuneSheet onClose={() => setTune(false)} />}
-      {share && <ShareSheet title={share.title} url={`https://iica.app/content/${share.id}`} onClose={() => setShare(null)} onToast={flash} />}
-      {toast && <div className="pointer-events-none absolute inset-x-0 bottom-24 z-50 flex justify-center"><span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span></div>}
     </ExploreShell>
   )
 }
