@@ -56,7 +56,11 @@ export interface ArtistAward {
   org: string
   recognitionType: string
   project?: string
+  category?: string
+  description?: string
+  image?: string
   link?: string
+  featured?: boolean
 }
 
 export interface ArtistMedia {
@@ -256,10 +260,10 @@ const abhishek: PublicArtist = {
     { id: 't5', year: '2025', title: 'Selected for 50 Hour Music Challenge', category: 'Award', description: 'Chosen nationally for the endurance composition challenge.', image: IMG.m5, link: 'https://example.com' },
   ],
   awards: [
-    { id: 'a1', year: '2025', name: '50 Hour Music Challenge — Selection', org: 'National Music Collective', recognitionType: 'Finalist', project: 'Original composition', link: 'https://example.com' },
-    { id: 'a2', year: '2022', name: 'IMA Special Mention', org: 'Independent Music Awards', recognitionType: 'Special Mention', project: 'Tere Naal' },
-    { id: 'a3', year: '2018', name: 'Young Composer of the Year', org: 'Malwa Arts Forum', recognitionType: 'Winner', project: 'Debut EP' },
-    { id: 'a4', year: '2016', name: 'State Youth Talent', org: 'MP Cultural Board', recognitionType: 'Winner' },
+    { id: 'a1', year: '2025', name: '50 Hour Music Challenge', org: 'National Music Collective', recognitionType: 'Finalist', project: 'Original Folk Fusion', description: 'Selected as a national finalist in the 50 Hour Music Challenge for an original folk-fusion composition written and produced within the challenge window.', featured: true, link: 'https://example.com' },
+    { id: 'a2', year: '2022', name: 'IMA Special Mention', org: 'Indian Independent Music Awards', recognitionType: 'Special Mention', category: 'Devotional', project: 'Namami Gange', description: 'Special Mention in the Devotional category for the release “Namami Gange”.' },
+    { id: 'a3', year: '2018', name: 'Young Composer of the Year', org: 'Malwa Arts Forum', recognitionType: 'Winner', project: 'Debut EP', description: 'Awarded Young Composer of the Year for the debut EP.' },
+    { id: 'a4', year: '2011', name: 'State Level Youth Festival', org: 'Vikram University, Ujjain', recognitionType: 'Winner', category: 'Music Performance' },
   ],
   media: [
     { id: 'md1', type: 'YouTube Video', title: 'Tere Naal — Official Video', url: 'https://youtube.com/watch?v=abc', thumbnail: IMG.m3, releaseDate: '2026-08-02', description: 'Official video for the new single.', credits: 'Written & produced by Abhishek Singh Chouhan', featured: true },

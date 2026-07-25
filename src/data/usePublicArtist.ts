@@ -106,7 +106,7 @@ function fromPortfolio(p: Portfolio, name: string, category?: string): PublicArt
     timeline: [...p.timeline]
       .sort((a, b) => (parseInt(a.date, 10) || 0) - (parseInt(b.date, 10) || 0))
       .map((m) => ({ id: m.id, year: String(m.date).slice(0, 4), title: m.title, category: m.category, description: m.description, image: m.media, link: m.link })),
-    awards: p.awards.map((a) => ({ id: a.id, year: String(a.year).slice(0, 4), name: a.name, org: a.org, recognitionType: a.recognitionType, project: a.project, link: a.link })),
+    awards: p.awards.map((a) => ({ id: a.id, year: String(a.year).slice(0, 4), name: a.name, org: a.org, recognitionType: a.recognitionType, project: a.project, category: a.category, description: a.description, image: a.image, link: a.link, featured: a.featured })),
     media: p.media.map((m) => ({ id: m.id, type: m.type, title: m.title, url: m.url, thumbnail: m.thumbnail, releaseDate: m.releaseDate, description: m.description, credits: m.credits, featured: m.featured })),
     collaborations: p.collaborations.map((c) => ({
       id: c.id,

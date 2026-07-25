@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   X, Pencil, MapPin, BadgeCheck, Star, Instagram, Facebook, Youtube, Music2,
   Twitter, Linkedin, Globe, CalendarDays, Handshake, Check, Lock, ChevronRight,
+  ChevronDown, ChevronUp,
 } from 'lucide-react'
 import { usePortfolio } from '../../state/PortfolioContext'
 import { requiredSections, requiredComplete } from '../../portfolio/sections'
@@ -21,9 +22,16 @@ export default function PortfolioPreview() {
   const [params] = useSearchParams()
   const [mode, setMode] = useState<Mode>('public')
   const [showPublish, setShowPublish] = useState(params.get('publish') === '1')
+  const [awardsExpanded, setAwardsExpanded] = useState(false)
 
   const p = portfolio
   const canPublish = requiredComplete(p)
+  // Preview mirrors the public top-3 + View All behaviour (editor shows all).
+  const sortedAwards = [...p.awards].sort((a, b) => {
+    if (!!a.featured !== !!b.featured) return a.featured ? -1 : 1
+    return (parseInt(String(b.year), 10) || 0) - (parseInt(String(a.year), 10) || 0)
+  })
+  const visibleAwards = awardsExpanded ? sortedAwards : sortedAwards.slice(0, 3)
   const gatedForPublic = p.basics.visibility === 'Members Only' && mode === 'public'
 
   const editLink = (slug: string) => (
@@ -170,17 +178,27 @@ export default function PortfolioPreview() {
             {p.awards.length > 0 && (
               <Section title="Awards & Recognition" edit={editLink('awards')}>
                 <div className="flex flex-col gap-2.5">
-                  {p.awards.map((a) => (
+                  {visibleAwards.map((a) => (
                     <div key={a.id} className="flex items-center gap-3 rounded-card border border-border bg-surface p-3">
                       {a.image && <img src={a.image} alt="" className="h-11 w-11 rounded-[8px] object-cover" />}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[14px] font-semibold text-ink">{a.name}</p>
-                        <p className="truncate text-[12px] text-muted">{[a.org, a.year].filter(Boolean).join(' · ')}</p>
+                        <p className="truncate text-[12px] text-muted">{[a.org, a.category, a.project, a.year].filter(Boolean).join(' · ')}</p>
                       </div>
                       <StatusBadge tone="brand">{a.recognitionType}</StatusBadge>
                     </div>
                   ))}
                 </div>
+                {sortedAwards.length > 3 && (
+                  <button
+                    onClick={() => setAwardsExpanded((v) => !v)}
+                    aria-expanded={awardsExpanded}
+                    aria-label={awardsExpanded ? 'Collapse awards' : `View all ${sortedAwards.length} awards`}
+                    className="tap mt-2.5 flex min-h-[44px] items-center gap-1 text-[13px] font-semibold text-brand hover:text-brand-dark"
+                  >
+                    {awardsExpanded ? <>Show less <ChevronUp className="h-4 w-4" /></> : <>View all {sortedAwards.length} awards <ChevronDown className="h-4 w-4" /></>}
+                  </button>
+                )}
               </Section>
             )}
 

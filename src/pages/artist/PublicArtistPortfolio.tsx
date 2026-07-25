@@ -10,6 +10,7 @@ import { useGate } from '../../state/GateContext'
 import { useSavedArtists } from '../../state/useSavedArtists'
 import ArtistSocials from '../../components/artist/ArtistSocials'
 import WhatsNew from '../../components/artist/WhatsNew'
+import Awards from '../../components/artist/Awards'
 import SectionNav, { NavItem } from '../../components/artist/SectionNav'
 import PublicTimeline from '../../components/artist/PublicTimeline'
 import GalleryViewer from '../../components/artist/GalleryViewer'
@@ -269,33 +270,7 @@ export default function PublicArtistPortfolio() {
             )}
 
             {/* ---------- AWARDS ---------- */}
-            {artist.awards.length > 0 && (
-              <section className="px-[18px] pt-8">
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="font-serif text-[19px] text-ink">Awards & Recognition</h2>
-                </div>
-                <div className="flex flex-col divide-y divide-border overflow-hidden rounded-card border border-border bg-surface">
-                  {artist.awards.slice(0, 3).map((a) => (
-                    <div key={a.id} className="flex items-center gap-3 px-3.5 py-3">
-                      <span className="w-9 shrink-0 font-serif text-[15px] text-brand">{a.year}</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14px] font-semibold text-ink">{a.name}</p>
-                        <p className="truncate text-[12px] text-muted">{[a.org, a.project].filter(Boolean).join(' · ')}</p>
-                      </div>
-                      <StatusBadge tone="brand">{a.recognitionType}</StatusBadge>
-                    </div>
-                  ))}
-                </div>
-                {artist.awards.length > 3 && (
-                  <button
-                    onClick={() => navigate(`/artist/${artist.slug}/journey`)}
-                    className="tap mt-2.5 text-[13px] font-semibold text-brand"
-                  >
-                    View all {artist.awards.length} awards
-                  </button>
-                )}
-              </section>
-            )}
+            <Awards awards={artist.awards} />
 
             {/* ---------- WATCH & LISTEN ---------- */}
             {artist.media.length > 0 && (
