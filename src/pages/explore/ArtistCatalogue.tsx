@@ -5,6 +5,7 @@ import BottomNavigation from '../../components/BottomNavigation'
 import { useSaveGate } from '../../components/SaveGate'
 import { FeaturedProfileCard, CatalogueListItem } from '../../components/explore/catalogueCards'
 import CatalogueFilterSheet from '../../components/explore/CatalogueFilterSheet'
+import ExploreTabs from '../../components/explore/ExploreTabs'
 import { PublicArtist } from '../../data/publicArtists'
 import {
   CatalogueFilters, CatalogueState, NO_FILTERS, CATALOGUE_POOL,
@@ -118,6 +119,8 @@ export default function ArtistCatalogue() {
           <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, category, genre or location" className="w-full bg-transparent text-[13.5px] text-ink placeholder:text-muted focus:outline-none" />
           {q && <button onClick={() => setQ('')} aria-label="Clear search"><X className="h-4 w-4 text-muted" /></button>}
         </div>
+        {/* Explore discovery tabs — keep the row consistent with other Explore tabs */}
+        <ExploreTabs active="artists" />
       </header>
 
       <div className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden" style={{ paddingBottom: 'calc(62px + var(--safe-bottom) + 8px)' }}>

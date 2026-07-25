@@ -1,16 +1,9 @@
 import { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Bookmark } from 'lucide-react'
+import { Bookmark } from 'lucide-react'
 import BottomNavigation from '../BottomNavigation'
 import ProfileAvatarButton from '../ProfileAvatarButton'
-
-const TABS = [
-  { id: 'foryou', label: 'For You', to: '/explore' },
-  { id: 'artists', label: 'Artists', to: '/explore/artists' },
-  { id: 'events', label: 'Events', to: '/explore/events' },
-  { id: 'archive', label: 'Archive', to: '/explore/archive' },
-  { id: 'shop', label: 'Shop', to: '/explore/shop' },
-]
+import ExploreTabs from './ExploreTabs'
 
 interface Props {
   active: string
@@ -32,25 +25,9 @@ export default function ExploreShell({ active, children, filterButton }: Props) 
           </div>
         </div>
 
-        {/* search field */}
-        <button onClick={() => navigate('/explore/search')} className="tap mb-2 flex h-11 w-full items-center gap-2 rounded-control border border-border bg-surface px-3 text-left">
-          <Search className="h-4 w-4 text-muted" />
-          <span className="text-[13.5px] text-muted">Search artists, events and products</span>
-        </button>
-
         {/* discovery nav + optional filter */}
-        <div className="flex items-center gap-2">
-          <div className="no-scrollbar -mx-[18px] flex flex-1 gap-4 overflow-x-auto px-[18px]">
-            {TABS.map((t) => {
-              const on = active === t.id
-              return (
-                <button key={t.id} onClick={() => navigate(t.to)} className="tap relative shrink-0 pb-2.5 pt-0.5">
-                  <span className={`text-[14px] font-semibold transition-colors ${on ? 'text-ink' : 'text-muted'}`}>{t.label}</span>
-                  {on && <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-brand" />}
-                </button>
-              )
-            })}
-          </div>
+        <div className="mt-1 flex items-center gap-2">
+          <ExploreTabs active={active} />
           {filterButton}
         </div>
       </header>
