@@ -1,13 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  Users, CalendarCheck, Inbox, ChevronRight, Clock, Copy, Compass, X,
+  Users, CalendarCheck, Inbox, ChevronRight, Clock, Copy, Compass, X, SlidersHorizontal,
 } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
 import ProfileAvatarButton from '../../components/ProfileAvatarButton'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
+import TuneSheet from '../../components/collab/TuneSheet'
 import { useAuth } from '../../state/AuthContext'
 import { useCollab } from '../../state/CollabContext'
+import { TuneFilters } from '../../collab/types'
 import { useState } from 'react'
 
 export default function CollaborateHome() {
@@ -16,6 +18,7 @@ export default function CollaborateHome() {
   const collab = useCollab()
   const [toast, setToast] = useState('')
   const [showHow, setShowHow] = useState(false)
+  const [showTune, setShowTune] = useState(false)
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
 
   // ---- Non-active states ----
@@ -99,7 +102,8 @@ export default function CollaborateHome() {
               <div className="mt-3.5">
                 <PrimaryButton full onClick={() => navigate('/collaborate/discover')}>Find Matches</PrimaryButton>
               </div>
-              <button onClick={() => setShowHow(true)} className="tap mt-2.5 w-full text-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">How matching works</button>
+              <TuneRow onClick={() => setShowTune(true)} />
+              <button onClick={() => setShowHow(true)} className="tap mt-1 flex min-h-[40px] w-full items-center justify-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">How matching works</button>
             </>
           ) : (
             <>
@@ -108,10 +112,11 @@ export default function CollaborateHome() {
               <div className="mt-3.5">
                 <PrimaryButton full onClick={() => navigate('/collaborate/recommendations')}>View Recommendations</PrimaryButton>
               </div>
+              <TuneRow onClick={() => setShowTune(true)} />
               {canMatch ? (
-                <button onClick={() => navigate('/collaborate/discover')} className="tap mt-2.5 w-full text-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">Refresh Matches</button>
+                <button onClick={() => navigate('/collaborate/discover')} className="tap mt-1 flex min-h-[40px] w-full items-center justify-center text-[12.5px] font-semibold text-brand hover:text-brand-dark">Refresh Matches</button>
               ) : (
-                <p className="mt-2.5 text-center text-[12px] text-muted">New matches will be available tomorrow.</p>
+                <p className="mt-2 text-center text-[12px] text-muted">New matches will be available tomorrow.</p>
               )}
             </>
           )}
@@ -128,7 +133,28 @@ export default function CollaborateHome() {
       <BottomNavigation />
       {toast && <Toast msg={toast} />}
       {showHow && <HowSheet onClose={() => setShowHow(false)} />}
+      {showTune && (
+        <TuneSheet
+          initial={collab.tune}
+          onClose={() => setShowTune(false)}
+          onReset={() => { collab.resetTune(); setShowTune(false); flash('Filters reset') }}
+          onShow={(t: TuneFilters) => {
+            collab.applyTune(t)
+            setShowTune(false)
+            navigate(hasSession ? '/collaborate/recommendations' : '/collaborate/discover')
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+// Clearly-labelled secondary action — text + sliders icon, not an icon alone.
+function TuneRow({ onClick }: { onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="tap mt-2 flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-control text-[13px] font-semibold text-ink hover:bg-black/[0.03]">
+      <SlidersHorizontal className="h-4 w-4 text-brand" /> Tune Matches
+    </button>
   )
 }
 

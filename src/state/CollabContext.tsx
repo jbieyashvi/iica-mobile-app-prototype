@@ -1,8 +1,10 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
   Candidate, CollabPrefs, CollabRequest, Meeting, MeetingSlot, RequestStatus, SwipeSession, COOLDOWN_MS,
+  TuneFilters, DEFAULT_TUNE,
 } from '../collab/types'
 import { candidates as allCandidates, seedMeetings, seedRequests, getCandidate } from '../collab/mockCollab'
+import { filterCandidates } from '../collab/tune'
 import { demoCollaborationPreferences } from '../demo/demoData'
 
 const PKEY = 'iica_collab_prefs_v1'
@@ -13,6 +15,7 @@ const RKEY = 'iica_collab_requests_v1'
 const MKEY = 'iica_collab_meetings_v1'
 const CKEY = 'iica_collab_cooldown_v1'
 const BKEY = 'iica_collab_blocked_v1'
+const TKEY = 'iica_collab_tune_v1'
 
 function load<T>(k: string, fb: T): T {
   try { const r = localStorage.getItem(k); if (r) return JSON.parse(r) as T } catch { /* */ }
@@ -84,6 +87,10 @@ interface Ctx {
   nextMatchAt: () => number | null
   startMatching: () => void
   resetCooldown: () => void
+  tune: TuneFilters
+  tuneRelaxed: boolean
+  applyTune: (t: TuneFilters) => void
+  resetTune: () => void
   currentCandidate: () => Candidate | null
   visibleQueue: () => Candidate[]
   swipe: (action: 'interested' | 'skipped') => void
@@ -114,6 +121,8 @@ export function CollabProvider({ children }: { children: ReactNode }) {
   const [meetings, setMeetings] = useState<Meeting[]>(() => load(MKEY, seedMeetings))
   const [lastRun, setLastRun] = useState<number | null>(() => load<number | null>(CKEY, null))
   const [blocked, setBlocked] = useState<string[]>(() => load(BKEY, []))
+  const [tune, setTune] = useState<TuneFilters>(() => ({ ...DEFAULT_TUNE, ...load(TKEY, {}) }))
+  const [tuneRelaxed, setTuneRelaxed] = useState(false)
 
   useEffect(() => { try { localStorage.setItem(PKEY, JSON.stringify(prefs)); localStorage.setItem(PVER, String(CURRENT_VER)) } catch { /* */ } }, [prefs])
   useEffect(() => { try { localStorage.setItem(SKEY, JSON.stringify(session)) } catch { /* */ } }, [session])
@@ -121,6 +130,7 @@ export function CollabProvider({ children }: { children: ReactNode }) {
   useEffect(() => { try { localStorage.setItem(MKEY, JSON.stringify(meetings)) } catch { /* */ } }, [meetings])
   useEffect(() => { try { localStorage.setItem(CKEY, JSON.stringify(lastRun)) } catch { /* */ } }, [lastRun])
   useEffect(() => { try { localStorage.setItem(BKEY, JSON.stringify(blocked)) } catch { /* */ } }, [blocked])
+  useEffect(() => { try { localStorage.setItem(TKEY, JSON.stringify(tune)) } catch { /* */ } }, [tune])
 
   // Single source of truth: a profile is ready to match once it's been saved.
   const prefsComplete = useCallback(() => prefs.configured, [prefs])
@@ -133,9 +143,33 @@ export function CollabProvider({ children }: { children: ReactNode }) {
   const resetCooldown = useCallback(() => setLastRun(null), [])
 
   const startMatching = useCallback(() => {
-    const queue = allCandidates.filter((c) => !blocked.includes(c.id)).map((c) => c.id)
-    setSession({ active: true, queue, index: 0, interested: [], saved: [], skipped: [], history: [], instructionsDismissed: false })
+    const pool = allCandidates.filter((c) => !blocked.includes(c.id))
+    const { ids, relaxed } = filterCandidates(pool, tune)
+    setTuneRelaxed(relaxed)
+    setSession({ active: true, queue: ids, index: 0, interested: [], saved: [], skipped: [], history: [], instructionsDismissed: false })
     setLastRun(now())
+  }, [blocked, tune])
+
+  // Save tuning and re-filter the CURRENT session in place (no cooldown spend).
+  const applyTune = useCallback((t: TuneFilters) => {
+    setTune(t)
+    setSession((s) => {
+      if (!s.active && s.queue.length === 0) return s
+      const pool = allCandidates.filter((c) => !blocked.includes(c.id))
+      const { ids, relaxed } = filterCandidates(pool, t)
+      setTuneRelaxed(relaxed)
+      return { ...s, active: true, queue: ids, index: 0, interested: [], saved: [], skipped: [], history: [], instructionsDismissed: true }
+    })
+  }, [blocked])
+
+  const resetTune = useCallback(() => {
+    setTune(DEFAULT_TUNE)
+    setTuneRelaxed(false)
+    setSession((s) => {
+      if (!s.active && s.queue.length === 0) return s
+      const ids = allCandidates.filter((c) => !blocked.includes(c.id)).map((c) => c.id)
+      return { ...s, active: true, queue: ids, index: 0, interested: [], saved: [], skipped: [], history: [], instructionsDismissed: true }
+    })
   }, [blocked])
 
   const currentCandidate = useCallback((): Candidate | null => {
@@ -220,10 +254,11 @@ export function CollabProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Ctx>(() => ({
     prefs, session, requests, meetings, blocked, lastRun,
     savePrefs, applyDemoPrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown,
+    tune, tuneRelaxed, applyTune, resetTune,
     currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession,
     sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest,
     getMeeting, rescheduleMeeting, cancelMeeting, block,
-  }), [prefs, session, requests, meetings, blocked, lastRun, applyDemoPrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown, currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession, sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest, getMeeting, rescheduleMeeting, cancelMeeting, block])
+  }), [prefs, session, requests, meetings, blocked, lastRun, applyDemoPrefs, prefsComplete, canMatch, nextMatchAt, startMatching, resetCooldown, tune, tuneRelaxed, applyTune, resetTune, currentCandidate, visibleQueue, swipe, undo, saveForLater, endSession, sendRequest, getRequest, markViewed, acceptRequest, proposeAlternate, declineRequest, withdrawRequest, getMeeting, rescheduleMeeting, cancelMeeting, block])
 
   return <CollabContext.Provider value={value}>{children}</CollabContext.Provider>
 }

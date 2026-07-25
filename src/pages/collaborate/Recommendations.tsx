@@ -1,22 +1,28 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, X, Undo2, Bookmark, Heart, Info, Send, PenLine, Sparkles } from 'lucide-react'
+import { ChevronLeft, X, Undo2, Bookmark, Heart, Info, Send, PenLine, Sparkles, SlidersHorizontal } from 'lucide-react'
 import SwipeCard from '../../components/collab/SwipeCard'
+import TuneSheet from '../../components/collab/TuneSheet'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useCollab } from '../../state/CollabContext'
 import { getCandidate } from '../../collab/mockCollab'
+import { tuneActive, tuneSummary } from '../../collab/tune'
+import { TuneFilters } from '../../collab/types'
 
 export default function Recommendations() {
   const navigate = useNavigate()
   const collab = useCollab()
   const { session } = collab
   const [sheetId, setSheetId] = useState<string | null>(null)
+  const [showTune, setShowTune] = useState(false)
 
   const current = collab.currentCandidate()
   const total = session.queue.length
   const position = session.index + 1
   const finished = !current
+  const active = tuneActive(collab.tune)
+  const summary = tuneSummary(collab.tune)
 
   // No session yet
   if (total === 0) {
@@ -44,6 +50,27 @@ export default function Recommendations() {
         {!finished && <span className="text-[13px] font-semibold text-muted">{position} of {total}</span>}
         <button onClick={collab.undo} disabled={session.history.length === 0} aria-label="Undo" className="tap flex h-11 w-11 items-center justify-center rounded-control text-ink hover:bg-black/[0.04] disabled:opacity-30"><Undo2 className="h-5 w-5" /></button>
       </header>
+
+      {/* Tune toolbar */}
+      {!finished && (
+        <div className="shrink-0 border-b border-border px-[18px] pb-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-semibold text-ink">{total} match{total === 1 ? '' : 'es'}</span>
+            <button onClick={() => setShowTune(true)} className="tap flex min-h-[36px] items-center gap-1.5 rounded-control border border-border bg-surface px-3 text-[12.5px] font-semibold text-ink hover:border-ink/25">
+              <SlidersHorizontal className="h-4 w-4 text-brand" /> Tune
+            </button>
+          </div>
+          {active && (
+            <div className="mt-1.5 flex items-center gap-2 text-[12px] text-muted">
+              <span className="min-w-0 truncate">{summary.slice(0, 3).join(' · ')}{summary.length > 3 ? ` · +${summary.length - 3} more` : ''}</span>
+              <button onClick={() => collab.resetTune()} className="tap ml-auto shrink-0 text-[12px] font-semibold text-brand">Clear</button>
+            </div>
+          )}
+          {collab.tuneRelaxed && active && (
+            <p className="mt-1 text-[12px] text-muted">We found a few close alternatives.</p>
+          )}
+        </div>
+      )}
 
       {finished ? (
         <SummaryView collab={collab} navigate={navigate} />
@@ -110,6 +137,15 @@ export default function Recommendations() {
             </div>
           </div>
         </div>
+      )}
+
+      {showTune && (
+        <TuneSheet
+          initial={collab.tune}
+          onClose={() => setShowTune(false)}
+          onReset={() => { collab.resetTune(); setShowTune(false) }}
+          onShow={(t: TuneFilters) => { collab.applyTune(t); setShowTune(false) }}
+        />
       )}
     </div>
   )

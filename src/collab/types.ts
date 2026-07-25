@@ -12,6 +12,26 @@ export const LOOKING_FOR = [
 // Scoring weights (PRD) — must total 100
 export const WEIGHTS = { creative: 30, intent: 25, location: 25, social: 20 }
 
+// ---- Tune Matches (optional, user-facing recommendation refinement) ----
+export type LocationType = 'anywhere' | 'near' | 'city'
+
+export interface TuneFilters {
+  lookingFor: string[]
+  category: string // '' = Any Category
+  locationType: LocationType
+  city: string
+  mode: CollabMode | 'Any'
+}
+
+export const TUNE_LOOKING_FOR = [
+  'Creative Collaboration', 'Live Performance', 'Workshop or Teaching',
+  'Brand Project', 'Cultural Event', 'Content/Archive Project', 'Other',
+]
+
+export const DEFAULT_TUNE: TuneFilters = {
+  lookingFor: [], category: '', locationType: 'anywhere', city: '', mode: 'Any',
+}
+
 export interface CollabPrefs {
   availability: Availability
   lookingFor: string[]
