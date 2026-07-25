@@ -75,6 +75,26 @@ export function seedPortfolio(name: string, email: string): Portfolio {
       performanceLanguages: 'Odia, Hindi',
       styles: 'Classical, Contemporary Fusion',
     },
+    announcements: [
+      {
+        id: 'an1', type: 'Upcoming Show', customType: '', title: 'Margazhi Festival — Solo Recital',
+        description: 'A full Bharatanatyam margam at the December season.', date: '2026-09-05', endDate: '', time: '7:00 PM',
+        location: 'Chennai', image: PRESET_IMAGES[6], cta: 'Book Tickets', ctaUrl: '', relatedType: 'None', relatedId: '',
+        featured: true, published: true,
+      },
+      {
+        id: 'an2', type: 'New Release', customType: '', title: 'Ananta — Fusion Single',
+        description: 'A new fusion single blending classical rhythm with contemporary sound.', date: '2026-08-28', endDate: '', time: '',
+        location: '', image: PRESET_IMAGES[5], cta: 'Subscribe on YouTube', ctaUrl: 'https://youtu.be/ScMzIvxBSi4', relatedType: 'None', relatedId: '',
+        featured: false, published: true,
+      },
+      {
+        id: 'an3', type: 'Workshop', customType: '', title: 'Weekend Bharatanatyam Intensive',
+        description: 'A two-day intensive for intermediate students.', date: '2026-09-20', endDate: '', time: '10:00 AM',
+        location: 'Bhubaneswar', image: PRESET_IMAGES[0], cta: 'Register', ctaUrl: '', relatedType: 'None', relatedId: '',
+        featured: false, published: false,
+      },
+    ],
     timeline: [
       {
         id: 'm1',

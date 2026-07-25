@@ -84,6 +84,25 @@ export interface MediaItem {
   duration?: string // e.g. "6:12", optional
 }
 
+export interface Announcement {
+  id: string
+  type: string // ANNOUNCEMENT_TYPES value
+  customType: string // used when type === 'Other'
+  title: string
+  description: string
+  date: string // YYYY-MM-DD (or expected date)
+  endDate: string
+  time: string
+  location: string
+  image: string
+  cta: string // CTA label
+  ctaUrl: string // external or internal link
+  relatedType: string // 'None' | 'Event' | 'Archive Video' | 'Product'
+  relatedId: string // id/slug of the linked internal item
+  featured: boolean
+  published: boolean
+}
+
 export interface Collaboration {
   id: string
   artistName: string
@@ -180,6 +199,7 @@ export interface Portfolio {
   basics: ProfileBasics
   about: About
   domain: DomainSkills
+  announcements: Announcement[]
   timeline: Milestone[]
   awards: Award[]
   media: MediaItem[]

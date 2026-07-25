@@ -24,7 +24,11 @@ export interface ArtistUpdate {
   description: string
   image: string
   cta?: string
-  href?: string
+  href?: string // CTA target: internal route (/…) or external URL (http…)
+  time?: string
+  location?: string
+  endDate?: string
+  featured?: boolean
 }
 
 export interface ArtistChapter {
@@ -210,41 +214,9 @@ const abhishek: PublicArtist = {
     spotify: 'https://open.spotify.com/artist/abhishekchouhan',
   },
   whatsNew: [
-    {
-      id: 'n1',
-      type: 'Live Concert',
-      title: 'Live in Mumbai',
-      date: '18 Aug 2026',
-      description: 'An intimate evening of original compositions at antiSOCIAL.',
-      image: IMG.ev1,
-      cta: 'View event',
-    },
-    {
-      id: 'n2',
-      type: 'New Release',
-      title: 'Tere Naal — New Release',
-      date: '02 Aug 2026',
-      description: 'A soft acoustic single, out now on all platforms.',
-      image: IMG.m3,
-      cta: 'Listen',
-    },
-    {
-      id: 'n3',
-      type: 'Recognition',
-      title: 'Selected for the 50 Hour Music Challenge',
-      date: '20 Jul 2026',
-      description: 'One of a few artists chosen nationally for the challenge.',
-      image: IMG.m2,
-    },
-    {
-      id: 'n4',
-      type: 'Workshop',
-      title: 'Home Studio Production Basics',
-      date: '28 Aug 2026',
-      description: 'A hands-on workshop for aspiring producers.',
-      image: IMG.m5,
-      cta: 'Register',
-    },
+    { id: 'n1', type: 'New Release', title: 'Mahakaal Ki Sawaari', date: '2026-08-15', description: 'Releasing this August, 2026', image: IMG.m3, cta: 'Subscribe on YouTube', href: 'https://youtu.be/ScMzIvxBSi4', featured: true },
+    { id: 'n2', type: 'New Release', title: 'Thodi Si Sacchai, Thoda Sa Zeher', date: '2026-08-22', description: 'Releasing this August, 2026', image: IMG.m2, cta: 'Subscribe on YouTube', href: 'https://youtu.be/jNQXAC9IVRw' },
+    { id: 'n3', type: 'New Release', title: 'Indra Dev Aarti', date: '2026-08-29', description: 'Releasing this August, 2026', image: IMG.m5, cta: 'Subscribe on YouTube', href: 'https://youtu.be/kJQP7kiw5Fk' },
   ],
   bio: 'Abhishek Singh Chouhan is a music composer and producer from Ujjain, blending Hindustani sensibilities with contemporary production. He founded Mid Town Music and writes, sings and produces original work across languages.',
   experienceYears: 14,
@@ -345,11 +317,13 @@ function makeArtist(
     genresOrSpecialisations?: string[]
     adminCorrectedLocation?: string
     activity?: ProfileActivity
+    whatsNew?: ArtistUpdate[]
   },
 ): PublicArtist {
   const availability = base.availability ?? 'Available'
   return {
     ...abhishek,
+    whatsNew: base.whatsNew ?? [], // never inherit abhishek's announcements
     slug: base.slug,
     name: base.name,
     headline: base.headline,
@@ -405,7 +379,9 @@ const A_HIGH: ProfileActivity = { productsListed: 5, profileViews: 1900, content
 
 const others: PublicArtist[] = [
   // ---- Artists ----
-  makeArtist({ slug: 'ananya-rao', name: 'Ananya Rao', headline: 'Bharatanatyam dancer', location: 'Chennai, India', photo: PIC.woman1, primaryDomain: 'Dance', tags: ['Bharatanatyam', 'Choreography', 'Contemporary'], verified: true, availability: 'Selectively Available', experienceYears: 12, category: 'Artist', genresOrSpecialisations: ['Bharatanatyam', 'Contemporary Dance'], activity: A_HIGH }),
+  makeArtist({ slug: 'ananya-rao', name: 'Ananya Rao', headline: 'Bharatanatyam dancer', location: 'Chennai, India', photo: PIC.woman1, primaryDomain: 'Dance', tags: ['Bharatanatyam', 'Choreography', 'Contemporary'], verified: true, availability: 'Selectively Available', experienceYears: 12, category: 'Artist', genresOrSpecialisations: ['Bharatanatyam', 'Contemporary Dance'], activity: A_HIGH, whatsNew: [
+    { id: 'ar-n1', type: 'Upcoming Show', title: 'Varnam — A Bharatanatyam Evening', date: '2026-09-10', time: '7:00 PM', location: 'Chennai', description: 'A solo margam of classical compositions.', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&q=80&auto=format&fit=crop', cta: 'Book Tickets', href: '/explore/events', featured: true },
+  ] }),
   makeArtist({ slug: 'kabir-menon', name: 'Kabir Menon', headline: 'Sitarist & composer', location: 'Mumbai, India', photo: PIC.man1, primaryDomain: 'Music', tags: ['Sitar', 'Composition', 'Fusion'], verified: true, experienceYears: 15, category: 'Artist', genresOrSpecialisations: ['Classical Music', 'Contemporary Music'], activity: A_MID }),
   makeArtist({ slug: 'meera-iyer', name: 'Meera Iyer', headline: 'Contemporary painter', location: 'Bengaluru, India', photo: PIC.woman2, primaryDomain: 'Visual Arts', tags: ['Oil', 'Pigment', 'Abstract'], verified: false, availability: 'Not Available', experienceYears: 6, category: 'Artist', genresOrSpecialisations: ['Visual Arts'], activity: A_LOW }),
   makeArtist({ slug: 'devraj-singh', name: 'Devraj Singh', headline: 'Tabla virtuoso', location: 'Jaipur, India', photo: PIC.man2, primaryDomain: 'Music', tags: ['Tabla', 'Percussion', 'Hindustani'], verified: true, experienceYears: 20, category: 'Artist', genresOrSpecialisations: ['Classical Music'], activity: A_MID }),
@@ -433,12 +409,16 @@ const others: PublicArtist[] = [
   makeArtist({ slug: 'bhavna-shah', name: 'Bhavna Shah', headline: 'Marathon runner & fitness mentor', location: 'Kolkata, India', photo: PIC.woman4, primaryDomain: 'Fitness', tags: ['Running', 'Endurance'], verified: false, availability: 'Selectively Available', experienceYears: 7, category: 'Fitness Champion', genresOrSpecialisations: ['Fitness'], activity: A_LOW }),
 
   // ---- Yoga Coach ----
-  makeArtist({ slug: 'neha-kapoor', name: 'Neha Kapoor', headline: 'Hatha & wellness yoga coach', location: 'Bengaluru, India', photo: PIC.yoga1, primaryDomain: 'Yoga', tags: ['Hatha', 'Wellness', 'Meditation'], verified: true, availability: 'Available', experienceYears: 10, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_HIGH }),
+  makeArtist({ slug: 'neha-kapoor', name: 'Neha Kapoor', headline: 'Hatha & wellness yoga coach', location: 'Bengaluru, India', photo: PIC.yoga1, primaryDomain: 'Yoga', tags: ['Hatha', 'Wellness', 'Meditation'], verified: true, availability: 'Available', experienceYears: 10, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_HIGH, whatsNew: [
+    { id: 'nk-n1', type: 'Workshop', title: 'Morning Hatha Yoga Workshop', date: '2026-09-12', time: '6:30 AM', location: 'Bengaluru', description: 'A guided sunrise session for all levels.', image: PIC.yoga1, cta: 'Register', href: '/explore/events', featured: true },
+  ] }),
   makeArtist({ slug: 'anil-menon', name: 'Anil Menon', headline: 'Ashtanga yoga instructor', location: 'Goa, India', photo: PIC.man5, primaryDomain: 'Yoga', tags: ['Ashtanga', 'Breathwork'], verified: false, availability: 'Selectively Available', experienceYears: 12, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_MID }),
 
   // ---- Athlete ----
   makeArtist({ slug: 'vikram-rathore', name: 'Vikram Rathore', headline: 'State cricket all-rounder', location: 'Delhi, India', photo: PIC.man3, primaryDomain: 'Sports', tags: ['Cricket', 'All-rounder'], verified: true, availability: 'Available', experienceYears: 8, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID }),
-  makeArtist({ slug: 'sara-dsouza', name: "Sara D'Souza", headline: 'National badminton player', location: 'Hyderabad, India', photo: PIC.woman5, primaryDomain: 'Sports', tags: ['Badminton', 'Singles'], verified: true, availability: 'Selectively Available', experienceYears: 6, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID }),
+  makeArtist({ slug: 'sara-dsouza', name: "Sara D'Souza", headline: 'National badminton player', location: 'Hyderabad, India', photo: PIC.woman5, primaryDomain: 'Sports', tags: ['Badminton', 'Singles'], verified: true, availability: 'Selectively Available', experienceYears: 6, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID, whatsNew: [
+    { id: 'sd-n1', type: 'Competition', title: 'National Championship 2026', date: '2026-10-05', location: 'Hyderabad', description: 'Competing in the national singles draw.', image: PIC.sport1, cta: 'View Details', href: '', featured: true },
+  ] }),
 
   // ---- Sports Coach/Trainer/Enthusiast ----
   makeArtist({ slug: 'gopal-iyer', name: 'Gopal Iyer', headline: 'Athletics coach & sprint trainer', location: 'Chennai, India', photo: PIC.man2, primaryDomain: 'Sports', tags: ['Athletics', 'Sprint', 'Coaching'], verified: false, availability: 'Available', experienceYears: 18, category: 'Sports Coach/Trainer/Enthusiast', genresOrSpecialisations: ['Sports'], activity: A_LOW }),
@@ -447,7 +427,9 @@ const others: PublicArtist[] = [
   makeArtist({ slug: 'tara-malhotra', name: 'Tara Malhotra', headline: 'Cultural events host & anchor', location: 'Mumbai, India', photo: PIC.woman1, primaryDomain: 'Cultural Experiences', tags: ['Hosting', 'Anchoring'], verified: true, availability: 'Available', experienceYears: 9, category: 'VIP Host', genresOrSpecialisations: ['Cultural Experiences'], activity: A_MID }),
 
   // ---- VIP Venue ----
-  makeArtist({ slug: 'royal-courtyard', name: 'Royal Courtyard', headline: 'Heritage venue for cultural events', location: 'Jaipur, India', photo: PIC.venue1, primaryDomain: 'Cultural Experiences', tags: ['Heritage Venue', 'Events'], verified: true, availability: 'Available', experienceYears: 15, category: 'VIP Venue', genresOrSpecialisations: ['Cultural Experiences'], adminCorrectedLocation: 'Jaipur, India', activity: A_HIGH }),
+  makeArtist({ slug: 'royal-courtyard', name: 'Royal Courtyard', headline: 'Heritage venue for cultural events', location: 'Jaipur, India', photo: PIC.venue1, primaryDomain: 'Cultural Experiences', tags: ['Heritage Venue', 'Events'], verified: true, availability: 'Available', experienceYears: 15, category: 'VIP Venue', genresOrSpecialisations: ['Cultural Experiences'], adminCorrectedLocation: 'Jaipur, India', activity: A_HIGH, whatsNew: [
+    { id: 'rc-n1', type: 'Event', title: 'An Evening of Classical Music', date: '2026-09-18', time: '7:30 PM', location: 'Jaipur', description: 'A curated evening of Hindustani classical performances.', image: PIC.venue1, cta: 'Book Tickets', href: '/explore/events', featured: true },
+  ] }),
   makeArtist({ slug: 'the-banyan-estate', name: 'The Banyan Estate', headline: 'Boutique hospitality & retreat venue', location: 'Goa, India', photo: PIC.venue2, primaryDomain: 'Hospitality', tags: ['Retreat', 'Hospitality'], verified: false, availability: 'Selectively Available', experienceYears: 7, category: 'VIP Venue', genresOrSpecialisations: ['Hospitality'], activity: A_MID }),
 
   // ---- VIP Connoisseur ----

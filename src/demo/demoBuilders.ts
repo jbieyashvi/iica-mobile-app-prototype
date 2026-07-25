@@ -24,6 +24,10 @@ export function demoPortfolio(): Portfolio {
       subdomains: 'Digital Art, UI/UX Design', skills: ['Visual Design', 'Creative Direction', 'Storytelling', 'Illustration'],
       experience: '5', performanceLanguages: 'English, Hindi', styles: 'Contemporary, Cultural',
     },
+    announcements: [
+      { id: 'da1', type: 'New Project', customType: '', title: 'Cultural Storytelling Series', description: 'A new visual series exploring Indian folk narratives.', date: '2026-09-08', endDate: '', time: '', location: '', image: demoWork[1], cta: 'Learn More', ctaUrl: '', relatedType: 'None', relatedId: '', featured: true, published: true },
+      { id: 'da2', type: 'Workshop', customType: '', title: 'Design & Culture Workshop', description: 'A hands-on session on cultural design thinking.', date: '2026-09-22', endDate: '', time: '11:00 AM', location: 'Bengaluru', image: demoWork[0], cta: 'Register', ctaUrl: '', relatedType: 'None', relatedId: '', featured: false, published: true },
+    ],
     timeline: [
       { id: 'm1', title: 'Started Professional Design Practice', date: '2021', category: 'Career', description: 'Began working professionally as a visual designer.', media: demoWork[0], link: '', featured: false },
       { id: 'm2', title: 'Completed First Cultural Design Project', date: '2022', category: 'Release', description: 'Delivered a visual identity for a cultural festival.', media: demoWork[3], link: '', featured: false },

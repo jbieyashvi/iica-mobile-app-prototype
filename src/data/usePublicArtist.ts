@@ -20,8 +20,24 @@ function ratingFrom(reviews: ArtistReview[]): RatingSummary {
   return { avg: Math.round(avg * 10) / 10, total, distribution: dist }
 }
 
+// Resolve an announcement's CTA target: linked IICA item → internal route,
+// otherwise its own link (external or internal). '' when none.
+function announcementHref(a: Portfolio['announcements'][number]): string {
+  if (a.relatedType === 'Event' && a.relatedId) return `/events/${a.relatedId}`
+  if (a.relatedType === 'Archive Video' && a.relatedId) return `/archive/video/${a.relatedId}`
+  if (a.relatedType === 'Product' && a.relatedId) return `/product/${a.relatedId}`
+  return a.ctaUrl || ''
+}
+function announcementCta(a: Portfolio['announcements'][number]): string {
+  if (a.cta) return a.cta
+  if (a.relatedType === 'Event') return 'View Event'
+  if (a.relatedType === 'Archive Video') return 'Watch in Archive'
+  if (a.relatedType === 'Product') return 'View Details'
+  return a.ctaUrl ? 'Learn More' : ''
+}
+
 // Convert the local Portfolio Builder data into a PublicArtist for the owner's page.
-function fromPortfolio(p: Portfolio, name: string): PublicArtist {
+function fromPortfolio(p: Portfolio, name: string, category?: string): PublicArtist {
   const reviews: ArtistReview[] = mockTestimonials
     .filter((t) => p.featuredTestimonials.includes(t.id) && !p.hiddenTestimonials.includes(t.id))
     .map((t) => ({
@@ -53,6 +69,7 @@ function fromPortfolio(p: Portfolio, name: string): PublicArtist {
           ? 'Available for selected collaborations'
           : 'Open to collaborations',
     visibility: p.basics.visibility,
+    category: (category as PublicArtist['category']) ?? 'Artist',
     followers: 0,
     saves: 0,
     socials: {
@@ -65,7 +82,22 @@ function fromPortfolio(p: Portfolio, name: string): PublicArtist {
       linkedin: p.social.hidden.includes('linkedin') ? '' : p.social.linkedin,
       custom: p.social.custom.filter((c) => c.url && !p.social.hidden.includes(c.id)).map((c) => ({ label: c.label, url: c.url })),
     },
-    whatsNew: [],
+    whatsNew: p.announcements
+      .filter((a) => a.published)
+      .map((a) => ({
+        id: a.id,
+        type: a.type === 'Other' ? (a.customType || 'Update') : a.type,
+        title: a.title,
+        date: a.date,
+        description: a.description,
+        image: a.image,
+        cta: announcementCta(a),
+        href: announcementHref(a),
+        time: a.time,
+        location: a.location,
+        endDate: a.endDate,
+        featured: a.featured,
+      })),
     bio: p.about.shortBio,
     experienceYears: parseInt(p.domain.experience, 10) || 0,
     languages: p.domain.performanceLanguages,
@@ -114,7 +146,7 @@ export function usePublicArtist(slug?: string): ResolvedArtist {
 
   const isOwn = state.role === 'active' && !!slug && portfolio.slug === slug
   if (isOwn) {
-    return { artist: fromPortfolio(portfolio, state.name), isOwn: true }
+    return { artist: fromPortfolio(portfolio, state.name, state.category ?? undefined), isOwn: true }
   }
   return { artist: getMockArtist(slug) ?? null, isOwn: false }
 }

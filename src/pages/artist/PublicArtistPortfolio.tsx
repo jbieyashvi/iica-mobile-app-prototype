@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   ChevronLeft, Share2, Bookmark, BookmarkCheck, BadgeCheck, MapPin, Handshake,
-  Pencil, Star, ChevronRight, ArrowRight, Play, CalendarDays, Ticket, Lock, X,
+  Pencil, Star, ChevronRight, Play, CalendarDays, Ticket, Lock, X,
 } from 'lucide-react'
 import { usePublicArtist } from '../../data/usePublicArtist'
 import { useAuth } from '../../state/AuthContext'
 import { useGate } from '../../state/GateContext'
 import { useSavedArtists } from '../../state/useSavedArtists'
 import ArtistSocials from '../../components/artist/ArtistSocials'
+import WhatsNew from '../../components/artist/WhatsNew'
 import SectionNav, { NavItem } from '../../components/artist/SectionNav'
 import PublicTimeline from '../../components/artist/PublicTimeline'
 import GalleryViewer from '../../components/artist/GalleryViewer'
@@ -227,34 +228,8 @@ export default function PublicArtistPortfolio() {
             </div>
           </div>
 
-          {/* What's New */}
-          {!gatedMembersOnly && artist.whatsNew.length > 0 && (
-            <div className="mt-7">
-              <div className="mb-3 flex items-center justify-between px-[18px]">
-                <h2 className="font-serif text-[19px] text-ink">What's New</h2>
-              </div>
-              <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
-                {artist.whatsNew.map((u) => (
-                  <div key={u.id} className="w-[230px] shrink-0 overflow-hidden rounded-card border border-border bg-surface">
-                    <div className="aspect-[16/9] w-full overflow-hidden bg-brand-soft">
-                      <img src={u.image} alt="" loading="lazy" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="p-3">
-                      <span className="text-[11px] font-semibold uppercase tracking-wide text-brand">{u.type}</span>
-                      <h3 className="mt-1 line-clamp-2 text-[14px] font-semibold leading-snug text-ink">{u.title}</h3>
-                      <p className="mt-1 text-[12px] text-muted">{u.date}</p>
-                      <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-muted">{u.description}</p>
-                      {u.cta && (
-                        <span className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-brand">
-                          {u.cta} <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* What's New — reusable across all profile categories */}
+          {!gatedMembersOnly && <WhatsNew updates={artist.whatsNew} category={artist.category} />}
         </section>
 
         {gatedMembersOnly ? (

@@ -12,6 +12,7 @@ import {
   Quote,
   Link2,
   Handshake,
+  Megaphone,
   LucideIcon,
 } from 'lucide-react'
 import { Portfolio } from './types'
@@ -61,6 +62,15 @@ export const SECTIONS: SectionDef[] = [
     required: true,
     complete: (p) => nonEmpty(p.domain.primaryDomain) && p.domain.skills.length > 0,
     started: (p) => nonEmpty(p.domain.primaryDomain) || p.domain.skills.length > 0,
+  },
+  {
+    slug: 'whats-new',
+    title: 'What’s New',
+    description: 'Upcoming shows, releases, events and announcements',
+    icon: Megaphone,
+    required: false,
+    complete: (p) => p.announcements.length >= 1,
+    started: (p) => p.announcements.length >= 1,
   },
   {
     slug: 'timeline',

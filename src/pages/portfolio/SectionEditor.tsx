@@ -1,6 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom'
 import BasicsEditor from './editors/BasicsEditor'
 import AboutEditor from './editors/AboutEditor'
+import WhatsNewEditor from './editors/WhatsNewEditor'
 import DomainEditor from './editors/DomainEditor'
 import TimelineEditor from './editors/TimelineEditor'
 import AwardsEditor from './editors/AwardsEditor'
@@ -16,6 +17,7 @@ import CollabPrefsEditor from './editors/CollabPrefsEditor'
 const MAP: Record<string, () => JSX.Element> = {
   basics: BasicsEditor,
   about: AboutEditor,
+  'whats-new': WhatsNewEditor,
   domain: DomainEditor,
   timeline: TimelineEditor,
   awards: AwardsEditor,

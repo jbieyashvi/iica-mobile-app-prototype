@@ -30,7 +30,12 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [portfolio, setPortfolio] = useState<Portfolio>(() => {
     try {
       const raw = localStorage.getItem(KEY)
-      if (raw) return JSON.parse(raw) as Portfolio
+      if (raw) {
+        // Backfill any top-level fields added since this was persisted (e.g.
+        // announcements) so older saved portfolios never crash consumers.
+        const stored = JSON.parse(raw) as Partial<Portfolio>
+        return { ...demoPortfolio(), ...stored } as Portfolio
+      }
     } catch {
       /* ignore */
     }
