@@ -82,7 +82,6 @@ import Search from './pages/Search'
 import Notifications from './pages/Notifications'
 import Portfolio from './pages/Portfolio'
 import CreateEvent from './pages/CreateEvent'
-import EventDetails from './pages/EventDetails'
 // Public artist portfolio
 import PublicArtistPortfolio from './pages/artist/PublicArtistPortfolio'
 import ArtistJourney from './pages/artist/ArtistJourney'
@@ -187,7 +186,8 @@ export default function App() {
             <Route path="/artist/:slug/share" element={<ArtistShare />} />
             <Route path="/artist/:slug/media/:id" element={<ArtistMediaViewer />} />
             <Route path="/artist/:slug/event/:id" element={<ArtistEventDetails />} />
-            <Route path="/event/:id" element={<EventDetails />} />
+            {/* Legacy path → same functional Event Details (no duplicate placeholder) */}
+            <Route path="/event/:id" element={<EventDetail />} />
             {/* Explore discovery */}
             <Route path="/explore" element={<ExploreHome />} />
             <Route path="/explore/artists" element={<ArtistCatalogue />} />

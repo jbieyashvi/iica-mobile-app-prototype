@@ -6,7 +6,7 @@ import {
 } from '../events/types'
 import { seedAttendees, seedBookings, seedEvents } from '../events/mockEvents'
 
-const EKEY = 'iica_events_v1'
+const EKEY = 'iica_events_v2' // v2: adds Home upcoming events (ragas-of-dusk, …)
 const BKEY = 'iica_bookings_v1'
 const AKEY = 'iica_attendees_v1'
 const DKEY = 'iica_event_draft_v1'

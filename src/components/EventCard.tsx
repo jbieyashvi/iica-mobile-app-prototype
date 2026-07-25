@@ -13,7 +13,7 @@ export default function EventCard({ event }: Props) {
 
   return (
     <button
-      onClick={() => navigate(`/event/${event.id}`)}
+      onClick={() => navigate(`/events/${event.id}`, { state: { from: '/home' } })}
       className="tap flex w-full items-stretch gap-3 rounded-card border border-border bg-surface p-3 text-left"
     >
       <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-[9px] bg-brand-soft">
