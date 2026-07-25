@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, Check, Loader2, Eye } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getPortfolioOrigin } from '../../portfolio/origin'
 import PrimaryButton from '../PrimaryButton'
 import SecondaryButton from '../SecondaryButton'
 
@@ -23,6 +24,12 @@ export default function EditorShell({
   showPreview = true,
 }: Props) {
   const navigate = useNavigate()
+  const location = useLocation()
+  // A section opened directly (e.g. Home "Add Video" → Watch) returns to the
+  // stored flow origin; one opened from the Setup dashboard returns to Setup.
+  const direct = !!(location.state as { direct?: boolean } | null)?.direct
+  const backTo = direct ? getPortfolioOrigin() : '/portfolio/setup'
+  const backLabel = direct ? 'Back' : 'Setup'
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const savedRev = useRef(0)
   const [dirty, setDirty] = useState(false)
@@ -44,7 +51,7 @@ export default function EditorShell({
 
   const back = () => {
     if (dirty) setConfirmExit(true)
-    else navigate('/portfolio/setup')
+    else navigate(backTo)
   }
 
   return (
@@ -60,7 +67,7 @@ export default function EditorShell({
           className="tap flex h-11 items-center gap-1 rounded-control pl-1 pr-2 text-ink hover:bg-black/[0.04]"
         >
           <ChevronLeft className="h-6 w-6" />
-          <span className="text-[13px] font-semibold">Setup</span>
+          <span className="text-[13px] font-semibold">{backLabel}</span>
         </button>
         <h1 className="absolute left-1/2 -translate-x-1/2 truncate text-[15px] font-bold text-ink">
           {title}
@@ -142,7 +149,7 @@ export default function EditorShell({
                 full
                 onClick={() => {
                   markSaved()
-                  navigate('/portfolio/setup')
+                  navigate(backTo)
                 }}
               >
                 Save & Exit

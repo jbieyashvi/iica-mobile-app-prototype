@@ -1,6 +1,7 @@
 import { FolderOpen, CalendarPlus, Sparkles, PlaySquare } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useGate } from '../state/GateContext'
+import { setPortfolioOrigin } from '../portfolio/origin'
 
 const actions = [
   { label: 'My Portfolio', feature: 'Portfolio', icon: FolderOpen, to: '/portfolio/setup' },
@@ -16,10 +17,22 @@ export default function QuickActions() {
   // Home is the logical origin for these quick actions — Back from the first
   // step of any flow returns here, not through Profile / My Events.
   const openAction = (label: string, feature: string, to: string) => {
+    if (label === 'My Portfolio') {
+      return requireMember(feature, () => {
+        setPortfolioOrigin('/home')
+        navigate(to, { state: { from: '/home', source: 'home-my-portfolio' } })
+      })
+    }
+    if (label === 'Add Video') {
+      // Existing Portfolio → Watch → Add YouTube Video experience, entered directly.
+      return requireMember(feature, () => {
+        setPortfolioOrigin('/home')
+        navigate(to, { state: { from: '/home', source: 'home-add-video', direct: true } })
+      })
+    }
     if (label === 'Create Event') {
       return requireMember(feature, () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }))
     }
-    // Add Video → Portfolio Watch section (creators only, via the gate).
     requireMember(feature, () => navigate(to))
   }
 

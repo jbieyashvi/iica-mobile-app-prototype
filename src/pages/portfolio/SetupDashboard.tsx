@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Eye, Check, Circle, Clock } from 'lucide-react'
+import { getPortfolioOrigin } from '../../portfolio/origin'
 import { usePortfolio } from '../../state/PortfolioContext'
 import {
   SECTIONS,
@@ -37,12 +38,12 @@ export default function SetupDashboard() {
         style={{ paddingTop: 'var(--safe-top)' }}
       >
         <button
-          onClick={() => navigate('/profile')}
-          aria-label="Back to profile"
+          onClick={() => navigate(getPortfolioOrigin())}
+          aria-label="Back"
           className="tap flex h-11 items-center gap-1 rounded-control pl-1 pr-2 text-ink hover:bg-black/[0.04]"
         >
           <ChevronLeft className="h-6 w-6" />
-          <span className="text-[13px] font-semibold">Profile</span>
+          <span className="text-[13px] font-semibold">Back</span>
         </button>
         <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-bold text-ink">
           Build Your Portfolio

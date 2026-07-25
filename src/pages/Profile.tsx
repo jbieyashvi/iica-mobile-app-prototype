@@ -6,6 +6,7 @@ import StatusBadge from '../components/StatusBadge'
 import PrimaryButton from '../components/PrimaryButton'
 import PrototypeTools from '../components/PrototypeTools'
 import { useAuth } from '../state/AuthContext'
+import { setPortfolioOrigin } from '../portfolio/origin'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -99,7 +100,7 @@ export default function Profile() {
 
         {isActive && (
           <button
-            onClick={() => navigate('/portfolio/setup')}
+            onClick={() => { setPortfolioOrigin('/profile'); navigate('/portfolio/setup', { state: { from: '/profile', source: 'profile' } }) }}
             className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-border bg-surface p-4 text-left"
           >
             <BadgeCheck className="h-5 w-5 shrink-0 text-brand" />
@@ -121,7 +122,7 @@ export default function Profile() {
           <ProfileLink icon={<Package className="h-5 w-5 shrink-0 text-brand" />} label="My Orders" onClick={() => navigate('/orders')} />
           <ProfileLink icon={<Library className="h-5 w-5 shrink-0 text-brand" />} label="My Library" onClick={() => navigate('/library')} />
           {isActive && <>
-            <ProfileLink icon={<PlaySquare className="h-5 w-5 shrink-0 text-brand" />} label="Manage Watch Videos" onClick={() => navigate('/portfolio/edit/media')} />
+            <ProfileLink icon={<PlaySquare className="h-5 w-5 shrink-0 text-brand" />} label="Manage Watch Videos" onClick={() => { setPortfolioOrigin('/profile'); navigate('/portfolio/edit/media', { state: { from: '/profile', source: 'profile', direct: true } }) }} />
             <ProfileLink icon={<CalendarCog className="h-5 w-5 shrink-0 text-brand" />} label="Manage Events" onClick={() => navigate('/creator/events')} />
             <ProfileLink icon={<Store className="h-5 w-5 shrink-0 text-brand" />} label="My Products" onClick={() => navigate('/creator/products')} />
             <ProfileLink icon={<ShoppingBag className="h-5 w-5 shrink-0 text-brand" />} label="Seller Orders" onClick={() => navigate('/creator/orders')} />
