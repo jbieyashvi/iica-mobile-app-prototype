@@ -1,4 +1,4 @@
-import { BadgeCheck, MapPin, Bookmark, BookmarkCheck, ChevronRight, Activity } from 'lucide-react'
+import { MapPin, Bookmark, BookmarkCheck, ChevronRight, Activity } from 'lucide-react'
 import { PublicArtist, effectiveCity, profileCategory, primaryGenre } from '../../data/publicArtists'
 
 /* ---------- Featured (horizontal) ---------- */
@@ -13,7 +13,6 @@ export function FeaturedProfileCard({ profile, onView }: { profile: PublicArtist
         <div className="p-3">
           <div className="flex items-center gap-1">
             <span className="truncate font-serif text-[15px] leading-tight text-ink">{profile.name}</span>
-            {profile.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-brand" />}
           </div>
           <p className="mt-0.5 truncate text-[11.5px] font-semibold text-brand-dark">{profileCategory(profile)}</p>
           <p className="truncate text-[11.5px] text-muted">{genre}</p>
@@ -43,7 +42,6 @@ export function CatalogueListItem({ profile, saved, onSave, onView }: {
         <div className="min-w-0 flex-1 pr-6">
           <div className="flex items-center gap-1">
             <span className="truncate font-serif text-[16px] leading-tight text-ink">{profile.name}</span>
-            {profile.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-brand" />}
           </div>
           <p className="mt-0.5 truncate text-[12.5px] font-semibold text-brand-dark">
             {profileCategory(profile)} · <span className="font-normal text-muted">{primaryGenre(profile)}</span>

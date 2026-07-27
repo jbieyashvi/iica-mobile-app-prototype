@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Star, Flag, BadgeCheck } from 'lucide-react'
+import { Star, Flag } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import Avatar from '../../components/Avatar'
 import PrimaryButton from '../../components/PrimaryButton'
@@ -101,7 +101,6 @@ export default function ArtistReviews() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <p className="truncate text-[13.5px] font-semibold text-ink">{r.author}</p>
-                      {r.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-brand" />}
                     </div>
                     <p className="truncate text-[11.5px] text-muted">{r.relationship} · {r.date}</p>
                   </div>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
-  ChevronLeft, Share2, Bookmark, BookmarkCheck, BadgeCheck, MapPin, Handshake,
+  ChevronLeft, Share2, Bookmark, BookmarkCheck, MapPin, Handshake,
   Pencil, Star, ChevronRight, Play, CalendarDays, Ticket, Lock, X,
 } from 'lucide-react'
 import { usePublicArtist } from '../../data/usePublicArtist'
@@ -174,7 +174,6 @@ export default function PublicArtistPortfolio() {
             </div>
             <div className="mt-2.5 flex items-center gap-1.5">
               <h1 className="font-serif text-[26px] leading-tight text-ink">{artist.name}</h1>
-              {artist.verified && <BadgeCheck className="h-5 w-5 shrink-0 text-brand" />}
             </div>
             <p className="mt-0.5 text-[14px] text-muted">{artist.headline}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-muted">
@@ -510,7 +509,6 @@ export default function PublicArtistPortfolio() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-[13.5px] font-semibold text-ink">{r.author}</p>
-                          {r.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-brand" />}
                         </div>
                         <p className="truncate text-[11.5px] text-muted">{r.relationship}</p>
                       </div>

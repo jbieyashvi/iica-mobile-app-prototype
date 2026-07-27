@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { ChevronLeft, Play, Bookmark, BookmarkCheck, Share2, ExternalLink, BadgeCheck, ArrowRight } from 'lucide-react'
+import { ChevronLeft, Play, Bookmark, BookmarkCheck, Share2, ExternalLink, ArrowRight } from 'lucide-react'
 import Avatar from '../../components/Avatar'
 import ArchiveVideoCard from '../../components/archive/ArchiveVideoCard'
 import { useSaveGate } from '../../components/SaveGate'
@@ -94,7 +94,7 @@ export default function ArchiveVideoDetail() {
           <button onClick={openCreator} className="tap mt-3 flex w-full items-center gap-3 rounded-card border border-border bg-surface p-3 text-left hover:border-ink/20">
             <Avatar name={video.creatorName} src={video.creatorAvatar} size={40} />
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1"><span className="truncate text-[14px] font-semibold text-ink">{video.creatorName}</span>{video.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-brand" />}</div>
+              <div className="flex items-center gap-1"><span className="truncate text-[14px] font-semibold text-ink">{video.creatorName}</span></div>
               <p className="truncate text-[12px] text-muted">{video.creatorCategory}</p>
             </div>
             <span className="flex items-center gap-0.5 text-[12px] font-semibold text-brand">Portfolio <ArrowRight className="h-3.5 w-3.5" /></span>

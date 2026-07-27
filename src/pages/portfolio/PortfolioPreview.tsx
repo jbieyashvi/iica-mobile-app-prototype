@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
-  X, Pencil, MapPin, BadgeCheck, Star, Instagram, Facebook, Youtube, Music2,
+  X, Pencil, MapPin, Star, Instagram, Facebook, Youtube, Music2,
   Twitter, Linkedin, Globe, CalendarDays, Handshake, Check, Lock, ChevronRight,
   ChevronDown, ChevronUp,
 } from 'lucide-react'
@@ -109,7 +109,6 @@ export default function PortfolioPreview() {
               <h1 className="font-serif text-[26px] leading-tight text-ink">
                 {p.basics.fullName}
               </h1>
-              <BadgeCheck className="h-5 w-5 text-brand" />
             </div>
             <p className="text-[13.5px] text-muted">{p.basics.headline}</p>
             <p className="mt-1 flex items-center gap-1 text-[12.5px] text-muted">

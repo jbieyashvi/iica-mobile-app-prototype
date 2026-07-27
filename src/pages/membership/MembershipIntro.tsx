@@ -34,7 +34,7 @@ const benefits = [
   {
     icon: Fingerprint,
     title: 'A unique IICA creator identity',
-    body: 'Receive a verified member ID that travels with your work.',
+    body: 'Receive a unique member ID that travels with your work.',
   },
 ]
 

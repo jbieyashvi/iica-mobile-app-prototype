@@ -1,4 +1,4 @@
-import { Play, Bookmark, BookmarkCheck, Share2, BadgeCheck } from 'lucide-react'
+import { Play, Bookmark, BookmarkCheck, Share2 } from 'lucide-react'
 import Avatar from '../Avatar'
 import { ArchiveVideo } from '../../data/archive'
 
@@ -45,7 +45,6 @@ export default function ArchiveVideoCard({ video, saved, onOpen, onCreator, onSa
           <button onClick={onCreator} className="tap flex min-w-0 items-center gap-1.5">
             <Avatar name={video.creatorName} src={video.creatorAvatar} size={22} />
             <span className="truncate text-[12px] font-semibold text-ink">{video.creatorName}</span>
-            {video.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-brand" />}
           </button>
         </div>
         <div className="mt-2 flex items-center gap-3 border-t border-border pt-2 text-[11.5px] text-muted">

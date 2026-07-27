@@ -96,7 +96,7 @@ export default function ArtistCatalogue() {
   }
 
   const removeFilter = (k: keyof CatalogueFilters) =>
-    setFilters((f) => ({ ...f, [k]: k === 'verified' ? false : '' }))
+    setFilters((f) => ({ ...f, [k]: '' }))
 
   const count = displayed.length
 
@@ -134,12 +134,6 @@ export default function ArtistCatalogue() {
                   <button aria-label={`Remove ${k}`} onClick={() => removeFilter(k)}><X className="h-3 w-3" /></button>
                 </span>
               ) : null,
-            )}
-            {filters.verified && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-brand-soft px-2 py-1 text-[11.5px] font-semibold text-brand-dark">
-                Verified
-                <button aria-label="Remove verified" onClick={() => removeFilter('verified')}><X className="h-3 w-3" /></button>
-              </span>
             )}
           </div>
         )}

@@ -1,4 +1,4 @@
-import { BadgeCheck, MapPin } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Artist } from '../data/artists'
 
@@ -27,9 +27,6 @@ export default function ArtistCard({ artist }: Props) {
           <span className="truncate font-serif text-[16px] leading-tight text-ink">
             {artist.name}
           </span>
-          {artist.verified && (
-            <BadgeCheck className="h-4 w-4 shrink-0 text-brand" strokeWidth={2} />
-          )}
         </div>
         <p className="mt-0.5 truncate text-[12px] text-muted">
           {artist.discipline}

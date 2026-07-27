@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { BadgeCheck, MapPin, ExternalLink, Bookmark, Info, Flag, Ban } from 'lucide-react'
+import { MapPin, ExternalLink, Bookmark, Info, Flag, Ban } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import ScoreBar from '../../components/collab/ScoreBar'
 import StatusBadge from '../../components/StatusBadge'
@@ -32,7 +32,7 @@ export default function MatchDetails() {
         <div className="mt-2 flex items-center gap-3">
           <img src={c.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5"><h1 className="truncate font-serif text-[22px] leading-tight text-ink">{c.name}</h1>{c.verified && <BadgeCheck className="h-5 w-5 shrink-0 text-brand" />}</div>
+            <div className="flex items-center gap-1.5"><h1 className="truncate font-serif text-[22px] leading-tight text-ink">{c.name}</h1></div>
             <p className="truncate text-[13px] text-muted">{c.headline}</p>
             <p className="flex items-center gap-1 text-[12px] text-muted"><MapPin className="h-3 w-3" /> {c.location} · {c.primaryDomain}</p>
           </div>

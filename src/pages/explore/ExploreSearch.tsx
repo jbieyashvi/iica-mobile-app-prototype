@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, X, Clock, TrendingUp, Loader2, ChevronRight, BadgeCheck, MapPin, Globe } from 'lucide-react'
+import { Search, X, Clock, TrendingUp, Loader2, ChevronRight, MapPin, Globe } from 'lucide-react'
 import { useRecentSearches } from '../../state/useExplore'
 import { publicArtists } from '../../data/publicArtists'
 import { exploreCategories, shopPreview, suggestedSearches, trendingSearches } from '../../data/exploreData'
@@ -81,7 +81,7 @@ export default function ExploreSearch() {
                 {artists.slice(0, 3).map((a) => (
                   <button key={a.slug} onClick={() => { add(q); navigate(`/artist/${a.slug}`) }} className="tap flex items-center gap-3 py-2.5 text-left">
                     <Avatar name={a.name} src={a.photo} size={40} />
-                    <div className="min-w-0 flex-1"><div className="flex items-center gap-1"><span className="truncate text-[14px] font-semibold text-ink">{a.name}</span>{a.verified && <BadgeCheck className="h-3.5 w-3.5 text-brand" />}</div><p className="truncate text-[12px] text-muted">{a.primaryDomain} · {a.location.split(',')[0]}</p></div>
+                    <div className="min-w-0 flex-1"><div className="flex items-center gap-1"><span className="truncate text-[14px] font-semibold text-ink">{a.name}</span></div><p className="truncate text-[12px] text-muted">{a.primaryDomain} · {a.location.split(',')[0]}</p></div>
                     <ChevronRight className="h-4 w-4 text-muted" />
                   </button>
                 ))}

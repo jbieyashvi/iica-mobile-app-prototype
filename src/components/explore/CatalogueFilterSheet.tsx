@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Search, Check } from 'lucide-react'
+import { X, Search } from 'lucide-react'
 import PrimaryButton from '../PrimaryButton'
 import SecondaryButton from '../SecondaryButton'
 import { MEMBERSHIP_CATEGORIES, CATALOGUE_LOCATIONS, CATALOGUE_GENRES } from '../../config/catalogue'
@@ -74,14 +74,6 @@ export default function CatalogueFilterSheet({ value, onApply, onClear, onClose 
                 <button key={g} onClick={() => setV({ ...v, genre: v.genre === g ? '' : g })} className={chip(v.genre === g)}>{g}</button>
               ))}
             </div>
-          </div>
-
-          {/* Verified */}
-          <div>
-            <p className="mb-2 text-[13px] font-semibold text-ink">Verified</p>
-            <button onClick={() => setV({ ...v, verified: !v.verified })} className={`${chip(v.verified)} inline-flex items-center gap-1.5`}>
-              {v.verified && <Check className="h-3.5 w-3.5" />} Verified only
-            </button>
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { BadgeCheck, MapPin, Bookmark, BookmarkCheck } from 'lucide-react'
+import { MapPin, Bookmark, BookmarkCheck } from 'lucide-react'
 import { PublicArtist } from '../../data/publicArtists'
 import { Collection, ExploreCategory, ShopItem } from '../../data/exploreData'
 import StatusBadge from '../StatusBadge'
@@ -19,7 +19,6 @@ export function ArtistListCard({ artist, saved, onSave, list }: { artist: Public
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1">
               <span className="truncate font-serif text-[16px] leading-tight text-ink">{artist.name}</span>
-              {artist.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-brand" />}
             </div>
             <p className="truncate text-[12.5px] text-muted">{artist.headline}</p>
             <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted"><MapPin className="h-3 w-3" /> {artist.location.split(',')[0]} · {artist.primaryDomain}</p>
@@ -38,7 +37,7 @@ export function ArtistListCard({ artist, saved, onSave, list }: { artist: Public
       <button onClick={() => navigate(`/artist/${artist.slug}`)} className="tap block w-full text-left">
         <div className="aspect-[3/4] w-full overflow-hidden bg-brand-soft"><img src={artist.photo} alt="" loading="lazy" className="h-full w-full object-cover" /></div>
         <div className="p-2.5">
-          <div className="flex items-center gap-1"><span className="truncate font-serif text-[15px] leading-tight text-ink">{artist.name}</span>{artist.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-brand" />}</div>
+          <div className="flex items-center gap-1"><span className="truncate font-serif text-[15px] leading-tight text-ink">{artist.name}</span></div>
           <p className="truncate text-[11.5px] text-muted">{artist.primaryDomain}</p>
           <p className="flex items-center gap-1 text-[11px] text-muted"><MapPin className="h-2.5 w-2.5" /> {artist.location.split(',')[0]}</p>
         </div>

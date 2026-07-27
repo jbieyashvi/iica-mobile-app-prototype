@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { BadgeCheck, MapPin, Info, Check, X } from 'lucide-react'
+import { MapPin, Info, Check, X } from 'lucide-react'
 import { Candidate } from '../../collab/types'
 
 interface Props {
@@ -60,7 +60,6 @@ export default function SwipeCard({ candidate, onDecision, onDetails }: Props) {
         <div className="flex h-[48%] flex-col p-4">
           <div className="flex items-center gap-1.5">
             <h2 className="font-serif text-[22px] leading-tight text-ink">{c.name}</h2>
-            {c.verified && <BadgeCheck className="h-5 w-5 text-brand" />}
           </div>
           <p className="text-[13px] text-muted">{c.headline}</p>
           <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-muted"><MapPin className="h-3.5 w-3.5" /> {c.location.split(',')[0]} · {c.primaryDomain}</p>

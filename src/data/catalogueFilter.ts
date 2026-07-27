@@ -10,7 +10,6 @@ export interface CatalogueFilters {
   category: string
   location: string
   genre: string
-  verified: boolean
 }
 
 export interface CatalogueState {
@@ -19,7 +18,7 @@ export interface CatalogueState {
   letter: string
 }
 
-export const NO_FILTERS: CatalogueFilters = { category: '', location: '', genre: '', verified: false }
+export const NO_FILTERS: CatalogueFilters = { category: '', location: '', genre: '' }
 
 export const CATALOGUE_POOL: PublicArtist[] = publicArtists
 
@@ -34,10 +33,10 @@ export function initialOf(name: string): string {
 }
 
 export function activeFilterCount(f: CatalogueFilters): number {
-  return (f.category ? 1 : 0) + (f.location ? 1 : 0) + (f.genre ? 1 : 0) + (f.verified ? 1 : 0)
+  return (f.category ? 1 : 0) + (f.location ? 1 : 0) + (f.genre ? 1 : 0)
 }
 
-// Pipeline: search → category → location → genre → verified. Never mutates.
+// Pipeline: search → category → location → genre. Never mutates.
 export function filterProfiles(pool: PublicArtist[], q: string, f: CatalogueFilters): PublicArtist[] {
   let r = pool
   const query = q.trim().toLowerCase()
@@ -50,7 +49,6 @@ export function filterProfiles(pool: PublicArtist[], q: string, f: CatalogueFilt
   if (f.category) r = r.filter((a) => profileCategory(a) === f.category)
   if (f.location) r = r.filter((a) => effectiveCity(a).toLowerCase() === f.location.toLowerCase())
   if (f.genre) r = r.filter((a) => profileGenres(a).some((g) => g.toLowerCase() === f.genre.toLowerCase()))
-  if (f.verified) r = r.filter((a) => a.verified)
   return r
 }
 
@@ -79,7 +77,6 @@ export function toCatalogueQuery(s: Partial<CatalogueState>): string {
   if (s.filters?.category) p.set('category', s.filters.category)
   if (s.filters?.location) p.set('location', s.filters.location)
   if (s.filters?.genre) p.set('genre', s.filters.genre)
-  if (s.filters?.verified) p.set('verified', '1')
   if (s.letter && s.letter !== 'All') p.set('letter', s.letter)
   const str = p.toString()
   return str ? `?${str}` : ''
@@ -90,12 +87,11 @@ export function fromCatalogueParams(params: URLSearchParams): CatalogueState | n
   const category = params.get('category')
   const location = params.get('location')
   const genre = params.get('genre')
-  const verified = params.get('verified')
   const letter = params.get('letter')
-  if (!q && !category && !location && !genre && !verified && !letter) return null
+  if (!q && !category && !location && !genre && !letter) return null
   return {
     q: q ?? '',
-    filters: { category: category ?? '', location: location ?? '', genre: genre ?? '', verified: verified === '1' },
+    filters: { category: category ?? '', location: location ?? '', genre: genre ?? '' },
     letter: letter ?? 'All',
   }
 }
