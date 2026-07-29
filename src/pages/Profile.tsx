@@ -82,10 +82,9 @@ export default function Profile() {
           )}
 
           {/* Creator Profile */}
-          {(isActive || isPending) && (
+          {isActive && (
             <Section title="Creator Profile">
-              <Row icon={<UserCog className="h-5 w-5" />} label="Edit Profile" hint="Personal & account information" onClick={() => navigate('/account/edit')} />
-              {isActive && <Row icon={<BadgeCheck className="h-5 w-5" />} label="Edit Portfolio" hint="Your creator portfolio" onClick={editPortfolio} />}
+              <Row icon={<BadgeCheck className="h-5 w-5" />} label="Edit Portfolio" hint="Your creator portfolio" onClick={editPortfolio} />
             </Section>
           )}
 
