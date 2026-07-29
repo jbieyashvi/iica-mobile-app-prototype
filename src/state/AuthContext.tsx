@@ -132,6 +132,7 @@ interface AuthContextValue {
   resetPassword: (email: string) => void
   saveApplicationDraft: (data: Partial<Application>) => void
   submitApplication: (data: Application) => string
+  updateAccount: (p: Partial<Pick<AuthState, 'name' | 'email'>>) => void
   enterPurchase: () => void
   purchaseSuccess: (platform: PurchasePlatform) => void
   purchaseFailed: () => void
@@ -211,6 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         return id
       },
+      updateAccount: (p) => patch(p),
       enterPurchase: () =>
         patch({
           role: 'pending',

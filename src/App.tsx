@@ -78,6 +78,13 @@ import CollabRequestDetails from './pages/collaborate/RequestDetails'
 import CollabMeetings from './pages/collaborate/Meetings'
 import CollabMeetingDetails from './pages/collaborate/MeetingDetails'
 import Profile from './pages/Profile'
+// Account & settings
+import EditProfile from './pages/account/EditProfile'
+import PaymentMethods from './pages/account/PaymentMethods'
+import PayoutSettings from './pages/account/PayoutSettings'
+import NotificationSettings from './pages/account/NotificationSettings'
+import DeleteAccount from './pages/account/DeleteAccount'
+import InfoPage from './pages/account/InfoPage'
 import Search from './pages/Search'
 import Notifications from './pages/Notifications'
 import Portfolio from './pages/Portfolio'
@@ -175,6 +182,15 @@ export default function App() {
             {/* App sub-screens (no bottom nav) */}
             <Route path="/search" element={<Search />} />
             <Route path="/notifications" element={<Notifications />} />
+            {/* Account & settings */}
+            <Route path="/account/edit" element={<EditProfile />} />
+            <Route path="/account/payment-methods" element={<PaymentMethods />} />
+            <Route path="/account/payouts" element={<PayoutSettings />} />
+            <Route path="/account/notifications" element={<NotificationSettings />} />
+            <Route path="/account/delete" element={<DeleteAccount />} />
+            <Route path="/info/privacy" element={<InfoPage kind="privacy" />} />
+            <Route path="/info/help" element={<InfoPage kind="help" />} />
+            <Route path="/info/legal" element={<InfoPage kind="legal" />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/create/event" element={<CreateEvent />} />
             {/* Public artist portfolio + subflows */}
