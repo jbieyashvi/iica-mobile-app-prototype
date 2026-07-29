@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  CheckCircle2, BookOpen, Play, FileText, MessageSquare, LifeBuoy, Truck, Check, ChevronRight, ShieldQuestion, Send, UserPlus,
+  CheckCircle2, BookOpen, Play, FileText, Truck, Check, ChevronRight, Send, UserPlus,
 } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import StatusBadge from '../../components/StatusBadge'
@@ -12,17 +12,20 @@ import { useAuth } from '../../state/AuthContext'
 import { inr } from '../../shop/pricing'
 import { fmtDate } from '../../events/format'
 
-const PHYSICAL_STEPS = ['Order Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered']
+// Customer-facing delivery is a simple 3-stage flow. Removed statuses
+// (Processing, Out for Delivery) collapse into the nearest visible stage.
+const PHYSICAL_STEPS = ['Order Confirmed', 'Shipped', 'Delivered']
 const stepIndex = (s: string) => {
-  const map: Record<string, number> = { Pending: 0, Confirmed: 0, Processing: 1, Shipped: 2, 'Out for Delivery': 3, Delivered: 4 }
+  const map: Record<string, number> = { Pending: 0, Confirmed: 0, Processing: 0, Shipped: 1, 'Out for Delivery': 1, Delivered: 2 }
   return map[s] ?? 0
 }
+const PAY_METHOD = 'UPI · demo@upi'
 const TYPE_LABEL: Record<string, string> = { Masterclass: 'Masterclass', Digital: 'Digital Audio Pack', Physical: 'Physical Product' }
 
 export default function OrderDetails() {
   const { orderId } = useParams()
   const navigate = useNavigate()
-  const { orders, refunds } = useShop()
+  const { orders } = useShop()
   const { state } = useAuth()
   const isGuest = !state.authed
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -35,7 +38,6 @@ export default function OrderDetails() {
   const o = orders.find((x) => x.id === orderId)
   if (!o) return <BackHeader title="Order Details" fallback="/orders" />
 
-  const refund = refunds.find((r) => r.orderId === o.id)
   const item = o.items[0]
   const isPhysical = o.hasPhysical
   const isMasterclass = !isPhysical && o.items.some((i) => i.type === 'Masterclass')
@@ -43,6 +45,66 @@ export default function OrderDetails() {
   const subtotal = o.items.reduce((s, i) => s + i.price * i.qty, 0)
   const fee = Math.max(0, o.amount - subtotal)
   const cur = stepIndex(o.status)
+  const txnId = `TXN-XXXX${o.orderId.slice(-4)}`
+  const statusLabel = o.status === 'Cancelled' || o.status === 'Refunded'
+    ? o.status
+    : isPhysical ? PHYSICAL_STEPS[cur] : o.status
+
+  // Functional prototype invoice: a self-contained, printable HTML file.
+  const downloadInvoice = () => {
+    const rows = o.items.map((i) => `<tr><td>${i.title}</td><td>${i.sellerName}</td><td class="r">${i.qty}</td><td class="r">${inr(i.price * i.qty)}</td></tr>`).join('')
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>IICA Invoice ${o.orderId}</title>
+<style>
+  *{box-sizing:border-box} body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#191718;margin:0;padding:32px;background:#fff}
+  .wrap{max-width:720px;margin:0 auto}
+  .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #9D2567;padding-bottom:16px}
+  .logo{display:flex;align-items:center;gap:10px}
+  .mark{width:40px;height:40px;border-radius:9px;background:#9D2567;color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif}
+  .brand{font-family:Georgia,serif;font-size:22px} .tag{font-size:11px;color:#8a8580;letter-spacing:.12em;text-transform:uppercase}
+  h1{font-family:Georgia,serif;font-size:20px;margin:24px 0 4px} .muted{color:#8a8580;font-size:12px}
+  .grid{display:flex;gap:32px;margin-top:16px;flex-wrap:wrap} .grid>div{flex:1;min-width:180px}
+  .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8a8580;margin-bottom:4px}
+  table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px}
+  th{text-align:left;border-bottom:1px solid #e7e3df;padding:8px 6px;font-size:11px;text-transform:uppercase;color:#8a8580}
+  td{padding:9px 6px;border-bottom:1px solid #f0ece8} .r{text-align:right}
+  .tot{margin-top:16px;margin-left:auto;width:260px;font-size:13px}
+  .tot .row{display:flex;justify-content:space-between;padding:4px 0}
+  .tot .grand{border-top:2px solid #191718;margin-top:6px;padding-top:8px;font-weight:700;font-size:15px}
+  .ft{margin-top:28px;border-top:1px solid #e7e3df;padding-top:12px;font-size:11px;color:#8a8580}
+</style></head><body><div class="wrap">
+  <div class="hd">
+    <div class="logo"><div class="mark">II</div><div><div class="brand">IICA</div><div class="tag">International Indian Culture &amp; Arts</div></div></div>
+    <div style="text-align:right"><div class="lbl">Invoice</div><div style="font-family:monospace;font-weight:700">INV-${o.orderId}</div></div>
+  </div>
+  <h1>Tax Invoice</h1>
+  <div class="grid">
+    <div><div class="lbl">Order ID</div><div style="font-family:monospace">${o.orderId}</div>
+      <div class="lbl" style="margin-top:10px">Purchase date</div><div>${fmtDate(o.createdAt)}</div></div>
+    <div><div class="lbl">Billed to</div><div>${o.buyerName}</div><div class="muted">${o.buyerEmail}</div>
+      ${o.address ? `<div class="muted" style="margin-top:6px">${o.address.line}, ${o.address.city}, ${o.address.state} ${o.address.postal}</div>` : ''}</div>
+  </div>
+  <table><thead><tr><th>Item</th><th>Seller</th><th class="r">Qty</th><th class="r">Amount</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="tot">
+    <div class="row"><span>Item subtotal</span><span>${inr(subtotal)}</span></div>
+    ${fee > 0 ? `<div class="row"><span>Platform fee &amp; tax</span><span>${inr(fee)}</span></div>` : ''}
+    <div class="row grand"><span>Total paid</span><span>${inr(o.amount)}</span></div>
+  </div>
+  <div class="ft">Payment method: ${PAY_METHOD} &nbsp;·&nbsp; Transaction ID: ${txnId} &nbsp;·&nbsp; Status: Paid<br/>
+  This is a prototype invoice generated by the IICA demo app. No real transaction occurred.</div>
+</div></body></html>`
+    try {
+      const blob = new Blob([html], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `IICA-Invoice-${o.orderId}.html`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+      flash('Invoice downloaded')
+    } catch { flash('Could not generate invoice') }
+  }
 
   const statusLine = isPhysical
     ? 'Your order is on its way.'
@@ -60,7 +122,7 @@ export default function OrderDetails() {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="font-serif text-[21px] leading-tight text-ink">Order completed</h1>
-              <StatusBadge tone={o.status === 'Cancelled' || o.status === 'Refunded' ? 'error' : o.status === 'Delivered' || o.status === 'Available' ? 'success' : 'warning'}>{o.status}</StatusBadge>
+              <StatusBadge tone={o.status === 'Cancelled' || o.status === 'Refunded' ? 'error' : o.status === 'Delivered' || o.status === 'Available' ? 'success' : 'warning'}>{statusLabel}</StatusBadge>
             </div>
             <p className="mt-0.5 text-[13px] text-muted">{statusLine}</p>
           </div>
@@ -155,26 +217,11 @@ export default function OrderDetails() {
         {/* 5 · Order actions */}
         <Section title="Order actions">
           <div className="overflow-hidden rounded-card border border-border bg-surface">
-            <ActionRow icon={<FileText className="h-[18px] w-[18px] text-brand" />} label="Download Invoice" onClick={() => flash('Invoice downloaded (prototype)')} />
-            <ActionRow icon={<MessageSquare className="h-[18px] w-[18px] text-brand" />} label="Contact Seller" onClick={() => flash('Message sent (prototype)')} />
-            <ActionRow icon={<LifeBuoy className="h-[18px] w-[18px] text-brand" />} label="Get Help" onClick={() => flash('Support request opened (prototype)')} last />
+            <ActionRow icon={<FileText className="h-[18px] w-[18px] text-brand" />} label="Download Invoice" onClick={downloadInvoice} last />
           </div>
         </Section>
 
-        {/* 6 · Need help / refund */}
-        {!refund && o.status !== 'Cancelled' && o.status !== 'Refunded' && (
-          <Section title="Need help with this purchase?">
-            <button onClick={() => navigate(`/refunds/${o.id}/request`)} className="tap flex w-full items-center gap-3 rounded-card border border-border bg-surface p-3.5 text-left hover:border-ink/20">
-              <ShieldQuestion className="h-5 w-5 shrink-0 text-muted" />
-              <span className="flex-1 text-[14px] font-semibold text-ink">{isPhysical ? 'Request Return or Refund' : 'Request a Refund'}</span>
-              <ChevronRight className="h-5 w-5 text-muted" />
-            </button>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-muted">{isPhysical ? 'Eligible items may be returned or refunded per IICA’s policy.' : 'Digital purchases may be eligible for a refund according to IICA’s refund policy.'}</p>
-          </Section>
-        )}
-        {refund && <div className="mt-4 rounded-card border border-warning/30 bg-[#F7F0E4] p-3.5"><p className="text-[13px] font-semibold text-ink">Refund {refund.status}</p><p className="mt-0.5 text-[12.5px] text-[#7a5412]">{refund.requestType} · {refund.reason}</p></div>}
-
-        {/* 7 · Navigation */}
+        {/* 6 · Navigation */}
         <div className="mt-7 border-t border-border pt-5">
           <SecondaryButton full onClick={() => navigate('/orders')}>View All Orders</SecondaryButton>
           <div className="mt-2.5 flex items-center justify-center gap-5">
