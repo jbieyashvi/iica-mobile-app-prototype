@@ -5,7 +5,29 @@ import { eligibleCreators } from './creators'
 // Weights (sum 100) — kept as a readable config, not exposed to users.
 const W = { skillGenre: 35, roleCategory: 20, locationFormat: 20, availability: 15, preference: 10 }
 
-const has = (arr: string[], s: string) => arr.some((x) => x.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(x.toLowerCase()))
+// Generic words that would otherwise make every craft "overlap" (e.g. every
+// music genre shares "music"). Ignored when comparing by word tokens.
+const STOP = new Set(['music', 'art', 'arts', 'the', 'and', 'of', 'a', 'an', 'experiences', 'artist'])
+const tokens = (s: string) => s.toLowerCase().split(/[^a-z]+/).filter((t) => t.length > 2 && !STOP.has(t))
+// Light stemming: two tokens relate if they share a long-enough prefix, so
+// word-forms of the same craft connect (photographer~photography,
+// guitarist~guitar, singer~sing, classical~classic) without over-matching
+// unrelated words (classical vs contemporary → prefix 1, no match).
+const prefixLen = (a: string, b: string) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i }
+const tokRel = (a: string, b: string) => {
+  if (a === b) return true
+  const p = prefixLen(a, b)
+  return p >= 5 && (p >= a.length - 3 || p >= b.length - 3)
+}
+// Two labels relate if one contains the other OR they share a meaningful word
+// token ("Indian Classical" ~ "Classical Music" via "classical").
+const rel = (x: string, s: string) => {
+  const a = x.toLowerCase(), b = s.toLowerCase()
+  if (a.includes(b) || b.includes(a)) return true
+  const ts = tokens(s)
+  return tokens(x).some((tx) => ts.some((t) => tokRel(tx, t)))
+}
+const has = (arr: string[], s: string) => arr.some((x) => rel(x, s))
 const specified = (v: string) => v && v !== NOT_SPECIFIED && v !== ANY_LOCATION
 
 function labelFor(score: number): MatchLabel {
@@ -65,12 +87,15 @@ function scoreCreator(req: CollaborationRequirement, c: MatchCreator) {
 // appear — availability/preference alone never qualifies. Weak results are
 // dropped rather than padding the screen.
 export function matchCreators(req: CollaborationRequirement, floor = 50): CollaborationMatch[] {
-  const locSpecified = specified(req.location) && req.location !== 'Near Me'
+  // A creator must share the requested craft (skill/genre) or role/category to
+  // appear. Location boosts the score but never qualifies a creator on its own
+  // (so a Mumbai model doesn't surface for "classical singer in Mumbai").
+  // If the requirement names no craft/role at all, fall back to score only.
+  const hasCraft = specified(req.skill) || specified(req.genre) || specified(req.role)
   return eligibleCreators()
     .map((c) => {
       const { score, reasons, breakdown } = scoreCreator(req, c)
-      const relevant = breakdown.skillGenre > 0 || breakdown.roleCategory > 0 ||
-        (locSpecified && c.city.toLowerCase() === req.location.toLowerCase())
+      const relevant = !hasCraft || breakdown.skillGenre > 0 || breakdown.roleCategory > 0
       return { m: { requirementId: req.id, creatorId: c.slug, score, label: labelFor(score), reasons, breakdown }, relevant }
     })
     .filter((x) => x.relevant && x.m.score >= floor)

@@ -72,8 +72,6 @@ import CollaborateHome from './pages/collaborate/CollaborateHome'
 import CollaborateEntry from './pages/aicollab/CollaborateEntry'
 import ConfirmRequirement from './pages/aicollab/ConfirmRequirement'
 import MatchResults from './pages/aicollab/MatchResults'
-import CreateRequest from './pages/aicollab/CreateRequest'
-import ReviewRequest from './pages/aicollab/ReviewRequest'
 import RequestSent from './pages/aicollab/RequestSent'
 import MyCollaborations from './pages/aicollab/MyCollaborations'
 import CollaborationDetails from './pages/aicollab/CollaborationDetails'
@@ -189,9 +187,7 @@ export default function App() {
             <Route path="/collaborate" element={<CollaborateEntry />} />
             <Route path="/collaborate/confirm" element={<ConfirmRequirement />} />
             <Route path="/collaborate/matches" element={<MatchResults />} />
-            <Route path="/collaborate/new/review" element={<ReviewRequest />} />
             <Route path="/collaborate/new/sent/:requestId" element={<RequestSent />} />
-            <Route path="/collaborate/new/:creatorId" element={<CreateRequest />} />
             <Route path="/collaborate/mine" element={<MyCollaborations />} />
             <Route path="/collaborate/mine/:requestId" element={<CollaborationDetails />} />
             {/* Legacy collaborate screens (kept, reachable by direct link) */}

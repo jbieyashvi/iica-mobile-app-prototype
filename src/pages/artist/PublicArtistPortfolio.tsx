@@ -152,7 +152,7 @@ export default function PublicArtistPortfolio() {
     <div className="flex h-full flex-col bg-bg">
       {showCollabSelect && (
         <div className="absolute inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-[18px] py-3 backdrop-blur-md" style={{ paddingBottom: 'calc(12px + var(--safe-bottom))' }}>
-          <PrimaryButton full onClick={() => navigate(`/collaborate/new/${artist.slug}`)}><Handshake className="h-[18px] w-[18px]" /> Select for Collaboration</PrimaryButton>
+          <PrimaryButton full onClick={() => navigate('/collaborate/matches', { state: { reviewCreator: artist.slug } })}><Handshake className="h-[18px] w-[18px]" /> Interested in Collaborating</PrimaryButton>
         </div>
       )}
       <div ref={scrollRef} className="no-scrollbar relative flex-1 overflow-y-auto overflow-x-hidden" style={showCollabSelect ? { paddingBottom: '72px' } : undefined}>

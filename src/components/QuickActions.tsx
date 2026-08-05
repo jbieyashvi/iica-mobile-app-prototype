@@ -1,6 +1,6 @@
 import {
-  FolderOpen, CalendarPlus, Sparkles, PlaySquare, Clapperboard,
-  BadgeCheck, Clock, AlertTriangle, LucideIcon,
+  FolderOpen, CalendarPlus, PlaySquare, Clapperboard, Compass,
+  CalendarDays, ShoppingBag, BadgeCheck, Clock, AlertTriangle, LucideIcon,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext'
@@ -16,9 +16,10 @@ interface QA {
   highlight?: boolean
 }
 
-// Home quick actions, conditional on membership state. No duplicate creator
-// actions leak to guests / non-members: they get a single membership CTA plus
-// the always-available Find Collaborators and Archive entries.
+// Home quick actions — always exactly four, membership-aware. Creator-management
+// actions (Portfolio / Add Video / Create Event) show only to Active Creator
+// Members; everyone else gets public actions. "Find Collaborators" is NOT here —
+// the Collaborate bottom-nav tab already covers it (no duplicate shortcut).
 export default function QuickActions() {
   const navigate = useNavigate()
   const { state } = useAuth()
@@ -26,26 +27,29 @@ export default function QuickActions() {
   const access = membershipAccess(state)
   const mpEnabled = membershipPurchaseEnabled()
 
-  const findCollaborators: QA = {
-    label: 'Find Collaborators', icon: Sparkles,
-    onClick: () => navigate('/collaborate', { state: { from: '/home' } }),
-  }
-  const archive: QA = {
-    label: 'Archive', icon: Clapperboard,
-    onClick: () => navigate('/explore/archive', { state: { from: '/home' } }),
-  }
+  const go = (to: string) => () => navigate(to, { state: { from: '/home' } })
 
-  let actions: QA[] = []
+  // Public actions (no membership required).
+  const explore: QA = { label: 'Explore', icon: Compass, onClick: go('/explore') }
+  const eventsAction: QA = { label: 'Events', icon: CalendarDays, onClick: go('/events') }
+  const shop: QA = { label: 'Shop', icon: ShoppingBag, onClick: go('/shop') }
+  const archive: QA = { label: 'Archive', icon: Clapperboard, onClick: go('/explore/archive') }
+  const publicSet: QA[] = [explore, eventsAction, shop, archive]
+
+  let actions: QA[]
 
   if (access.isActiveMember) {
-    actions = [
-      {
-        label: portfolio.published ? 'My Portfolio' : 'Create Portfolio', icon: FolderOpen,
-        onClick: () => {
-          setPortfolioOrigin('/home')
-          navigate('/portfolio/setup', { state: { from: '/home', source: 'home-my-portfolio' } })
-        },
+    // Portfolio label stays "Portfolio"; destination depends on whether one exists.
+    const portfolioAction: QA = {
+      label: 'Portfolio', icon: FolderOpen,
+      onClick: () => {
+        setPortfolioOrigin('/home')
+        if (portfolio.published) navigate('/portfolio', { state: { from: '/home' } })
+        else navigate('/portfolio/setup', { state: { from: '/home', source: 'home-portfolio' } })
       },
+    }
+    actions = [
+      portfolioAction,
       {
         label: 'Add Video', icon: PlaySquare,
         onClick: () => {
@@ -53,55 +57,47 @@ export default function QuickActions() {
           navigate('/portfolio/edit/media', { state: { from: '/home', source: 'home-add-video', direct: true } })
         },
       },
-      {
-        label: 'Create Event', icon: CalendarPlus,
-        onClick: () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }),
-      },
-      findCollaborators,
+      { label: 'Create Event', icon: CalendarPlus, onClick: () => navigate('/events/create/details', { state: { from: '/home', source: 'home-quick-action' } }) },
       archive,
     ]
   } else if (access.isPending) {
-    // Membership purchase action only when the platform toggle allows it.
-    actions = [
-      ...(mpEnabled ? [{ label: 'Complete Membership', icon: Clock, highlight: true, onClick: () => navigate('/membership/purchase') } as QA] : []),
-      findCollaborators,
-      archive,
-    ]
+    // IICA ID generated but unpaid → complete the purchase (when enabled).
+    actions = mpEnabled
+      ? [{ label: 'Complete Membership', icon: Clock, highlight: true, onClick: () => navigate('/membership/purchase') }, explore, eventsAction, archive]
+      : publicSet
   } else if (access.isSuspended) {
-    // Suspended/expired: no new-content creation; offer renewal (if enabled).
-    actions = [
-      ...(mpEnabled ? [{ label: 'Renew Membership', icon: AlertTriangle, highlight: true, onClick: () => navigate('/membership/status') } as QA] : []),
-      findCollaborators,
-      archive,
-    ]
+    // Suspended / expired → read-only; offer renewal (when enabled), else public.
+    actions = mpEnabled
+      ? [{ label: 'Renew Membership', icon: AlertTriangle, highlight: true, onClick: () => navigate('/membership/status') }, explore, eventsAction, archive]
+      : publicSet
+  } else if (access.isGuest) {
+    actions = publicSet
   } else {
-    // Guest or registered (no membership) — a single Apply CTA when enabled.
-    actions = [
-      ...(mpEnabled ? [{ label: 'Apply for Membership', icon: BadgeCheck, highlight: true, onClick: () => navigate('/membership') } as QA] : []),
-      findCollaborators,
-      archive,
-    ]
+    // Registered, no IICA ID yet → apply (when enabled), else public.
+    actions = mpEnabled
+      ? [{ label: 'Apply for Membership', icon: BadgeCheck, highlight: true, onClick: () => navigate('/membership') }, explore, eventsAction, archive]
+      : publicSet
   }
 
   return (
-    <div
-      className="grid gap-2 px-[18px]"
-      style={{ gridTemplateColumns: `repeat(${actions.length}, minmax(0, 1fr))` }}
-    >
-      {actions.map(({ label, icon: Icon, onClick, highlight }) => (
-        <button
-          key={label}
-          onClick={onClick}
-          className={`tap flex flex-col items-center gap-2 rounded-card border px-1 py-3 text-center transition-colors ${
-            highlight ? 'border-brand/40 bg-brand-soft hover:border-brand' : 'border-border bg-surface hover:border-ink/20'
-          }`}
-        >
-          <span className={`flex h-9 w-9 items-center justify-center rounded-[9px] ${highlight ? 'bg-brand text-white' : 'bg-brand-soft text-brand-dark'}`}>
-            <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-          </span>
-          <span className="text-[10.5px] font-semibold leading-tight text-ink">{label}</span>
-        </button>
-      ))}
+    <div className="px-[18px]">
+      <p className="mb-2 text-[12px] font-bold uppercase tracking-wide text-muted">Quick Actions</p>
+      <div className="grid grid-cols-4 gap-2">
+        {actions.map(({ label, icon: Icon, onClick, highlight }) => (
+          <button
+            key={label}
+            onClick={onClick}
+            className={`tap flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-card border px-1 py-2.5 text-center transition-colors ${
+              highlight ? 'border-brand/40 bg-brand-soft hover:border-brand' : 'border-border bg-surface hover:border-ink/20'
+            }`}
+          >
+            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] ${highlight ? 'bg-brand text-white' : 'bg-brand-soft text-brand-dark'}`}>
+              <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+            </span>
+            <span className="line-clamp-2 text-[10.5px] font-semibold leading-tight text-ink">{label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

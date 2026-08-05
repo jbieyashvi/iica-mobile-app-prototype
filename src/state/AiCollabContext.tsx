@@ -6,6 +6,14 @@ import { demoUser } from '../demo/demoData'
 
 const REQ_KEY = 'iica_aicollab_requests_v1'
 const CUR_KEY = 'iica_aicollab_current' // session-scoped active requirement
+const SW_KEY = 'iica_aicollab_swipe' // session-scoped swipe progress
+
+export interface SwipeSession {
+  requirementId: string
+  skipped: string[]
+  interested: string[]
+  index: number
+}
 
 const rid = (p: string) => p + Math.random().toString(36).slice(2, 8).toUpperCase()
 const nowISO = () => new Date().toISOString()
@@ -44,6 +52,10 @@ function loadCurrent(): CollaborationRequirement | null {
   try { const r = sessionStorage.getItem(CUR_KEY); if (r) return JSON.parse(r) } catch { /* */ }
   return null
 }
+function loadSwipe(): SwipeSession | null {
+  try { const r = sessionStorage.getItem(SW_KEY); if (r) return JSON.parse(r) } catch { /* */ }
+  return null
+}
 
 export interface CreateRequestInput {
   requirementId: string
@@ -63,9 +75,14 @@ export interface CreateRequestInput {
 interface Ctx {
   current: CollaborationRequirement | null
   requests: CollaborationRequest[]
+  swipe: SwipeSession | null
   setRequirement: (r: Omit<CollaborationRequirement, 'id' | 'createdByUserId' | 'createdAt'>, userId: string) => CollaborationRequirement
   updateRequirement: (patch: Partial<CollaborationRequirement>) => void
   clearRequirement: () => void
+  ensureSwipe: (requirementId: string) => void
+  swipeSkip: (creatorId: string) => void
+  swipeInterest: (creatorId: string) => void
+  setSwipeIndex: (index: number) => void
   getRequest: (id?: string) => CollaborationRequest | undefined
   createRequest: (input: CreateRequestInput, sender: { id: string; name: string }) => CollaborationRequest
   accept: (id: string) => void
@@ -79,19 +96,35 @@ const AiCollabContext = createContext<Ctx | null>(null)
 export function AiCollabProvider({ children }: { children: ReactNode }) {
   const [current, setCurrent] = useState<CollaborationRequirement | null>(loadCurrent)
   const [requests, setRequests] = useState<CollaborationRequest[]>(loadRequests)
+  const [swipe, setSwipe] = useState<SwipeSession | null>(loadSwipe)
 
   useEffect(() => { try { localStorage.setItem(REQ_KEY, JSON.stringify(requests)) } catch { /* */ } }, [requests])
   useEffect(() => {
     try { current ? sessionStorage.setItem(CUR_KEY, JSON.stringify(current)) : sessionStorage.removeItem(CUR_KEY) } catch { /* */ }
   }, [current])
+  useEffect(() => {
+    try { swipe ? sessionStorage.setItem(SW_KEY, JSON.stringify(swipe)) : sessionStorage.removeItem(SW_KEY) } catch { /* */ }
+  }, [swipe])
 
   const setRequirement = useCallback<Ctx['setRequirement']>((r, userId) => {
     const full: CollaborationRequirement = { ...r, id: rid('REQ-'), createdByUserId: userId, createdAt: nowISO() }
     setCurrent(full)
+    setSwipe({ requirementId: full.id, skipped: [], interested: [], index: 0 }) // fresh stack per search
     return full
   }, [])
   const updateRequirement = useCallback<Ctx['updateRequirement']>((patch) => setCurrent((c) => (c ? { ...c, ...patch } : c)), [])
-  const clearRequirement = useCallback(() => setCurrent(null), [])
+  const clearRequirement = useCallback(() => { setCurrent(null); setSwipe(null) }, [])
+
+  const ensureSwipe = useCallback<Ctx['ensureSwipe']>((requirementId) => {
+    setSwipe((s) => (s && s.requirementId === requirementId ? s : { requirementId, skipped: [], interested: [], index: 0 }))
+  }, [])
+  const swipeSkip = useCallback<Ctx['swipeSkip']>((creatorId) => {
+    setSwipe((s) => (s ? { ...s, skipped: s.skipped.includes(creatorId) ? s.skipped : [...s.skipped, creatorId], index: s.index + 1 } : s))
+  }, [])
+  const swipeInterest = useCallback<Ctx['swipeInterest']>((creatorId) => {
+    setSwipe((s) => (s ? { ...s, interested: s.interested.includes(creatorId) ? s.interested : [...s.interested, creatorId], index: s.index + 1 } : s))
+  }, [])
+  const setSwipeIndex = useCallback<Ctx['setSwipeIndex']>((index) => setSwipe((s) => (s ? { ...s, index } : s)), [])
 
   const getRequest = useCallback((id?: string) => requests.find((r) => r.id === id), [requests])
 
@@ -112,9 +145,10 @@ export function AiCollabProvider({ children }: { children: ReactNode }) {
   const complete = useCallback((id: string) => patch(id, { status: 'Completed' }), [])
 
   const value = useMemo<Ctx>(() => ({
-    current, requests, setRequirement, updateRequirement, clearRequirement,
+    current, requests, swipe, setRequirement, updateRequirement, clearRequirement,
+    ensureSwipe, swipeSkip, swipeInterest, setSwipeIndex,
     getRequest, createRequest, accept, decline, cancel, complete,
-  }), [current, requests, setRequirement, updateRequirement, clearRequirement, getRequest, createRequest, accept, decline, cancel, complete])
+  }), [current, requests, swipe, setRequirement, updateRequirement, clearRequirement, ensureSwipe, swipeSkip, swipeInterest, setSwipeIndex, getRequest, createRequest, accept, decline, cancel, complete])
 
   return <AiCollabContext.Provider value={value}>{children}</AiCollabContext.Provider>
 }

@@ -41,7 +41,8 @@ export default function RequestSent() {
 
         <div className="mt-5 flex flex-col gap-2.5">
           <PrimaryButton full onClick={() => navigate(`/collaborate/mine/${req.id}`, { replace: true })}>View Request</PrimaryButton>
-          <SecondaryButton full onClick={() => navigate('/collaborate', { replace: true })}><FolderKanban className="h-4 w-4" /> Return to Collaborate</SecondaryButton>
+          <SecondaryButton full onClick={() => navigate('/collaborate/matches', { replace: true })}>Continue Browsing Matches</SecondaryButton>
+          <button onClick={() => navigate('/collaborate', { replace: true })} className="tap mx-auto flex min-h-[44px] items-center justify-center gap-1.5 text-[14px] font-semibold text-muted hover:text-ink"><FolderKanban className="h-4 w-4" /> Return to Collaborate</button>
         </div>
       </div>
       {toast && <div className="pointer-events-none absolute inset-x-0 bottom-8 z-50 flex justify-center"><span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span></div>}

@@ -379,6 +379,9 @@ function makeArtist(
     photo: base.photo,
     primaryDomain: base.primaryDomain,
     tags: base.tags,
+    // Skills must reflect THIS creator's craft — never inherit abhishek's music
+    // skills via the spread above (that made a fashion model "sing").
+    skills: base.tags,
     verified: base.verified,
     followers: 3200,
     saves: 210,
