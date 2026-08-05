@@ -32,14 +32,17 @@ export default function MatchResults() {
   const location = useLocation()
   const { state } = useAuth()
   const access = membershipAccess(state)
-  const { current, swipe, ensureSwipe, swipeSkip, swipeInterest, createRequest } = useAiCollab()
+  const { current, swipe, ensureSwipe, swipeSkip, swipeInterest, createRequest, isSaved, saveMatch, unsaveMatch } = useAiCollab()
   const reducedMotion = useReducedMotion()
+  const meId = state.iicaId || state.email || 'guest'
 
   const matches = useMemo(() => (current ? matchCreators(current) : []), [current])
   const [review, setReview] = useState<CollaborationMatch | null>(null)
   const [message, setMessage] = useState('')
   const [gate, setGate] = useState(false)
+  const [toast, setToast] = useState('')
   const sending = useRef(false)
+  const showToast = (t: string) => { setToast(t); window.setTimeout(() => setToast(''), 1600) }
 
   useEffect(() => { if (current) ensureSwipe(current.id) }, [current, ensureSwipe])
   // Open review sheet when returning from a profile via "Interested in Collaborating".
@@ -67,6 +70,13 @@ export default function MatchResults() {
   }
   const doSkip = () => active && swipeSkip(active.creatorId)
   const doInterest = () => active && startReview(active)
+  // Save is independent of swipe: it never changes status, never sends a
+  // request, and never advances the stack.
+  const toggleSave = () => {
+    if (!active) return
+    if (isSaved(meId, active.creatorId)) { unsaveMatch(meId, active.creatorId); showToast('Removed from saved') }
+    else { saveMatch({ userId: meId, creatorId: active.creatorId, requirementId: current.id, reason: active.reasons.join(' · ') }); showToast('Creator saved') }
+  }
 
   const send = () => {
     if (!review || sending.current) return
@@ -127,18 +137,23 @@ export default function MatchResults() {
                   key={active.creatorId}
                   creator={getMatchCreator(active.creatorId)!}
                   match={active}
+                  saved={isSaved(meId, active.creatorId)}
                   reducedMotion={reducedMotion}
                   onSkip={doSkip}
                   onInterest={doInterest}
+                  onToggleSave={toggleSave}
                   onView={() => navigate(`/artist/${active.creatorId}`, { state: { from: '/collaborate/matches', collabSelect: true } })}
                 />
               )}
             </div>
 
-            {/* accessible fallback buttons (same as gestures) */}
+            {/* accessible fallback buttons (same as gestures) — priority: remaining, skip, interested */}
             <div className="mt-3 flex items-center justify-center gap-4">
               <button onClick={doSkip} aria-label="Skip" className="tap flex h-14 w-14 items-center justify-center rounded-full border border-border bg-surface text-error shadow-subtle hover:border-error/40"><X className="h-6 w-6" /></button>
-              <p className="text-[11.5px] text-muted">{stack.length} left</p>
+              <p className="min-w-[72px] text-center text-[11.5px] text-muted">
+                {stack.length === 1 ? 'Last match' : `${stack.length} left`}
+                {(swipe?.interested.length ?? 0) > 0 && <span className="block text-[10.5px]">{swipe!.interested.length} interested</span>}
+              </p>
               <button onClick={doInterest} aria-label="Interested" className="tap flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-subtle hover:bg-brand-dark"><Heart className="h-6 w-6" /></button>
             </div>
           </>
@@ -193,6 +208,13 @@ export default function MatchResults() {
               <button onClick={() => setGate(false)} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Keep Browsing</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* subtle save confirmation (no modal) */}
+      {toast && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-24 z-[60] flex justify-center">
+          <span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span>
         </div>
       )}
     </div>

@@ -1,14 +1,16 @@
 import { useRef, useState } from 'react'
-import { MapPin, Info } from 'lucide-react'
+import { MapPin, Info, Bookmark } from 'lucide-react'
 import StatusBadge from '../StatusBadge'
 import type { MatchCreator, CollaborationMatch, MatchLabel } from '../../aicollab/types'
 
 interface Props {
   creator: MatchCreator
   match: CollaborationMatch
+  saved: boolean
   onSkip: () => void
   onInterest: () => void
   onView: () => void
+  onToggleSave: () => void
   reducedMotion?: boolean
 }
 
@@ -19,7 +21,7 @@ const labelTone = (l: MatchLabel) => (l === 'Strong Match' ? 'success' : l === '
 // right = interested. Gestures never scroll the page (touch-none). When
 // reduced-motion is on, the card doesn't drag — the Skip / Interested buttons
 // (rendered by the parent) do the same job.
-export default function AiSwipeCard({ creator: c, match, onSkip, onInterest, onView, reducedMotion }: Props) {
+export default function AiSwipeCard({ creator: c, match, saved, onSkip, onInterest, onView, onToggleSave, reducedMotion }: Props) {
   const [dx, setDx] = useState(0)
   const [dragging, setDragging] = useState(false)
   const start = useRef<number | null>(null)
@@ -62,23 +64,36 @@ export default function AiSwipeCard({ creator: c, match, onSkip, onInterest, onV
           <span className="absolute right-3 bottom-3 rounded-md border-2 border-error px-2 py-0.5 text-[13px] font-bold uppercase text-error" style={{ opacity: skipOpacity, background: 'rgba(255,255,255,.9)' }}>Skip</span>
         </div>
 
-        <div className="flex flex-1 flex-col overflow-hidden p-4">
-          <h2 className="font-serif text-[22px] leading-tight text-ink">{c.name}</h2>
-          <p className="text-[12.5px] font-semibold text-brand-dark">{c.category}</p>
-          <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-muted"><MapPin className="h-3.5 w-3.5" /> {c.city}, {c.country}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="flex flex-1 flex-col overflow-hidden p-3.5">
+          <h2 className="font-serif text-[21px] leading-tight text-ink">{c.name}</h2>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[12px] text-muted">
+            <span className="font-semibold text-brand-dark">{c.category}</span>
+            <span aria-hidden>·</span>
+            <span className="inline-flex items-center gap-0.5"><MapPin className="h-3.5 w-3.5" /> {c.city}, {c.country}</span>
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             {[c.primaryDomain, ...c.genres, ...c.skills].filter((v, i, a) => v && a.indexOf(v) === i).slice(0, 3).map((s) => (
               <span key={s} className="rounded-[7px] border border-border bg-bg px-2 py-0.5 text-[11px] font-medium text-ink">{s}</span>
             ))}
           </div>
-          <p className="mt-2 line-clamp-1 text-[12.5px] text-muted">{c.headline}</p>
+          <p className="mt-1.5 line-clamp-1 text-[12.5px] text-muted">{c.headline}</p>
           <p className="mt-1.5 line-clamp-2 rounded-control bg-brand-soft px-2.5 py-1.5 text-[12px] leading-relaxed text-brand-dark">{match.reasons.join(' · ')}</p>
-          <button
-            onClick={(e) => { e.stopPropagation(); if (!moved.current) onView() }}
-            className="tap mt-auto flex items-center justify-center gap-1.5 rounded-control border border-border py-2 text-[13px] font-semibold text-ink hover:border-ink/25"
-          >
-            <Info className="h-4 w-4" /> View Profile
-          </button>
+          <div className="mt-auto flex items-center gap-2 pt-2.5">
+            <button
+              onClick={(e) => { e.stopPropagation(); if (!moved.current) onToggleSave() }}
+              aria-label={saved ? 'Remove from saved' : 'Save creator'}
+              aria-pressed={saved}
+              className={`tap flex h-[38px] w-[42px] shrink-0 items-center justify-center rounded-control border transition-colors ${saved ? 'border-brand bg-brand-soft text-brand' : 'border-border text-muted hover:border-ink/25 hover:text-ink'}`}
+            >
+              <Bookmark className="h-[18px] w-[18px]" fill={saved ? 'currentColor' : 'none'} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); if (!moved.current) onView() }}
+              className="tap flex flex-1 items-center justify-center gap-1.5 rounded-control border border-border py-2 text-[13px] font-semibold text-ink hover:border-ink/25"
+            >
+              <Info className="h-4 w-4" /> View Profile
+            </button>
+          </div>
         </div>
       </div>
       <span className="sr-only">Swipe right to show interest, left to skip. {c.name}, {match.label}.</span>
