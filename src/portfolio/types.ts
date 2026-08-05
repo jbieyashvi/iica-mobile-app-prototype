@@ -185,6 +185,37 @@ export interface SocialLinks {
   hidden: string[] // keys hidden from public
 }
 
+// ---- Free Resources (free PDFs / e-books) ----
+export interface FreeResource {
+  id: string
+  title: string
+  description: string
+  cover: string // cover image (preset/mock upload) or '' for placeholder
+  pdfName: string // original file name, e.g. "folk-art-guide.pdf"
+  pdfData: string // data: URL of the PDF (mock local persistence) or '' for demo/preview
+  author: string
+  category: string
+  year: string
+  language: string
+}
+
+// ---- Donation / support listings ----
+export interface DonationOption {
+  id: string
+  title: string
+  amount: string // numeric string; validated > 0
+  currency: string
+  note: string // optional short note
+  active: boolean
+}
+
+export interface SupportConfig {
+  show: boolean
+  heading: string
+  description: string // max 1000 chars
+  options: DonationOption[]
+}
+
 export interface CollabPrefs {
   availability: string
   openTo: string[]
@@ -208,6 +239,8 @@ export interface Portfolio {
   education: EducationEntry[]
   experience: ExperienceEntry[]
   gallery: { images: GalleryImage[]; videos: GalleryVideo[] }
+  freeResources: FreeResource[]
+  support: SupportConfig
   social: SocialLinks
   collabPrefs: CollabPrefs
   featuredTestimonials: string[]

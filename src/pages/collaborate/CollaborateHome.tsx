@@ -8,6 +8,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import TuneSheet from '../../components/collab/TuneSheet'
 import { useAuth } from '../../state/AuthContext'
+import { membershipAccess } from '../../state/membershipAccess'
 import { useCollab } from '../../state/CollabContext'
 import { TuneFilters } from '../../collab/types'
 import { useState } from 'react'
@@ -21,8 +22,8 @@ export default function CollaborateHome() {
   const [showTune, setShowTune] = useState(false)
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
 
-  // ---- Non-active states ----
-  if (state.role !== 'active') {
+  // ---- Non-active states (guest, registered, pending, suspended) ----
+  if (!membershipAccess(state).canUseCreatorFeatures) {
     return (
       <div className="flex h-full flex-col bg-bg">
         <Header />

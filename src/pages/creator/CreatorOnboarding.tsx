@@ -4,6 +4,7 @@ import { Link2, FolderOpen, Sparkles, ChevronRight, BadgeCheck } from 'lucide-re
 import AuthShell from '../../components/AuthShell'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useAuth } from '../../state/AuthContext'
+import { membershipAccess } from '../../state/membershipAccess'
 
 // Post-payment creator onboarding entry. These three areas are collected only
 // AFTER membership purchase — never during registration. The detailed forms
@@ -34,10 +35,11 @@ export default function CreatorOnboarding() {
   const navigate = useNavigate()
   const { state } = useAuth()
 
-  // Only reachable after a successful purchase.
+  // Only reachable by an active creator member (post-purchase, not suspended).
   useEffect(() => {
-    if (state.role !== 'active') navigate('/membership/status', { replace: true })
-  }, [state.role, navigate])
+    if (!membershipAccess(state).canEditPortfolio)
+      navigate('/membership/status', { replace: true })
+  }, [state, navigate])
 
   return (
     <AuthShell

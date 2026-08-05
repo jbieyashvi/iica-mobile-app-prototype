@@ -1,0 +1,55 @@
+/* IICA User App — colour tokens (reference only)
+ * Exact values audited from tailwind.config.js, src/index.css and inline utilities.
+ * NOT imported anywhere. Do not replace existing styles or theme colours.
+ * See docs/user-app-colors.md for usage, occurrences and rationale.
+ */
+:root {
+  /* Brand */
+  --color-primary: #9D2567;        /* brand.DEFAULT — bg-brand / text-brand */
+  --color-primary-hover: #592049;  /* brand.dark — hover:bg-brand-dark */
+  --color-primary-soft: #F8EDF3;   /* brand.soft — bg-brand-soft */
+  --color-on-primary: #FFFFFF;
+  --color-brand-text-on-soft: #6D3357; /* body text inside brand-soft cards */
+
+  /* Backgrounds and surfaces */
+  --color-page-background: #FAFAF8; /* bg */
+  --color-surface: #FFFFFF;         /* surface */
+  --color-canvas: #ECEAE7;          /* mobile body backdrop (unify #ECEBE7/#EDEBE7) */
+  --color-frame: #1D1D1F;           /* desktop device bezel */
+  --color-island: #0D0D0E;          /* dynamic island */
+
+  /* Text */
+  --color-text-primary: #191718;    /* ink */
+  --color-text-secondary: #706B6E;  /* muted */
+  --color-warning-text: #7A5412;    /* copy on warning tint */
+  --color-error-text: #7A2B30;      /* copy on error tint */
+
+  /* Borders and dividers */
+  --color-border: #E8E4E6;          /* border */
+
+  /* Status */
+  --color-success: #227A52;
+  --color-success-soft: #EAF3EE;
+  --color-warning: #B77818;
+  --color-warning-soft: #F7F0E4;
+  --color-error: #B83A42;
+  --color-error-soft: #F7E9EA;
+
+  /* Overlays and shadows */
+  --color-overlay: rgba(25, 23, 24, 0.40);       /* bg-ink/40 scrim */
+  --color-scrim-white: rgba(255, 255, 255, 0.90);
+  --color-shadow-subtle: rgba(25, 23, 24, 0.04); /* shadow-subtle */
+  --color-shadow-frame: rgba(25, 23, 24, 0.16);
+
+  /* Brand social marks (third-party — keep literal, not design tokens) */
+  --brand-whatsapp: #25D366;
+  --brand-instagram: #E4405F;
+  --brand-facebook: #1877F2;
+  --brand-linkedin: #0A66C2;
+  --brand-youtube: #FF0000;
+  --brand-spotify: #1DB954;
+  --brand-google-blue: #4285F4;
+  --brand-google-red: #EA4335;
+  --brand-google-yellow: #FBBC05;
+  --brand-google-green: #34A853;
+}

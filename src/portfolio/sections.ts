@@ -13,6 +13,8 @@ import {
   Link2,
   Handshake,
   Megaphone,
+  FileText,
+  HeartHandshake,
   LucideIcon,
 } from 'lucide-react'
 import { Portfolio } from './types'
@@ -56,8 +58,8 @@ export const SECTIONS: SectionDef[] = [
   },
   {
     slug: 'domain',
-    title: 'Domain & Skills',
-    description: 'Creative domain, skills and experience',
+    title: 'Genre & Skills',
+    description: 'Creative genre, skills and experience',
     icon: Palette,
     required: true,
     complete: (p) => nonEmpty(p.domain.primaryDomain) && p.domain.skills.length > 0,
@@ -98,6 +100,15 @@ export const SECTIONS: SectionDef[] = [
     required: false,
     complete: (p) => p.media.length >= 1,
     started: (p) => p.media.length >= 1,
+  },
+  {
+    slug: 'free-resources',
+    title: 'Free Resources',
+    description: 'Free PDFs and e-books for your audience',
+    icon: FileText,
+    required: false,
+    complete: (p) => p.freeResources.length >= 1,
+    started: (p) => p.freeResources.length >= 1,
   },
   {
     slug: 'collaborations',
@@ -143,6 +154,15 @@ export const SECTIONS: SectionDef[] = [
     required: false,
     complete: (p) => p.featuredTestimonials.length >= 1,
     started: (p) => p.featuredTestimonials.length >= 1,
+  },
+  {
+    slug: 'support',
+    title: 'We Need Your Support',
+    description: 'Fixed donation options for supporters',
+    icon: HeartHandshake,
+    required: false,
+    complete: (p) => p.support.options.length >= 1,
+    started: (p) => p.support.options.length >= 1 || nonEmpty(p.support.description),
   },
   {
     slug: 'social',

@@ -8,10 +8,12 @@ import CatalogueFilterSheet from '../../components/explore/CatalogueFilterSheet'
 import ExploreTabs from '../../components/explore/ExploreTabs'
 import { PublicArtist } from '../../data/publicArtists'
 import {
-  CatalogueFilters, CatalogueState, NO_FILTERS, CATALOGUE_POOL,
+  CatalogueFilters, CatalogueState, NO_FILTERS, CATALOGUE_POOL, NEAR_ME,
   initialOf, activeFilterCount as countFilters, filterProfiles, deriveLetters,
   applyLetter, topFeatured, fromCatalogueParams,
 } from '../../data/catalogueFilter'
+import { effectiveCity } from '../../data/publicArtists'
+import { cityDistanceKm, distanceLabel } from '../../lib/geo'
 import { FEATURED_BLURB } from '../../config/catalogue'
 
 const KEY = 'iica_catalogue_v1'
@@ -70,7 +72,23 @@ export default function ArtistCatalogue() {
     if (letter !== 'All' && !availableLetters.includes(letter)) setLetter('All')
   }, [availableLetters, letter])
 
-  const displayed = useMemo(() => applyLetter(filtered, letter), [filtered, letter])
+  // Near Me: sort the filtered set by proximity to the chosen origin city and
+  // bypass A–Z grouping. `near` is the device's nearest city or a manual pick.
+  const nearMode = filters.location === NEAR_ME && !!filters.near
+  const nearSorted = useMemo(
+    () =>
+      nearMode
+        ? [...filtered].sort(
+            (a, b) => cityDistanceKm(filters.near, effectiveCity(a)) - cityDistanceKm(filters.near, effectiveCity(b)),
+          )
+        : [],
+    [nearMode, filtered, filters.near],
+  )
+
+  const displayed = useMemo(
+    () => (nearMode ? nearSorted : applyLetter(filtered, letter)),
+    [nearMode, nearSorted, filtered, letter],
+  )
 
   const grouped = useMemo(() => {
     const map = new Map<string, PublicArtist[]>()
@@ -96,7 +114,8 @@ export default function ArtistCatalogue() {
   }
 
   const removeFilter = (k: keyof CatalogueFilters) =>
-    setFilters((f) => ({ ...f, [k]: '' }))
+    // Removing the location chip also clears the Near-Me origin city.
+    setFilters((f) => (k === 'location' ? { ...f, location: '', near: '' } : { ...f, [k]: '' }))
 
   const count = displayed.length
 
@@ -130,7 +149,7 @@ export default function ArtistCatalogue() {
             {(['category', 'location', 'genre'] as const).map((k) =>
               filters[k] ? (
                 <span key={k} className="inline-flex items-center gap-1 rounded-md bg-brand-soft px-2 py-1 text-[11.5px] font-semibold text-brand-dark">
-                  {filters[k]}
+                  {k === 'location' && filters.location === NEAR_ME ? `Near Me${filters.near ? ` · ${filters.near}` : ''}` : filters[k]}
                   <button aria-label={`Remove ${k}`} onClick={() => removeFilter(k)}><X className="h-3 w-3" /></button>
                 </span>
               ) : null,
@@ -154,23 +173,31 @@ export default function ArtistCatalogue() {
 
         {/* All Profiles */}
         <section className="mt-6">
-          <h2 className="mb-2.5 px-[18px] font-serif text-[19px] text-ink">All Profiles</h2>
+          <h2 className="mb-2.5 px-[18px] font-serif text-[19px] text-ink">
+            {nearMode ? `Creators near ${filters.near}` : 'All Profiles'}
+          </h2>
 
-          {/* A–Z selector */}
-          <div className="no-scrollbar flex gap-1 overflow-x-auto px-[18px] pb-1">
-            {['All', ...availableLetters].map((l) => {
-              const on = letter === l
-              return (
-                <button
-                  key={l}
-                  onClick={() => setLetter(l)}
-                  className={`tap shrink-0 rounded-md px-2.5 py-1.5 text-[13px] font-semibold transition-colors ${on ? 'text-brand underline decoration-2 underline-offset-4' : 'text-muted hover:text-ink'}`}
-                >
-                  {l}
-                </button>
-              )
-            })}
-          </div>
+          {/* A–Z selector (hidden in Near-Me proximity mode) */}
+          {!nearMode && (
+            <div className="no-scrollbar flex gap-1 overflow-x-auto px-[18px] pb-1">
+              {['All', ...availableLetters].map((l) => {
+                const on = letter === l
+                return (
+                  <button
+                    key={l}
+                    onClick={() => setLetter(l)}
+                    className={`tap shrink-0 rounded-md px-2.5 py-1.5 text-[13px] font-semibold transition-colors ${on ? 'text-brand underline decoration-2 underline-offset-4' : 'text-muted hover:text-ink'}`}
+                  >
+                    {l}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {nearMode && count > 0 && (
+            <p className="px-[18px] text-[11.5px] text-muted">Sorted by distance · prototype estimates, not live GPS data.</p>
+          )}
 
           {/* Result count */}
           {count > 0 && (
@@ -188,6 +215,19 @@ export default function ArtistCatalogue() {
                 <button onClick={clearAll} className="tap min-h-[44px] rounded-control bg-brand px-5 text-[14px] font-semibold text-white hover:bg-brand-dark">Clear Filters</button>
                 <button onClick={clearAll} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">Browse All Profiles</button>
               </div>
+            </div>
+          ) : nearMode ? (
+            <div className="mt-3 flex flex-col gap-3 px-[18px]">
+              {displayed.map((a) => (
+                <CatalogueListItem
+                  key={a.slug}
+                  profile={a}
+                  saved={isSaved('artist:' + a.slug)}
+                  onSave={() => save('artist:' + a.slug)}
+                  onView={() => openProfile(a)}
+                  distanceLabel={distanceLabel(filters.near, effectiveCity(a))}
+                />
+              ))}
             </div>
           ) : letter === 'All' ? (
             <div className="mt-3 flex flex-col gap-4 px-[18px]">

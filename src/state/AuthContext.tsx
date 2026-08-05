@@ -22,6 +22,7 @@ export type MembershipStatus =
   | 'failed'
   | 'cancelled'
   | 'expired'
+  | 'suspended'
   | 'restored'
 
 export type PurchasePlatform = 'Apple' | 'Google' | 'Demo'
@@ -138,9 +139,11 @@ interface AuthContextValue {
   purchaseFailed: () => void
   purchaseCancelled: () => void
   restorePurchase: (platform: PurchasePlatform) => void
+  suspendMembership: (reason?: 'suspended' | 'expired') => void
   previewRegistered: () => void
   previewPending: () => void
   previewActive: () => void
+  previewSuspended: () => void
   logout: () => void
 }
 
@@ -241,6 +244,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           purchasePlatform: platform,
           purchaseRef: purchaseRefFor(state.iicaId),
         }),
+      suspendMembership: (reason = 'expired') =>
+        // Suspended/expired: preserve the IICA ID, payment history and portfolio
+        // data. `role` stays 'active' so ownership of existing content is kept,
+        // but membershipAccess() derives access from the status and blocks all
+        // editing / new creator listings (see src/state/membershipAccess.ts).
+        patch({ membershipStatus: reason }),
       previewRegistered: () => {
         patch({
           onboarded: true, authed: true, emailVerified: true, role: 'guest',
@@ -278,6 +287,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           category: state.category ?? demoUser.category,
           paymentDone: true,
           purchasePlatform: 'Demo',
+          purchaseRef: `IAP-${id.replace(/[^A-Z0-9]/gi, '')}`,
+          name,
+          email: state.email || demoUser.email,
+          iicaId: id,
+        })
+      },
+      previewSuspended: () => {
+        const name = state.name || demoUser.fullName
+        const id = state.iicaId ?? demoUser.memberId
+        patch({
+          onboarded: true,
+          authed: true,
+          emailVerified: true,
+          role: 'active',
+          membershipStatus: 'expired',
+          category: state.category ?? demoUser.category,
+          paymentDone: true,
+          purchasePlatform: state.purchasePlatform ?? 'Demo',
           purchaseRef: `IAP-${id.replace(/[^A-Z0-9]/gi, '')}`,
           name,
           email: state.email || demoUser.email,

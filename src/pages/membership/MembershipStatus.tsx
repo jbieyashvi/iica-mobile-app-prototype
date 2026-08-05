@@ -17,7 +17,8 @@ const META: Record<Status, { label: string; tone: Tone; blurb: string }> = {
   active: { label: 'Active', tone: 'success', blurb: 'Your creator membership is active. All creator tools are unlocked.' },
   failed: { label: 'Purchase Failed', tone: 'error', blurb: 'The last purchase didn’t go through. Your application and IICA ID are safe.' },
   cancelled: { label: 'Purchase Cancelled', tone: 'warning', blurb: 'You cancelled the purchase. Membership is still pending.' },
-  expired: { label: 'Expired', tone: 'error', blurb: 'Your membership has expired (prototype state). Renew via an in-app purchase.' },
+  expired: { label: 'Expired', tone: 'error', blurb: 'Your membership has expired. Your IICA ID and portfolio are saved — renew via an in-app purchase to edit and list again.' },
+  suspended: { label: 'Suspended', tone: 'error', blurb: 'Your membership is suspended. Your IICA ID and portfolio are preserved. Creator editing and new listings are paused.' },
   restored: { label: 'Restored', tone: 'success', blurb: 'Your creator membership was restored. All creator tools are unlocked.' },
 }
 
@@ -30,7 +31,7 @@ export default function MembershipStatus() {
   const meta = META[status]
   const id = state.iicaId ?? '—'
   const isActive = status === 'active' || status === 'restored'
-  const canPurchase = status === 'submitted' || status === 'purchase_pending' || status === 'cancelled' || status === 'failed' || status === 'expired'
+  const canPurchase = status === 'submitted' || status === 'purchase_pending' || status === 'cancelled' || status === 'failed' || status === 'expired' || status === 'suspended'
 
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
   const copyId = async () => {
@@ -75,7 +76,7 @@ export default function MembershipStatus() {
         {canPurchase && (
           <>
             <PrimaryButton full onClick={() => navigate('/membership/purchase')}>
-              Complete In-App Purchase
+              {status === 'expired' || status === 'suspended' ? 'Renew Membership' : 'Complete In-App Purchase'}
             </PrimaryButton>
             {state.iicaId && (
               <button onClick={copyId} className="tap flex min-h-[46px] items-center justify-center gap-2 rounded-control border border-border bg-surface text-[14px] font-semibold text-ink hover:border-ink/25">

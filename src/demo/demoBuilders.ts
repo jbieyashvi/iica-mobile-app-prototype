@@ -61,6 +61,20 @@ export function demoPortfolio(): Portfolio {
       ],
       videos: [],
     },
+    freeResources: [
+      { id: 'fr1', title: 'A Beginner’s Guide to Indian Folk Art', description: 'A free introduction to regional folk-art styles, motifs and techniques.', cover: demoWork[3], pdfName: 'indian-folk-art-guide.pdf', pdfData: '', author: demoUser.fullName, category: 'Visual Arts', year: '2026', language: 'English' },
+      { id: 'fr2', title: 'Cultural Storytelling Workbook', description: 'A short workbook with prompts for translating cultural stories into visuals.', cover: demoWork[1], pdfName: 'storytelling-workbook.pdf', pdfData: '', author: demoUser.fullName, category: 'Education', year: '2026', language: 'English' },
+    ],
+    support: {
+      show: true,
+      heading: 'We Need Your Support',
+      description: 'Your support helps me keep creating free cultural resources, workshops and open storytelling projects. Every contribution goes directly towards new work and community sessions.',
+      options: [
+        { id: 'sp1', title: 'Buy me a chai', amount: '100', currency: 'INR', note: 'A small thank-you', active: true },
+        { id: 'sp2', title: 'Support a workshop', amount: '500', currency: 'INR', note: 'Helps fund one community session', active: true },
+        { id: 'sp3', title: 'Patron', amount: '1000', currency: 'INR', note: 'Supports a full free resource', active: true },
+      ],
+    },
     social: {
       instagram: demoSocial.instagram, facebook: demoSocial.facebook, youtube: demoSocial.youtube, spotify: demoSocial.spotify,
       x: '', linkedin: 'https://linkedin.com/in/yashvi', website: demoSocial.website, custom: [], hidden: [],

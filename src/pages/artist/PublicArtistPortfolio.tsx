@@ -3,7 +3,9 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   ChevronLeft, Share2, Bookmark, BookmarkCheck, MapPin, Handshake,
   Pencil, Star, ChevronRight, Play, CalendarDays, Ticket, Lock, X,
+  FileText, HeartHandshake,
 } from 'lucide-react'
+import { formatMoney } from '../../shop/pricing'
 import { usePublicArtist } from '../../data/usePublicArtist'
 import { useAuth } from '../../state/AuthContext'
 import { useGate } from '../../state/GateContext'
@@ -20,13 +22,15 @@ import StatusBadge from '../../components/StatusBadge'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 
-const NAV: NavItem[] = [
+const BASE_NAV: NavItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'journey', label: 'Journey' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'media', label: 'Media' },
+  { id: 'resources', label: 'Free Resources' },
   { id: 'collaborations', label: 'Collaborations' },
   { id: 'events', label: 'Events' },
+  { id: 'support', label: 'Support' },
   { id: 'reviews', label: 'Reviews' },
 ]
 
@@ -51,6 +55,15 @@ export default function PublicArtistPortfolio() {
   const scrollMt = { scrollMarginTop: 'calc(var(--safe-top) + 96px)' } as const
 
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
+
+  // Only show nav pills for sections that actually render (hide empty optional).
+  const NAV = useMemo(() => {
+    const hasResources = (artist?.freeResources?.length ?? 0) > 0
+    const hasSupport = !!artist?.support && artist.support.options.length > 0
+    return BASE_NAV.filter(
+      (n) => (n.id !== 'resources' || hasResources) && (n.id !== 'support' || hasSupport),
+    )
+  }, [artist])
 
   // scrollspy
   useEffect(() => {
@@ -308,6 +321,42 @@ export default function PublicArtistPortfolio() {
               </section>
             )}
 
+            {/* ---------- FREE RESOURCES ---------- */}
+            {(artist.freeResources?.length ?? 0) > 0 && (
+              <section id="resources" ref={setRef('resources')} style={scrollMt} className="pt-8">
+                <div className="mb-3 flex items-center gap-2 px-[18px]">
+                  <h2 className="font-serif text-[19px] text-ink">Free Resources</h2>
+                  <StatusBadge tone="success">Free</StatusBadge>
+                </div>
+                <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
+                  {artist.freeResources!.map((r) => (
+                    <div key={r.id} className="w-[210px] shrink-0 overflow-hidden rounded-card border border-border bg-surface">
+                      <div className="relative aspect-[3/2] w-full overflow-hidden bg-brand-soft">
+                        {r.cover ? (
+                          <img src={r.cover} alt="" loading="lazy" className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="flex h-full w-full items-center justify-center text-brand-dark"><FileText className="h-8 w-8" /></span>
+                        )}
+                        <span className="absolute left-2 top-2"><StatusBadge tone="success">Free</StatusBadge></span>
+                      </div>
+                      <div className="p-3">
+                        <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-ink">{r.title}</p>
+                        <p className="mt-0.5 line-clamp-1 text-[11.5px] text-muted">
+                          {[r.category, r.year, r.language].filter(Boolean).join(' · ') || 'PDF · E-book'}
+                        </p>
+                        <button
+                          onClick={() => navigate(`/artist/${artist.slug}/resource/${r.id}`)}
+                          className="tap mt-2.5 flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-control bg-ink text-[13px] font-semibold text-white hover:bg-ink/90"
+                        >
+                          <FileText className="h-4 w-4" /> Read Free
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* ---------- GALLERY ---------- */}
             {artist.gallery.length > 0 && (
               <section className="pt-8">
@@ -469,6 +518,42 @@ export default function PublicArtistPortfolio() {
                 </div>
               )}
             </section>
+
+            {/* ---------- WE NEED YOUR SUPPORT ---------- */}
+            {artist.support && artist.support.options.length > 0 && (
+              <section id="support" ref={setRef('support')} style={scrollMt} className="px-[18px] pt-8">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-soft text-brand"><HeartHandshake className="h-4 w-4" /></span>
+                  <h2 className="font-serif text-[19px] text-ink">{artist.support.heading || 'We Need Your Support'}</h2>
+                </div>
+                {artist.support.description && (
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-ink">{artist.support.description}</p>
+                )}
+                <div className="mt-3 flex flex-col gap-2.5">
+                  {artist.support.options.map((o) => (
+                    <div key={o.id} className="flex items-center gap-3 rounded-card border border-border bg-surface p-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-semibold text-ink">{o.title || 'Support'}</p>
+                        {o.note && <p className="truncate text-[12px] text-muted">{o.note}</p>}
+                        <p className="mt-0.5 text-[11.5px] font-medium text-brand">Fixed amount</p>
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end gap-1.5">
+                        <span className="text-[15px] font-bold text-ink">{formatMoney(o.amount, o.currency)}</span>
+                        <button
+                          onClick={() => navigate(`/artist/${artist.slug}/support/${o.id}`)}
+                          className="tap flex min-h-[36px] items-center gap-1.5 rounded-control bg-brand px-3.5 text-[13px] font-semibold text-white hover:bg-brand-dark"
+                        >
+                          <HeartHandshake className="h-4 w-4" /> Support Now
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2.5 text-[11.5px] text-muted">
+                  Each amount is fixed by the creator. Prototype only — no real payment is processed.
+                </p>
+              </section>
+            )}
 
             {/* ---------- REVIEWS ---------- */}
             <section id="reviews" ref={setRef('reviews')} style={scrollMt} className="px-[18px] pb-10 pt-8">

@@ -2,6 +2,13 @@ import { CartItem, COMMISSION_RATE, PLATFORM_FEE_RATE, Product } from './types'
 
 export const inr = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN')
 
+// Multi-currency formatter for donations/support (prototype).
+const CURRENCY_SYMBOL: Record<string, string> = {
+  INR: '₹', USD: '$', GBP: '£', EUR: '€', AED: 'AED ',
+}
+export const formatMoney = (n: number, currency = 'INR') =>
+  `${CURRENCY_SYMBOL[currency] ?? `${currency} `}${Math.round(n).toLocaleString('en-IN')}`
+
 export function unitPrice(p: Product, variantId?: string): number {
   if (p.free) return 0
   const v = p.variants?.find((x) => x.id === variantId)

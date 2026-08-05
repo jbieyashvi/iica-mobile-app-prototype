@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   FlaskConical, UserRound, Clock, BadgeCheck, UserCheck, FolderCheck, CalendarDays,
-  GraduationCap, Download, Package, RotateCcw, ChevronRight, X, Sparkles,
+  GraduationCap, Download, Package, RotateCcw, ChevronRight, X, Sparkles, AlertTriangle,
 } from 'lucide-react'
 import { useAuth } from '../state/AuthContext'
 import { usePortfolio } from '../state/PortfolioContext'
@@ -17,7 +17,7 @@ const TOAST_KEY = 'iica_demo_toast'
 
 export default function PrototypeTools() {
   const navigate = useNavigate()
-  const { continueAsGuest, previewRegistered, previewPending, previewActive } = useAuth()
+  const { continueAsGuest, previewRegistered, previewPending, previewActive, previewSuspended } = useAuth()
   const portfolio = usePortfolio()
   const events = useEvents()
   const shop = useShop()
@@ -74,6 +74,7 @@ export default function PrototypeTools() {
             <Chip icon={<UserCheck className="h-4 w-4" />} label="Registered User" onClick={() => { previewRegistered(); navigate('/home'); flash('Registered user') }} />
             <Chip icon={<Clock className="h-4 w-4" />} label="Purchase-Pending" onClick={() => { previewPending(); navigate('/membership/status') }} />
             <Chip icon={<BadgeCheck className="h-4 w-4" />} label="Active Creator" onClick={() => { previewActive(); navigate('/home'); flash('Active creator') }} />
+            <Chip icon={<AlertTriangle className="h-4 w-4" />} label="Suspended / Expired" onClick={() => { previewSuspended(); navigate('/membership/status'); flash('Membership expired') }} />
           </Group>
 
           <Group title="Load demo">

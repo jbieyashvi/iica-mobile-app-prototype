@@ -141,7 +141,7 @@ export const seedEvents: EventItem[] = [
       { id: 's2', start: '20:00', end: '21:30', title: 'Main performance', host: 'Abhishek Singh Chouhan', description: 'Original compositions.' },
       { id: 's3', start: '21:30', end: '22:30', title: 'Encore & meet', host: 'Abhishek Singh Chouhan', description: 'Interactive encore.' },
     ],
-    venueName: 'antiSOCIAL, Khar', address: 'Rohan Plaza, Khar West', city: 'Mumbai',
+    venueName: 'antiSOCIAL, Hauz Khas', address: 'Hauz Khas Village', city: 'Delhi',
     state: 'Maharashtra', country: 'India', postal: '400052',
     venueInstructions: 'Entry from Gate 2. Carry a valid ID.',
     accessibility: 'Wheelchair accessible. Accessible restrooms available.',

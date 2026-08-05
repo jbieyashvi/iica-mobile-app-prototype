@@ -38,8 +38,9 @@ export default function MembershipSubmitted() {
           Your IICA ID is ready
         </h1>
         <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">
-          We’ve emailed your IICA ID to you. Complete the membership purchase in
-          the app to unlock your creator portfolio and tools.
+          We’ve emailed your IICA ID and a membership purchase link to you.
+          Enter the ID in the app to complete your purchase and unlock your
+          creator portfolio and tools.
         </p>
       </div>
 
@@ -66,9 +67,10 @@ export default function MembershipSubmitted() {
             • Your unique IICA ID:{' '}
             <span className="font-mono font-semibold text-ink">{id}</span>
           </li>
+          <li>• A secure membership purchase link</li>
           <li>
-            • Return to the IICA app to complete membership through the App
-            Store / Play Store purchase
+            • Enter your IICA ID in the app to complete membership through the
+            App Store / Play Store purchase
           </li>
         </ul>
       </div>

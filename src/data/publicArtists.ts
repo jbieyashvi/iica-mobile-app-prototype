@@ -135,6 +135,33 @@ export interface ArtistReview {
   avatar?: string
 }
 
+export interface ArtistFreeResource {
+  id: string
+  title: string
+  description: string
+  cover: string
+  pdfName: string
+  pdfData: string // data: URL when the creator uploaded one; '' → prototype placeholder
+  author: string
+  category: string
+  year: string
+  language: string
+}
+
+export interface ArtistSupportOption {
+  id: string
+  title: string
+  amount: number
+  currency: string
+  note: string
+}
+
+export interface ArtistSupport {
+  heading: string
+  description: string
+  options: ArtistSupportOption[]
+}
+
 export interface RatingSummary {
   avg: number
   total: number
@@ -175,6 +202,8 @@ export interface PublicArtist {
   upcomingEvents: ArtistEvent[]
   pastEvents: ArtistPastEvent[]
   gallery: ArtistGalleryItem[]
+  freeResources?: ArtistFreeResource[]
+  support?: ArtistSupport
   reviews: ArtistReview[]
   ratingSummary: RatingSummary
 }
@@ -301,6 +330,19 @@ const abhishek: PublicArtist = {
     { id: 'r3', author: 'Vikram Joshi', relationship: 'Student', date: '2024-09-08', rating: 4, text: 'Learnt production basics in his workshop. Patient, clear and genuinely generous with knowledge.', verified: false },
   ],
   ratingSummary: { avg: 4.8, total: 42, distribution: [34, 6, 2, 0, 0] },
+  freeResources: [
+    { id: 'afr1', title: 'Hindustani Riyaz Starter Pack', description: 'A free practice guide for daily vocal riyaz, with warm-ups and simple exercises.', cover: IMG.m3, pdfName: 'riyaz-starter.pdf', pdfData: '', author: 'Abhishek Singh Chouhan', category: 'Music', year: '2026', language: 'Hindi, English' },
+    { id: 'afr2', title: 'Home Studio Setup on a Budget', description: 'An e-book on building your first home recording setup affordably.', cover: IMG.m4, pdfName: 'home-studio.pdf', pdfData: '', author: 'Abhishek Singh Chouhan', category: 'Education', year: '2026', language: 'English' },
+  ],
+  support: {
+    heading: 'We Need Your Support',
+    description: 'Independent music takes time and resources. Your support helps me release free music, run open riyaz sessions and keep learning material free for everyone.',
+    options: [
+      { id: 'asp1', title: 'Buy me a chai', amount: 100, currency: 'INR', note: 'A small thank-you' },
+      { id: 'asp2', title: 'Fund a session', amount: 500, currency: 'INR', note: 'Supports one open riyaz session' },
+      { id: 'asp3', title: 'Studio patron', amount: 1000, currency: 'INR', note: 'Helps fund a new release' },
+    ],
+  },
 }
 
 // Lighter profiles for the existing directory artists so their cards open real pages.
@@ -328,6 +370,8 @@ function makeArtist(
   return {
     ...abhishek,
     whatsNew: base.whatsNew ?? [], // never inherit abhishek's announcements
+    freeResources: [], // Free Resources are per-creator; don't inherit the sample
+    support: undefined, // Support section is opt-in per creator; hidden by default
     slug: base.slug,
     name: base.name,
     headline: base.headline,
@@ -416,7 +460,7 @@ const others: PublicArtist[] = [
   makeArtist({ slug: 'neha-kapoor', name: 'Neha Kapoor', headline: 'Hatha & wellness yoga coach', location: 'Bengaluru, India', photo: PIC.yoga1, primaryDomain: 'Yoga', tags: ['Hatha', 'Wellness', 'Meditation'], verified: true, availability: 'Available', experienceYears: 10, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_HIGH, whatsNew: [
     { id: 'nk-n1', type: 'Workshop', title: 'Morning Hatha Yoga Workshop', date: '2026-09-12', time: '6:30 AM', location: 'Bengaluru', description: 'A guided sunrise session for all levels.', image: PIC.yoga1, cta: 'Register', href: '/explore/events', featured: true },
   ] }),
-  makeArtist({ slug: 'anil-menon', name: 'Anil Menon', headline: 'Ashtanga yoga instructor', location: 'Goa, India', photo: PIC.man5, primaryDomain: 'Yoga', tags: ['Ashtanga', 'Breathwork'], verified: false, availability: 'Selectively Available', experienceYears: 12, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_MID }),
+  makeArtist({ slug: 'anil-menon', name: 'Anil Menon', headline: 'Ashtanga yoga instructor', location: 'Pune, India', photo: PIC.man5, primaryDomain: 'Yoga', tags: ['Ashtanga', 'Breathwork'], verified: false, availability: 'Selectively Available', experienceYears: 12, category: 'Yoga Coach', genresOrSpecialisations: ['Yoga'], activity: A_MID }),
 
   // ---- Athlete ----
   makeArtist({ slug: 'vikram-rathore', name: 'Vikram Rathore', headline: 'State cricket all-rounder', location: 'Delhi, India', photo: PIC.man3, primaryDomain: 'Sports', tags: ['Cricket', 'All-rounder'], verified: true, availability: 'Available', experienceYears: 8, category: 'Athlete', genresOrSpecialisations: ['Sports'], activity: A_MID }),

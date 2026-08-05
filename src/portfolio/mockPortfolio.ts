@@ -188,6 +188,13 @@ export function seedPortfolio(name: string, email: string): Portfolio {
       ],
       videos: [],
     },
+    freeResources: [],
+    support: {
+      show: false,
+      heading: 'We Need Your Support',
+      description: '',
+      options: [],
+    },
     social: {
       instagram: 'https://instagram.com/reshma.patra',
       facebook: 'https://facebook.com/reshma.patra',

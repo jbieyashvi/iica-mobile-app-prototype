@@ -2,6 +2,7 @@ import { createContext, ReactNode, useCallback, useContext, useState } from 'rea
 import { Lock, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
+import { membershipAccess, membershipCtaTarget } from './membershipAccess'
 import PrimaryButton from '../components/PrimaryButton'
 
 interface GateContextValue {
@@ -18,10 +19,10 @@ export function GateProvider({ children }: { children: ReactNode }) {
 
   const requireMember = useCallback(
     (f: string, action: () => void) => {
-      if (state.role === 'active') action()
+      if (membershipAccess(state).canUseCreatorFeatures) action()
       else setFeature(f)
     },
-    [state.role],
+    [state],
   )
 
   const close = () => setFeature(null)
@@ -65,7 +66,7 @@ export function GateProvider({ children }: { children: ReactNode }) {
                 full
                 onClick={() => {
                   close()
-                  navigate(state.role === 'pending' ? '/membership/status' : '/membership')
+                  navigate(membershipCtaTarget(state))
                 }}
               >
                 Activate Creator Membership

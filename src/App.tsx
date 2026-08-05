@@ -85,8 +85,13 @@ import PayoutSettings from './pages/account/PayoutSettings'
 import NotificationSettings from './pages/account/NotificationSettings'
 import DeleteAccount from './pages/account/DeleteAccount'
 import InfoPage from './pages/account/InfoPage'
-import Search from './pages/Search'
+import GlobalSearch from './pages/GlobalSearch'
+import SearchAll from './pages/search/SearchAll'
 import Notifications from './pages/Notifications'
+import NewMusic from './pages/NewMusic'
+import SubmitMusic from './pages/music/SubmitMusic'
+import TalkShow from './pages/TalkShow'
+import ApplyGuestArtist from './pages/talkshow/ApplyGuestArtist'
 import Portfolio from './pages/Portfolio'
 import CreateEvent from './pages/CreateEvent'
 // Public artist portfolio
@@ -98,6 +103,8 @@ import ArtistCollaborate from './pages/artist/ArtistCollaborate'
 import ArtistShare from './pages/artist/ArtistShare'
 import ArtistMediaViewer from './pages/artist/ArtistMediaViewer'
 import ArtistEventDetails from './pages/artist/ArtistEventDetails'
+import ArtistResourceReader from './pages/artist/ArtistResourceReader'
+import ArtistSupport from './pages/artist/ArtistSupport'
 // Portfolio builder
 import PortfolioGuard from './components/portfolio/PortfolioGuard'
 import SetupDashboard from './pages/portfolio/SetupDashboard'
@@ -180,7 +187,14 @@ export default function App() {
             <Route path="/collaborate/meetings/:meetingId" element={<CollabMeetingDetails />} />
 
             {/* App sub-screens (no bottom nav) */}
-            <Route path="/search" element={<Search />} />
+            <Route path="/search" element={<GlobalSearch />} />
+            <Route path="/search/all/:group" element={<SearchAll />} />
+            {/* New Music Today */}
+            <Route path="/music" element={<NewMusic />} />
+            <Route path="/music/submit" element={<SubmitMusic />} />
+            {/* Talk Show This Week */}
+            <Route path="/talk-show" element={<TalkShow />} />
+            <Route path="/talk-show/apply" element={<ApplyGuestArtist />} />
             <Route path="/notifications" element={<Notifications />} />
             {/* Account & settings */}
             <Route path="/account/edit" element={<EditProfile />} />
@@ -202,6 +216,8 @@ export default function App() {
             <Route path="/artist/:slug/share" element={<ArtistShare />} />
             <Route path="/artist/:slug/media/:id" element={<ArtistMediaViewer />} />
             <Route path="/artist/:slug/event/:id" element={<ArtistEventDetails />} />
+            <Route path="/artist/:slug/resource/:id" element={<ArtistResourceReader />} />
+            <Route path="/artist/:slug/support/:optionId" element={<ArtistSupport />} />
             {/* Legacy path → same functional Event Details (no duplicate placeholder) */}
             <Route path="/event/:id" element={<EventDetail />} />
             {/* Explore discovery */}

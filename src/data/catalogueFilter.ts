@@ -6,10 +6,16 @@
 import { PublicArtist, effectiveCity, profileCategory, profileGenres, publicArtists } from './publicArtists'
 import { featuredScore } from '../config/catalogue'
 
+// Special sentinel for the location filter: sort by proximity to `near`.
+export const NEAR_ME = 'Near Me'
+
 export interface CatalogueFilters {
   category: string
   location: string
   genre: string
+  // Origin city for Near-Me proximity (device's nearest city or a manual pick).
+  // Only meaningful when location === NEAR_ME.
+  near: string
 }
 
 export interface CatalogueState {
@@ -18,9 +24,12 @@ export interface CatalogueState {
   letter: string
 }
 
-export const NO_FILTERS: CatalogueFilters = { category: '', location: '', genre: '' }
+export const NO_FILTERS: CatalogueFilters = { category: '', location: '', genre: '', near: '' }
 
-export const CATALOGUE_POOL: PublicArtist[] = publicArtists
+// Only publicly visible, eligible creator profiles appear in the directory.
+export const CATALOGUE_POOL: PublicArtist[] = publicArtists.filter(
+  (a) => a.visibility === 'Public',
+)
 
 // First display letter: strip leading punctuation/space, uppercase; digits /
 // symbols collapse to '#'. Case-insensitive.
@@ -47,7 +56,9 @@ export function filterProfiles(pool: PublicArtist[], q: string, f: CatalogueFilt
     )
   }
   if (f.category) r = r.filter((a) => profileCategory(a) === f.category)
-  if (f.location) r = r.filter((a) => effectiveCity(a).toLowerCase() === f.location.toLowerCase())
+  // Near Me does not hard-filter by city — it sorts by proximity (handled by the
+  // caller). A concrete city value still filters exactly.
+  if (f.location && f.location !== NEAR_ME) r = r.filter((a) => effectiveCity(a).toLowerCase() === f.location.toLowerCase())
   if (f.genre) r = r.filter((a) => profileGenres(a).some((g) => g.toLowerCase() === f.genre.toLowerCase()))
   return r
 }
@@ -77,6 +88,7 @@ export function toCatalogueQuery(s: Partial<CatalogueState>): string {
   if (s.filters?.category) p.set('category', s.filters.category)
   if (s.filters?.location) p.set('location', s.filters.location)
   if (s.filters?.genre) p.set('genre', s.filters.genre)
+  if (s.filters?.near) p.set('near', s.filters.near)
   if (s.letter && s.letter !== 'All') p.set('letter', s.letter)
   const str = p.toString()
   return str ? `?${str}` : ''
@@ -87,11 +99,12 @@ export function fromCatalogueParams(params: URLSearchParams): CatalogueState | n
   const category = params.get('category')
   const location = params.get('location')
   const genre = params.get('genre')
+  const near = params.get('near')
   const letter = params.get('letter')
   if (!q && !category && !location && !genre && !letter) return null
   return {
     q: q ?? '',
-    filters: { category: category ?? '', location: location ?? '', genre: genre ?? '' },
+    filters: { category: category ?? '', location: location ?? '', genre: genre ?? '', near: near ?? '' },
     letter: letter ?? 'All',
   }
 }

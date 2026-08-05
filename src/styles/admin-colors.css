@@ -1,0 +1,42 @@
+/* IICA Admin Panel — colour tokens (reference / starter)
+ * NOTE: The Admin Panel is NOT part of this repository, so these values are the
+ * shared IICA brand base (mirrored from the User App), not an audit of admin code.
+ * NOT imported anywhere. When the Admin Panel source is available, re-audit inside
+ * that project and replace admin-specific values (charts, tables, roles) below.
+ * See docs/admin-panel-colors.md.
+ */
+:root {
+  /* Brand (shared) */
+  --color-primary: #9D2567;
+  --color-primary-hover: #592049;
+  --color-primary-soft: #F8EDF3;
+  --color-on-primary: #FFFFFF;
+
+  /* Backgrounds and surfaces (shared base — extend for sidebar/topbar/tables) */
+  --color-page-background: #FAFAF8;
+  --color-surface: #FFFFFF;
+
+  /* Text (shared) */
+  --color-text-primary: #191718;
+  --color-text-secondary: #706B6E;
+
+  /* Borders and dividers (shared) */
+  --color-border: #E8E4E6;
+
+  /* Status (shared — map to approve/pending/reject) */
+  --color-success: #227A52;
+  --color-success-soft: #EAF3EE;
+  --color-warning: #B77818;
+  --color-warning-soft: #F7F0E4;
+  --color-error: #B83A42;
+  --color-error-soft: #F7E9EA;
+
+  /* Overlays and shadows (shared) */
+  --color-overlay: rgba(25, 23, 24, 0.40);
+  --color-shadow-subtle: rgba(25, 23, 24, 0.04);
+
+  /* Admin-specific — TO AUDIT in the admin project (placeholders, do not ship):
+   * --color-sidebar-bg, --color-topbar-bg, --color-table-row-alt,
+   * --color-focus-ring, --color-chart-1..n
+   */
+}

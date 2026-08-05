@@ -130,6 +130,22 @@ function fromPortfolio(p: Portfolio, name: string, category?: string): PublicArt
       ...p.gallery.images.map((g) => ({ id: g.id, url: g.url, caption: g.caption, type: 'image' as const })),
       ...p.gallery.videos.map((v) => ({ id: v.id, url: v.url, caption: v.caption, type: 'video' as const })),
     ],
+    freeResources: p.freeResources.map((r) => ({
+      id: r.id, title: r.title, description: r.description, cover: r.cover,
+      pdfName: r.pdfName, pdfData: r.pdfData, author: r.author, category: r.category,
+      year: r.year, language: r.language,
+    })),
+    // Only expose the support section when the creator enabled it and it has at
+    // least one active option (empty/hidden sections must not appear publicly).
+    support: p.support.show
+      ? {
+          heading: p.support.heading || 'We Need Your Support',
+          description: p.support.description,
+          options: p.support.options
+            .filter((o) => o.active && Number(o.amount) > 0)
+            .map((o) => ({ id: o.id, title: o.title, amount: Number(o.amount), currency: o.currency, note: o.note })),
+        }
+      : undefined,
     reviews,
     ratingSummary: ratingFrom(reviews),
   }

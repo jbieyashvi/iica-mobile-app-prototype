@@ -8,7 +8,7 @@ import EditorShell from '../../../components/portfolio/EditorShell'
 import TextField from '../../../components/form/TextField'
 import { usePortfolio } from '../../../state/PortfolioContext'
 import { SocialLinks } from '../../../portfolio/types'
-import { isUrl } from '../../../lib/validation'
+import { isUrl, isFacebookUrl } from '../../../lib/validation'
 import { useEditorNav } from './common'
 
 interface Row { key: keyof SocialLinks; label: string; icon: LucideIcon; required?: boolean; placeholder: string }
@@ -43,7 +43,9 @@ export default function SocialEditor() {
 
   const err = (key: keyof SocialLinks) => {
     const v = s[key]
-    return typeof v === 'string' && v && !isUrl(v) ? 'Enter a valid URL' : ''
+    if (typeof v !== 'string' || !v) return ''
+    if (key === 'facebook') return isFacebookUrl(v) ? '' : 'Enter a valid Facebook profile/page URL'
+    return isUrl(v) ? '' : 'Enter a valid URL'
   }
 
   const filled = [...PRIORITY, ...SECONDARY].filter(

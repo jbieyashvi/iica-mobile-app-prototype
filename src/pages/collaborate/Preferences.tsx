@@ -57,9 +57,9 @@ export default function Preferences() {
 
         <Section title="Creative preferences">
           <div className="flex flex-col gap-4">
-            <ChipSelect label="Preferred creative domains" options={DOMAINS} selected={v.domains} onToggle={(x) => toggleArr('domains', x)} />
+            <ChipSelect label="Preferred genres" options={DOMAINS} selected={v.domains} onToggle={(x) => toggleArr('domains', x)} />
             <TextField label="Required / complementary skills" optional value={v.skills} onChange={(x) => set('skills', x)} placeholder="e.g. Mixing, Percussion, Visuals" />
-            <TextField label="Genres / styles" optional value={v.genres} onChange={(x) => set('genres', x)} placeholder="e.g. Fusion, Classical" />
+            <TextField label="Styles / sub-genres" optional value={v.genres} onChange={(x) => set('genres', x)} placeholder="e.g. Fusion, Classical" />
             <SelectField label="Experience preference" optional value={v.experience} onChange={(x) => set('experience', x)} options={['Any', 'Emerging (0–5 yrs)', 'Established (5–10 yrs)', 'Senior (10+ yrs)']} />
             <TextField label="Languages" optional value={v.languages} onChange={(x) => set('languages', x)} placeholder="e.g. Hindi, English" />
           </div>
@@ -109,7 +109,7 @@ export default function Preferences() {
             <div className="flex flex-col gap-2 text-[13px]">
               <Line label="Availability" value={v.availability} />
               <div><p className="text-muted">Looking for</p><div className="mt-1 flex flex-wrap gap-1.5">{v.lookingFor.length ? v.lookingFor.map((x) => <StatusBadge key={x} tone="brand">{x}</StatusBadge>) : <span className="text-ink">—</span>}</div></div>
-              <Line label="Domains" value={v.domains.join(', ') || '—'} />
+              <Line label="Genres" value={v.domains.join(', ') || '—'} />
               <Line label="Statement" value={v.statement || '—'} />
               <Line label="Compensation" value={v.compensation} />
             </div>

@@ -13,6 +13,8 @@ import GalleryEditor from './editors/GalleryEditor'
 import TestimonialsEditor from './editors/TestimonialsEditor'
 import SocialEditor from './editors/SocialEditor'
 import CollabPrefsEditor from './editors/CollabPrefsEditor'
+import FreeResourcesEditor from './editors/FreeResourcesEditor'
+import SupportEditor from './editors/SupportEditor'
 
 const MAP: Record<string, () => JSX.Element> = {
   basics: BasicsEditor,
@@ -29,6 +31,8 @@ const MAP: Record<string, () => JSX.Element> = {
   testimonials: TestimonialsEditor,
   social: SocialEditor,
   collabPrefs: CollabPrefsEditor,
+  'free-resources': FreeResourcesEditor,
+  support: SupportEditor,
 }
 
 export default function SectionEditor() {

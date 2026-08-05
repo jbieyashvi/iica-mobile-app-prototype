@@ -10,6 +10,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import StatusBadge from '../../components/StatusBadge'
 import { usePublicArtist } from '../../data/usePublicArtist'
 import { useAuth } from '../../state/AuthContext'
+import { membershipAccess } from '../../state/membershipAccess'
 
 const PROJECT_TYPES = ['Performance', 'Recording', 'Workshop', 'Installation', 'Film', 'Live show', 'Other']
 const MODES = ['In person', 'Remote', 'Either']
@@ -37,7 +38,7 @@ export default function ArtistCollaborate() {
   if (!artist) return <BackHeader title="Collaborate" />
 
   // Non-members: explain the restriction (do not silently redirect).
-  if (state.role !== 'active') {
+  if (!membershipAccess(state).canUseCreatorFeatures) {
     return (
       <div className="flex h-full flex-col bg-bg">
         <BackHeader title="Collaborate" />

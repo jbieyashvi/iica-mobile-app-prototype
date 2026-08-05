@@ -12,10 +12,13 @@ import FeaturedCarousel from '../components/FeaturedCarousel'
 import QuickActions from '../components/QuickActions'
 import SectionHeader from '../components/SectionHeader'
 import HomeCatalogue from '../components/home/HomeCatalogue'
+import NewMusicToday from '../components/music/NewMusicToday'
+import TalkShowThisWeek from '../components/talkshow/TalkShowThisWeek'
 import EventCard from '../components/EventCard'
 import { events } from '../data/events'
 import { whatsNew, UpdateKind } from '../data/whatsNew'
 import { useAuth } from '../state/AuthContext'
+import { membershipAccess } from '../state/membershipAccess'
 
 const kindIcon: Record<UpdateKind, typeof Music2> = {
   performance: CalendarDays,
@@ -27,13 +30,30 @@ const kindIcon: Record<UpdateKind, typeof Music2> = {
 export default function Home() {
   const navigate = useNavigate()
   const { state } = useAuth()
+  const access = membershipAccess(state)
 
   return (
     <div className="pt-3">
       {/* Membership prompt for non-active members */}
-      {state.role !== 'active' && (
+      {!access.isActiveMember && (
         <PageContainer className="mb-4">
-          {state.role === 'pending' ? (
+          {access.isSuspended ? (
+            <button
+              onClick={() => navigate('/membership/status')}
+              className="tap flex w-full items-center gap-3 rounded-card border border-error/30 bg-[#F7E9EA] p-4 text-left"
+            >
+              <Clock className="h-5 w-5 shrink-0 text-error" />
+              <span className="flex-1">
+                <span className="block text-[14px] font-semibold text-ink">
+                  Renew your membership
+                </span>
+                <span className="block text-[12.5px] text-[#8a3b3b]">
+                  Expired · your portfolio is saved · tap to renew
+                </span>
+              </span>
+              <ArrowRight className="h-4 w-4 text-error" />
+            </button>
+          ) : access.isPending ? (
             <button
               onClick={() => navigate('/membership/status')}
               className="tap flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left"
@@ -120,6 +140,16 @@ export default function Home() {
             )
           })}
         </div>
+      </div>
+
+      {/* New Music Today (Admin-featured) */}
+      <div className="mb-8">
+        <NewMusicToday />
+      </div>
+
+      {/* Talk Show This Week (Admin-featured) */}
+      <div className="mb-8">
+        <TalkShowThisWeek />
       </div>
 
       {/* Upcoming Events */}

@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Check, Loader2, ShieldCheck, Apple, Play, Sparkles, XCircle, RotateCcw, AlertTriangle,
+  Fingerprint, Mail,
 } from 'lucide-react'
 import AuthShell from '../../components/AuthShell'
+import TextField from '../../components/form/TextField'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useAuth } from '../../state/AuthContext'
@@ -11,20 +13,40 @@ import {
   MEMBERSHIP_PLAN, detectPlatform, purchaseCtaLabel, platformDisplayName,
 } from '../../config/membership'
 
-type Phase = 'plan' | 'processing' | 'failed' | 'cancelled'
+type Phase = 'verify' | 'plan' | 'processing' | 'failed' | 'cancelled'
+
+// Normalise an IICA ID for comparison: drop spaces, uppercase. So a pasted
+// "jy.673.iica " still matches the record's "JY.673.IICA".
+const normalizeId = (v: string) => v.trim().replace(/\s+/g, '').toUpperCase()
 
 export default function MembershipPurchase() {
   const navigate = useNavigate()
-  const { state, purchaseSuccess, purchaseFailed, purchaseCancelled, restorePurchase } = useAuth()
+  const { state, enterPurchase, purchaseSuccess, purchaseFailed, purchaseCancelled, restorePurchase } = useAuth()
 
   const platform = useMemo(() => detectPlatform(), [])
   const storeName = platformDisplayName(platform)
-  const [phase, setPhase] = useState<Phase>('plan')
+  // Enter the flow at the IICA ID verification step every time — the user must
+  // enter/paste the ID that was emailed to them before purchasing.
+  const [phase, setPhase] = useState<Phase>('verify')
+  const [enteredId, setEnteredId] = useState('')
+  const [idError, setIdError] = useState('')
 
   // Must have submitted the form (and an IICA ID) before purchasing.
   useEffect(() => {
     if (!state.iicaId) navigate('/membership/application', { replace: true })
   }, [state.iicaId, navigate])
+
+  // Validate the entered ID against the submitted membership record.
+  const verifyId = () => {
+    if (!enteredId.trim()) { setIdError('Enter the IICA ID from your email'); return }
+    if (normalizeId(enteredId) !== normalizeId(state.iicaId ?? '')) {
+      setIdError("That IICA ID doesn't match our records. Check the email we sent you.")
+      return
+    }
+    setIdError('')
+    enterPurchase() // membership status → purchase_pending
+    setPhase('plan')
+  }
 
   const runSuccess = () => {
     setPhase('processing')
@@ -41,6 +63,58 @@ export default function MembershipPurchase() {
   }
 
   const StoreIcon = platform === 'android' ? Play : platform === 'ios' ? Apple : Sparkles
+
+  // ---- Step 2a: verify the emailed IICA ID before purchase ----
+  if (phase === 'verify') {
+    return (
+      <AuthShell
+        onBack={() => navigate('/membership/status')}
+        footer={
+          <div className="flex flex-col gap-2.5">
+            <PrimaryButton full onClick={verifyId}>
+              Verify &amp; Continue
+            </PrimaryButton>
+            <SecondaryButton full onClick={() => navigate('/membership/status')}>
+              Back to Status
+            </SecondaryButton>
+          </div>
+        }
+      >
+        <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.14em] text-brand">
+          Step 2 of 2
+        </p>
+        <h1 className="mt-2 font-serif text-[27px] leading-tight text-ink">
+          Enter your IICA ID
+        </h1>
+        <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">
+          Enter or paste the IICA ID we emailed you to confirm this membership
+          purchase is for your account.
+        </p>
+
+        <div className="mt-5 flex items-start gap-2.5 rounded-control border border-border bg-surface px-3.5 py-3">
+          <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+          <p className="text-[12.5px] leading-relaxed text-muted">
+            We sent your IICA ID and this membership purchase link to{' '}
+            <span className="font-semibold text-ink">{state.email || 'your email'}</span>.
+          </p>
+        </div>
+
+        <div className="mt-5">
+          <TextField
+            label="IICA ID"
+            value={enteredId}
+            onChange={(v) => { setEnteredId(v); if (idError) setIdError('') }}
+            placeholder="e.g. PN.418.IICA"
+            error={idError}
+          />
+          <div className="mt-2 flex items-center gap-1.5 text-[12px] text-muted">
+            <Fingerprint className="h-3.5 w-3.5 text-brand" />
+            Format: INITIALS.3-DIGIT-NUMBER.IICA
+          </div>
+        </div>
+      </AuthShell>
+    )
+  }
 
   if (phase === 'failed' || phase === 'cancelled') {
     const failed = phase === 'failed'

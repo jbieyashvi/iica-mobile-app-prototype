@@ -27,31 +27,31 @@ export default function DomainEditor() {
   }
 
   return (
-    <EditorShell title="Domain & Skills" revision={rev} onSaveContinue={goNext}>
+    <EditorShell title="Genre & Skills" revision={rev} onSaveContinue={goNext}>
       <div className="flex flex-col gap-4">
         <SelectField
-          label="Primary creative domain"
+          label="Primary genre"
           value={d.primaryDomain}
           onChange={(v) => set('primaryDomain', v)}
           options={DOMAINS}
         />
         {d.primaryDomain === 'Other' && (
           <TextField
-            label="Your domain"
+            label="Your genre"
             value={d.customDomain}
             onChange={(v) => set('customDomain', v)}
             placeholder="e.g. Puppetry"
           />
         )}
         <TextField
-          label="Secondary domains"
+          label="Secondary genres"
           optional
           value={d.secondaryDomains}
           onChange={(v) => set('secondaryDomains', v)}
           placeholder="e.g. Music, Theatre"
         />
         <TextField
-          label="Sub-domains"
+          label="Sub-genres"
           optional
           value={d.subdomains}
           onChange={(v) => set('subdomains', v)}

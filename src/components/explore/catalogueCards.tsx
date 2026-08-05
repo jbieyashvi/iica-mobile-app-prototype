@@ -32,8 +32,8 @@ export function FeaturedProfileCard({ profile, onView }: { profile: PublicArtist
 }
 
 /* ---------- Catalogue list item ---------- */
-export function CatalogueListItem({ profile, saved, onSave, onView }: {
-  profile: PublicArtist; saved: boolean; onSave: () => void; onView: () => void
+export function CatalogueListItem({ profile, saved, onSave, onView, distanceLabel }: {
+  profile: PublicArtist; saved: boolean; onSave: () => void; onView: () => void; distanceLabel?: string
 }) {
   return (
     <div className="relative flex gap-3 rounded-card border border-border bg-surface p-3">
@@ -47,6 +47,9 @@ export function CatalogueListItem({ profile, saved, onSave, onView }: {
             {profileCategory(profile)} · <span className="font-normal text-muted">{primaryGenre(profile)}</span>
           </p>
           <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted"><MapPin className="h-3 w-3" /> {effectiveCity(profile)}</p>
+          {distanceLabel && (
+            <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-brand"><MapPin className="h-3 w-3" /> {distanceLabel}</p>
+          )}
           <p className="mt-1 line-clamp-1 text-[12px] leading-relaxed text-muted">{profile.headline}</p>
         </div>
       </button>

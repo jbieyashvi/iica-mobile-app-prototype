@@ -3,13 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import {
   ChevronLeft, ChevronRight, Clock, UserPlus, UserCog, BadgeCheck,
   Ticket as TicketIcon, Package, Library, PlaySquare, CalendarCog, Store, ShoppingBag,
-  CreditCard, Wallet, Bell, ShieldCheck, LifeBuoy, Scale, Trash2, LogOut,
+  CreditCard, Wallet, Bell, ShieldCheck, LifeBuoy, Scale, Trash2, LogOut, AlertTriangle,
 } from 'lucide-react'
 import PageContainer from '../components/PageContainer'
 import Avatar from '../components/Avatar'
 import StatusBadge from '../components/StatusBadge'
 import PrimaryButton from '../components/PrimaryButton'
+import SecondaryButton from '../components/SecondaryButton'
 import { useAuth } from '../state/AuthContext'
+import { membershipAccess } from '../state/membershipAccess'
 import { setPortfolioOrigin } from '../portfolio/origin'
 
 export default function Profile() {
@@ -19,9 +21,12 @@ export default function Profile() {
   const { state, logout } = useAuth()
   const [confirmOut, setConfirmOut] = useState(false)
 
-  const isGuest = state.role === 'guest'
-  const isPending = state.role === 'pending'
-  const isActive = state.role === 'active'
+  const access = membershipAccess(state)
+  const isGuest = access.isGuest
+  const isRegistered = access.isRegistered
+  const isPending = access.isPending
+  const isActive = access.isActiveMember
+  const isSuspended = access.isSuspended
 
   const name = state.name || (isGuest ? 'Guest' : 'Reshma Patra')
   const email = state.email || (isGuest ? 'Browsing as guest' : '')
@@ -49,7 +54,9 @@ export default function Profile() {
               {email && <p className="truncate text-[13px] text-muted">{email}</p>}
               <div className="mt-1.5">
                 {isActive && <StatusBadge tone="success">Active Creator</StatusBadge>}
-                {isPending && <StatusBadge tone="warning">Payment Pending</StatusBadge>}
+                {isSuspended && <StatusBadge tone="error">Membership Expired</StatusBadge>}
+                {isPending && <StatusBadge tone="warning">Purchase Pending</StatusBadge>}
+                {isRegistered && <StatusBadge tone="neutral">Registered</StatusBadge>}
                 {isGuest && <StatusBadge tone="neutral">Guest</StatusBadge>}
               </div>
             </div>
@@ -58,30 +65,51 @@ export default function Profile() {
             )}
           </div>
 
-          {isActive && state.iicaId && (
+          {access.hasIicaId && state.iicaId && (
             <p className="mt-3 flex items-center justify-between rounded-control border border-border bg-surface px-4 py-3 text-[13px]">
-              <span className="text-muted">Member ID</span>
+              <span className="text-muted">{isPending ? 'IICA ID' : 'Member ID'}</span>
               <span className="font-mono font-semibold text-ink">{state.iicaId}</span>
             </p>
           )}
 
           {/* Role prompts */}
+          {/* Guest — no account yet: create one or sign in. */}
           {isGuest && (
+            <div className="mt-4 rounded-card border border-border bg-brand-soft p-4">
+              <div className="flex items-center gap-2 text-brand-dark"><UserPlus className="h-5 w-5" strokeWidth={1.75} /><h3 className="font-serif text-[18px]">Join IICA</h3></div>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[#6d3357]">Create an account to save your activity, then apply for creator membership.</p>
+              <div className="mt-3 flex flex-col gap-2.5">
+                <PrimaryButton full onClick={() => navigate('/signup')}>Create Account</PrimaryButton>
+                <SecondaryButton full onClick={() => navigate('/login')}>Sign In</SecondaryButton>
+              </div>
+            </div>
+          )}
+          {/* Registered — signed in, no membership application yet. */}
+          {isRegistered && (
             <div className="mt-4 rounded-card border border-border bg-brand-soft p-4">
               <div className="flex items-center gap-2 text-brand-dark"><UserPlus className="h-5 w-5" strokeWidth={1.75} /><h3 className="font-serif text-[18px]">Become a creator</h3></div>
               <p className="mt-1.5 text-[13px] leading-relaxed text-[#6d3357]">Unlock portfolios, Archive videos, events and AI collaboration.</p>
-              <div className="mt-3"><PrimaryButton full onClick={() => navigate('/membership')}>Apply for Membership</PrimaryButton></div>
+              <div className="mt-3"><PrimaryButton full onClick={() => navigate('/membership')}>Apply for IICA Membership</PrimaryButton></div>
             </div>
           )}
+          {/* Pending — IICA ID generated, membership not yet purchased. */}
           {isPending && (
-            <button onClick={() => navigate('/membership/status')} className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left">
+            <button onClick={() => navigate('/membership/purchase')} className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left">
               <Clock className="h-5 w-5 shrink-0 text-warning" />
-              <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Complete your payment</span><span className="block text-[12.5px] text-[#7a5412]">Membership activates after payment</span></span>
+              <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Complete Membership Purchase</span><span className="block text-[12.5px] text-[#7a5412]">Enter your IICA ID to activate creator access</span></span>
               <ChevronRight className="h-5 w-5 text-warning" />
             </button>
           )}
+          {/* Suspended / expired — data preserved, creator actions blocked. */}
+          {isSuspended && (
+            <button onClick={() => navigate('/membership/status')} className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-error/30 bg-[#F7E9EA] p-4 text-left">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-error" />
+              <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Renew your membership</span><span className="block text-[12.5px] text-[#8a3b3b]">Your portfolio is saved. Renew to edit and list again.</span></span>
+              <ChevronRight className="h-5 w-5 text-error" />
+            </button>
+          )}
 
-          {/* Creator Profile */}
+          {/* Creator Profile — active members only can edit their portfolio. */}
           {isActive && (
             <Section title="Creator Profile">
               <Row icon={<BadgeCheck className="h-5 w-5" />} label="Edit Portfolio" hint="Your creator portfolio" onClick={editPortfolio} />
