@@ -8,6 +8,7 @@ import SocialButtons from '../../components/form/SocialButtons'
 import Divider from '../../components/form/Divider'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
+import { takeAuthReturn } from '../../lib/authReturn'
 import { isEmail } from '../../lib/validation'
 import { demoUser, DEMO_PASSWORD } from '../../demo/demoData'
 
@@ -30,7 +31,7 @@ export default function Login() {
     setTouched(true)
     if (!valid) return
     login(email.trim())
-    navigate('/home')
+    navigate(takeAuthReturn() ?? '/home')
   }
 
   return (

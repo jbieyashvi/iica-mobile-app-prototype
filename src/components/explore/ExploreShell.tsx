@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bookmark } from 'lucide-react'
+import { Bookmark, Search } from 'lucide-react'
 import BottomNavigation from '../BottomNavigation'
 import ProfileAvatarButton from '../ProfileAvatarButton'
 import ExploreTabs from './ExploreTabs'
@@ -20,6 +20,7 @@ export default function ExploreShell({ active, children, filterButton }: Props) 
         <div className="flex h-12 items-center justify-between">
           <h1 className="font-serif text-[22px] text-ink">Explore</h1>
           <div className="flex items-center -mr-1">
+            <button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button>
             <button onClick={() => navigate('/explore/saved')} aria-label="Saved items" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Bookmark className="h-5 w-5" /></button>
             <ProfileAvatarButton />
           </div>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  Users, CalendarCheck, Inbox, ChevronRight, Clock, Copy, Compass, X, SlidersHorizontal,
+  Users, CalendarCheck, Inbox, ChevronRight, Clock, Copy, Compass, X, SlidersHorizontal, Search,
 } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
 import ProfileAvatarButton from '../../components/ProfileAvatarButton'
@@ -175,11 +175,13 @@ function HowSheet({ onClose }: { onClose: () => void }) {
 }
 
 function Header({ right }: { right?: React.ReactNode }) {
+  const navigate = useNavigate()
   return (
     <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
       <div className="flex h-12 items-center justify-between px-[18px]">
         <h1 className="font-serif text-[22px] text-ink">Collaborate</h1>
         <div className="flex items-center -mr-1">
+          <button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button>
           {right}
           <ProfileAvatarButton />
         </div>

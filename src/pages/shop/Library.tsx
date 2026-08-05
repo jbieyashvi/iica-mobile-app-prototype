@@ -44,7 +44,7 @@ export default function Library() {
         <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-[18px] backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
           <div className="flex h-12 items-center justify-between">
             <h1 className="font-serif text-[19px] text-ink">My Library</h1>
-            <div className="flex items-center -mr-1"><ProfileAvatarButton /></div>
+            <div className="flex items-center -mr-1"><button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button><ProfileAvatarButton /></div>
           </div>
         </header>
         <div className="no-scrollbar flex-1 overflow-y-auto px-[18px] py-6" style={{ paddingBottom: 'calc(62px + var(--safe-bottom) + 16px)' }}>
@@ -68,7 +68,7 @@ export default function Library() {
       <header className="sticky top-0 z-30 shrink-0 border-b border-border bg-bg/92 px-[18px] backdrop-blur-md" style={{ paddingTop: 'var(--safe-top)' }}>
         <div className="flex h-12 items-center justify-between">
           <h1 className="font-serif text-[19px] text-ink">My Library</h1>
-          <div className="flex items-center -mr-1"><ProfileAvatarButton /></div>
+          <div className="flex items-center -mr-1"><button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button><ProfileAvatarButton /></div>
         </div>
         <div className="no-scrollbar -mx-[18px] flex gap-1.5 overflow-x-auto px-[18px] pb-2">
           {(['Masterclasses', 'Digital Downloads', 'Saved Videos', 'Saved Products'] as Tab[]).map((t) => (

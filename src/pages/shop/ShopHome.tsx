@@ -20,6 +20,7 @@ export function ShopHeader({ cartCount }: { cartCount: number }) {
       <div className="flex h-12 items-center justify-between">
         <h1 className="font-serif text-[22px] text-ink">Shop</h1>
         <div className="flex items-center -mr-1">
+          <button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button>
           <button onClick={() => navigate('/cart')} aria-label="Cart" className="tap relative flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[9px] font-bold text-white">{cartCount}</span>}
@@ -46,7 +47,7 @@ export default function ShopHome() {
     <div className="flex h-full flex-col bg-bg">
       <ShopHeader cartCount={cartCount} />
       <div className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden pt-4" style={{ paddingBottom: 'calc(62px + var(--safe-bottom) + 8px)' }}>
-        <button onClick={() => navigate('/shop/search')} className="tap mx-[18px] mb-5 flex h-11 w-[calc(100%-36px)] items-center gap-2 rounded-control border border-border bg-surface px-3 text-left">
+        <button onClick={() => navigate('/search')} aria-label="Search" className="tap mx-[18px] mb-5 flex h-11 w-[calc(100%-36px)] items-center gap-2 rounded-control border border-border bg-surface px-3 text-left">
           <Search className="h-4 w-4 text-muted" /><span className="text-[13.5px] text-muted">Search masterclasses, products, creators</span>
         </button>
 

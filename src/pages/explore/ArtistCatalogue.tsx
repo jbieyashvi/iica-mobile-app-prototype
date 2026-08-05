@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -22,7 +22,6 @@ export default function ArtistCatalogue() {
   const navigate = useNavigate()
   const { save, isSaved, sheet } = useSaveGate()
   const [params] = useSearchParams()
-  const searchRef = useRef<HTMLInputElement>(null)
 
   // ---- initial state: URL intent wins, else restore session ----
   // Computed once, synchronously, so returning from a profile restores state
@@ -126,18 +125,15 @@ export default function ArtistCatalogue() {
         <div className="flex h-12 items-center justify-between">
           <h1 className="font-serif text-[22px] text-ink">Artist Catalogue</h1>
           <div className="flex -mr-2">
-            <button onClick={() => searchRef.current?.focus()} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button>
+            <button onClick={() => navigate('/search')} aria-label="Search" className="tap flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]"><Search className="h-5 w-5" /></button>
             <button onClick={() => setShowFilters(true)} aria-label="Filter" className="tap relative flex h-10 w-10 items-center justify-center rounded-control text-ink hover:bg-black/[0.04]">
               <SlidersHorizontal className="h-5 w-5" />
               {activeFilterCount > 0 && <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[9px] font-bold text-white">{activeFilterCount}</span>}
             </button>
           </div>
         </div>
-        <div className="mb-2.5 flex h-11 items-center gap-2 rounded-control border border-border bg-surface px-3">
-          <Search className="h-4 w-4 text-muted" />
-          <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, category, genre or location" className="w-full bg-transparent text-[13.5px] text-ink placeholder:text-muted focus:outline-none" />
-          {q && <button onClick={() => setQ('')} aria-label="Clear search"><X className="h-4 w-4 text-muted" /></button>}
-        </div>
+        {/* Text search moved to Global Search; the Artist tab keeps only filters. */}
+        <div className="pb-2.5" />
         {/* Explore discovery tabs — keep the row consistent with other Explore tabs */}
         <ExploreTabs active="artists" />
       </header>
@@ -162,7 +158,7 @@ export default function ArtistCatalogue() {
           <section className="pt-4">
             <div className="mb-2.5 flex items-center justify-between px-[18px]">
               <h2 className="font-serif text-[19px] text-ink">Featured Profiles</h2>
-              <button onClick={() => { setQ(''); setFilters(NO_FILTERS); setLetter('All'); searchRef.current?.blur() }} className="text-[13px] font-semibold text-brand">See All</button>
+              <button onClick={() => { setQ(''); setFilters(NO_FILTERS); setLetter('All') }} className="text-[13px] font-semibold text-brand">See All</button>
             </div>
             <p className="-mt-1 mb-2.5 px-[18px] text-[12px] text-muted">{FEATURED_BLURB}</p>
             <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">

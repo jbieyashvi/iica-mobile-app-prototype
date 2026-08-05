@@ -6,6 +6,7 @@ import OtpInput from '../../components/form/OtpInput'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
 import { maskEmail } from '../../lib/validation'
+import { takeAuthReturn } from '../../lib/authReturn'
 
 const CODE = '123456'
 
@@ -28,7 +29,8 @@ export default function VerifyEmail() {
     if (code === CODE) {
       verifyEmail()
       setVerified(true)
-      setTimeout(() => navigate('/membership'), 1100)
+      const back = takeAuthReturn()
+      setTimeout(() => navigate(back ?? '/membership'), 1100)
     } else {
       setError('That code is incorrect. Try 123456.')
     }
