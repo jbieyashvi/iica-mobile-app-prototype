@@ -68,6 +68,15 @@ import ShopComing from './pages/explore/ShopComing'
 import Home from './pages/Home'
 // Collaborate module
 import CollaborateHome from './pages/collaborate/CollaborateHome'
+// AI-powered Collaboration (Phase 1)
+import CollaborateEntry from './pages/aicollab/CollaborateEntry'
+import ConfirmRequirement from './pages/aicollab/ConfirmRequirement'
+import MatchResults from './pages/aicollab/MatchResults'
+import CreateRequest from './pages/aicollab/CreateRequest'
+import ReviewRequest from './pages/aicollab/ReviewRequest'
+import RequestSent from './pages/aicollab/RequestSent'
+import MyCollaborations from './pages/aicollab/MyCollaborations'
+import CollaborationDetails from './pages/aicollab/CollaborationDetails'
 import CollabPreferences from './pages/collaborate/Preferences'
 import CollabDiscover from './pages/collaborate/Discover'
 import CollabRecommendations from './pages/collaborate/Recommendations'
@@ -176,7 +185,17 @@ export default function App() {
             <Route path="/creator/payouts" element={<EventCreatorGuard><CreatorPayouts /></EventCreatorGuard>} />
 
             {/* Collaborate module (bottom nav on home/requests/meetings via their own render) */}
-            <Route path="/collaborate" element={<CollaborateHome />} />
+            {/* AI-powered Collaboration (new Phase 1 flow) */}
+            <Route path="/collaborate" element={<CollaborateEntry />} />
+            <Route path="/collaborate/confirm" element={<ConfirmRequirement />} />
+            <Route path="/collaborate/matches" element={<MatchResults />} />
+            <Route path="/collaborate/new/review" element={<ReviewRequest />} />
+            <Route path="/collaborate/new/sent/:requestId" element={<RequestSent />} />
+            <Route path="/collaborate/new/:creatorId" element={<CreateRequest />} />
+            <Route path="/collaborate/mine" element={<MyCollaborations />} />
+            <Route path="/collaborate/mine/:requestId" element={<CollaborationDetails />} />
+            {/* Legacy collaborate screens (kept, reachable by direct link) */}
+            <Route path="/collaborate/home" element={<CollaborateHome />} />
             <Route path="/collaborate/preferences" element={<CollabPreferences />} />
             <Route path="/collaborate/discover" element={<CollabDiscover />} />
             <Route path="/collaborate/recommendations" element={<CollabRecommendations />} />

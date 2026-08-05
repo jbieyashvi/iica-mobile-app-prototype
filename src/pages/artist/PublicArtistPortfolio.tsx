@@ -20,6 +20,7 @@ import MediaEmbed from '../../components/portfolio/MediaEmbed'
 import Avatar from '../../components/Avatar'
 import StatusBadge from '../../components/StatusBadge'
 import PrimaryButton from '../../components/PrimaryButton'
+import { membershipAccess } from '../../state/membershipAccess'
 import SecondaryButton from '../../components/SecondaryButton'
 
 const BASE_NAV: NavItem[] = [
@@ -39,6 +40,8 @@ export default function PublicArtistPortfolio() {
   const navigate = useNavigate()
   const location = useLocation()
   const backTo = (location.state as { from?: string } | null)?.from ?? '/home'
+  // When opened from AI-collab match results, offer a contextual select action.
+  const fromCollabSelect = !!(location.state as { collabSelect?: boolean } | null)?.collabSelect
   const { artist, isOwn } = usePublicArtist(slug)
   const { state } = useAuth()
   const { requireMember } = useGate()
@@ -142,9 +145,17 @@ export default function PublicArtistPortfolio() {
     sectionRefs.current[id] = el
   }
 
+  const collabAccess = membershipAccess(state)
+  const showCollabSelect = fromCollabSelect && collabAccess.isActiveMember && !isOwn
+
   return (
     <div className="flex h-full flex-col bg-bg">
-      <div ref={scrollRef} className="no-scrollbar relative flex-1 overflow-y-auto overflow-x-hidden">
+      {showCollabSelect && (
+        <div className="absolute inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-[18px] py-3 backdrop-blur-md" style={{ paddingBottom: 'calc(12px + var(--safe-bottom))' }}>
+          <PrimaryButton full onClick={() => navigate(`/collaborate/new/${artist.slug}`)}><Handshake className="h-[18px] w-[18px]" /> Select for Collaboration</PrimaryButton>
+        </div>
+      )}
+      <div ref={scrollRef} className="no-scrollbar relative flex-1 overflow-y-auto overflow-x-hidden" style={showCollabSelect ? { paddingBottom: '72px' } : undefined}>
         {/* Sticky top bar */}
         <div
           className="sticky top-0 z-40 flex items-center justify-between border-b border-transparent bg-bg/0 px-2 backdrop-blur-0 transition-colors"

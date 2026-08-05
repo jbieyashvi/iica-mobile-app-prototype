@@ -6,6 +6,7 @@ import { AuthProvider } from './state/AuthContext'
 import { PortfolioProvider } from './state/PortfolioContext'
 import { EventsProvider } from './state/EventsContext'
 import { CollabProvider } from './state/CollabContext'
+import { AiCollabProvider } from './state/AiCollabContext'
 import { ShopProvider } from './state/ShopContext'
 import { SupportProvider } from './state/SupportContext'
 import { SearchProvider } from './state/SearchContext'
@@ -25,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                   <SearchProvider>
                     <NewMusicProvider>
                       <TalkShowProvider>
-                        <App />
+                        <AiCollabProvider>
+                          <App />
+                        </AiCollabProvider>
                       </TalkShowProvider>
                     </NewMusicProvider>
                   </SearchProvider>
