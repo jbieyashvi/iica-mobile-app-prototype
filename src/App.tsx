@@ -92,6 +92,7 @@ import NewMusic from './pages/NewMusic'
 import SubmitMusic from './pages/music/SubmitMusic'
 import TalkShow from './pages/TalkShow'
 import ApplyGuestArtist from './pages/talkshow/ApplyGuestArtist'
+import Recommended from './pages/Recommended'
 import Portfolio from './pages/Portfolio'
 import CreateEvent from './pages/CreateEvent'
 // Public artist portfolio
@@ -195,6 +196,8 @@ export default function App() {
             {/* Talk Show This Week */}
             <Route path="/talk-show" element={<TalkShow />} />
             <Route path="/talk-show/apply" element={<ApplyGuestArtist />} />
+            {/* Admin-curated Recommended Listings — View All */}
+            <Route path="/recommended" element={<Recommended />} />
             <Route path="/notifications" element={<Notifications />} />
             {/* Account & settings */}
             <Route path="/account/edit" element={<EditProfile />} />

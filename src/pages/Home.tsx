@@ -14,6 +14,7 @@ import SectionHeader from '../components/SectionHeader'
 import HomeCatalogue from '../components/home/HomeCatalogue'
 import NewMusicToday from '../components/music/NewMusicToday'
 import TalkShowThisWeek from '../components/talkshow/TalkShowThisWeek'
+import RecommendedHome from '../components/recommend/RecommendedHome'
 import EventCard from '../components/EventCard'
 import { events } from '../data/events'
 import { whatsNew, UpdateKind } from '../data/whatsNew'
@@ -151,6 +152,9 @@ export default function Home() {
       <div className="mb-8">
         <TalkShowThisWeek />
       </div>
+
+      {/* Recommended Listings (Admin-curated; self-hides with no blank spacing) */}
+      <RecommendedHome />
 
       {/* Upcoming Events */}
       <div className="mb-4">
