@@ -7,6 +7,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
 import { useAuth, MembershipStatus as Status } from '../../state/AuthContext'
 import { detectPlatform, platformDisplayName } from '../../config/membership'
+import { membershipPurchaseEnabled, MEMBERSHIP_UNAVAILABLE_MSG } from '../../config/platform'
 
 type Tone = 'success' | 'warning' | 'neutral' | 'error'
 
@@ -31,7 +32,10 @@ export default function MembershipStatus() {
   const meta = META[status]
   const id = state.iicaId ?? '—'
   const isActive = status === 'active' || status === 'restored'
-  const canPurchase = status === 'submitted' || status === 'purchase_pending' || status === 'cancelled' || status === 'failed' || status === 'expired' || status === 'suspended'
+  const mpEnabled = membershipPurchaseEnabled()
+  const canPurchase = mpEnabled && (status === 'submitted' || status === 'purchase_pending' || status === 'cancelled' || status === 'failed' || status === 'expired' || status === 'suspended')
+  // Still has an unpaid/expired membership but purchases are paused platform-wide.
+  const purchasePaused = !mpEnabled && !isActive && status !== 'not_submitted'
 
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1800) }
   const copyId = async () => {
@@ -68,9 +72,20 @@ export default function MembershipStatus() {
       {/* Actions */}
       <div className="mt-6 flex flex-col gap-2.5">
         {status === 'not_submitted' && (
-          <PrimaryButton full onClick={() => navigate('/membership/application')}>
-            Start Membership Form
-          </PrimaryButton>
+          mpEnabled ? (
+            <PrimaryButton full onClick={() => navigate('/membership/application')}>
+              Start Membership Form
+            </PrimaryButton>
+          ) : (
+            <p className="rounded-control border border-border bg-surface px-4 py-3 text-center text-[13px] font-medium text-muted">{MEMBERSHIP_UNAVAILABLE_MSG}</p>
+          )
+        )}
+
+        {purchasePaused && (
+          <div className="rounded-control border border-border bg-surface px-4 py-3 text-center">
+            <p className="text-[13px] font-medium text-muted">{MEMBERSHIP_UNAVAILABLE_MSG}</p>
+            <p className="mt-1 text-[12px] text-muted">Your IICA ID and details are saved. You can complete your membership when purchases reopen.</p>
+          </div>
         )}
 
         {canPurchase && (

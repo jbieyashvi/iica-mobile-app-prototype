@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShoppingBag, GraduationCap, CalendarDays, HeartHandshake, Package, ImageOff } from 'lucide-react'
+import { ShoppingBag, GraduationCap, CalendarDays, HeartHandshake, Package, Guitar, ImageOff } from 'lucide-react'
 import { useShop } from '../../state/ShopContext'
 import { inr } from '../../shop/pricing'
 import type { RecommendedCard as Card, ListingType } from '../../recommend/types'
@@ -10,6 +10,7 @@ const TYPE_ICON: Record<ListingType, typeof Package> = {
   digital_product: ShoppingBag,
   masterclass: GraduationCap,
   event: CalendarDays,
+  secondhand_instrument: Guitar,
   donation: HeartHandshake,
 }
 
@@ -29,6 +30,7 @@ export default function RecommendCard({ card, flash, variant = 'carousel' }: {
     switch (card.type) {
       case 'physical_product':
       case 'digital_product':
+      case 'secondhand_instrument':
       case 'masterclass': return navigate(`/product/${card.productId}`, from)
       case 'event': return navigate(`/events/${card.eventId}`, from)
       case 'donation': return navigate(`/artist/${card.artistSlug}`, from)
@@ -39,6 +41,7 @@ export default function RecommendCard({ card, flash, variant = 'carousel' }: {
     switch (card.type) {
       case 'physical_product':
       case 'digital_product':
+      case 'secondhand_instrument':
         return { label: 'Add to Cart', onClick: () => { addToCart(card.productId!); flash('Added to cart') } }
       case 'masterclass':
         return { label: card.free ? 'Join' : `Buy ${inr(card.price ?? 0)}`, onClick: () => navigate(`/product/${card.productId}`, from) }

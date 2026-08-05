@@ -8,6 +8,7 @@ export type ListingType =
   | 'digital_product'
   | 'masterclass'
   | 'event'
+  | 'secondhand_instrument'
   | 'donation'
 
 export interface SelectedListing {

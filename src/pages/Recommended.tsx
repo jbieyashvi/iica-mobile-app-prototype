@@ -16,6 +16,7 @@ const TYPE_TABS: { key: TypeFilter; label: string }[] = [
   { key: 'digital_product', label: 'Digital' },
   { key: 'masterclass', label: 'Classes' },
   { key: 'event', label: 'Events' },
+  { key: 'secondhand_instrument', label: 'Instruments' },
   { key: 'donation', label: 'Support' },
 ]
 

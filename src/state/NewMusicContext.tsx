@@ -64,20 +64,37 @@ const seed = (): NewMusicRecord[] => {
 function load(): NewMusicRecord[] {
   try {
     const raw = localStorage.getItem(KEY)
-    if (raw) return JSON.parse(raw) as NewMusicRecord[]
+    if (raw) {
+      // Migrate older records (multi-field submissions) to the simplified shape:
+      // ensure a display title + thumbnail exist. Valid data is preserved.
+      const parsed = JSON.parse(raw) as NewMusicRecord[]
+      return parsed.map((r) => ({
+        ...r,
+        title: (r.title ?? '').trim() || FALLBACK_TITLE,
+        artist: r.artist ?? '',
+        genre: r.genre ?? '',
+        thumbnail: r.thumbnail || (r.videoId ? youTubeThumb(r.videoId) : ''),
+      }))
+    }
   } catch { /* ignore */ }
   return seed()
 }
 
+// Phase 1 correction: the user-facing form supplies ONLY the YouTube URL (+ the
+// submitter, attached automatically). Title/artist/genre are optional and
+// derived — the app never asks for them.
 export interface SubmitInput {
   url: string
-  title: string
-  artist: string
-  genre: string
+  title?: string
+  artist?: string
+  genre?: string
   note?: string
   submittedByName: string
   submittedByUserId?: string
 }
+
+// Neutral fallback when no title metadata can be derived.
+export const FALLBACK_TITLE = 'Submitted Music Link'
 
 interface Ctx {
   records: NewMusicRecord[]
@@ -117,9 +134,10 @@ export function NewMusicProvider({ children }: { children: ReactNode }) {
       id: 'nm-' + Math.random().toString(36).slice(2, 9),
       videoId,
       url: input.url.trim(),
-      title: input.title.trim(),
-      artist: input.artist.trim(),
-      genre: input.genre,
+      // Derive display metadata; the form no longer collects these.
+      title: (input.title ?? '').trim() || FALLBACK_TITLE,
+      artist: (input.artist ?? '').trim(),
+      genre: (input.genre ?? '').trim(),
       thumbnail: videoId ? youTubeThumb(videoId) : '',
       note: input.note?.trim() || undefined,
       submittedByUserId: input.submittedByUserId,

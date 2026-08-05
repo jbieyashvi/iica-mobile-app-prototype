@@ -8,7 +8,9 @@ import AuthShell from '../../components/AuthShell'
 import TextField from '../../components/form/TextField'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
+import MembershipUnavailable from '../../components/MembershipUnavailable'
 import { useAuth } from '../../state/AuthContext'
+import { membershipPurchaseEnabled } from '../../config/platform'
 import {
   MEMBERSHIP_PLAN, detectPlatform, purchaseCtaLabel, platformDisplayName,
 } from '../../config/membership'
@@ -63,6 +65,10 @@ export default function MembershipPurchase() {
   }
 
   const StoreIcon = platform === 'android' ? Play : platform === 'ios' ? Apple : Sparkles
+
+  // Platform toggle: block the purchase entry point when disabled. Existing
+  // active memberships are untouched (they never reach this screen).
+  if (!membershipPurchaseEnabled()) return <MembershipUnavailable />
 
   // ---- Step 2a: verify the emailed IICA ID before purchase ----
   if (phase === 'verify') {

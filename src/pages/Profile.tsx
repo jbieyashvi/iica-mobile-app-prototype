@@ -12,6 +12,7 @@ import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton'
 import { useAuth } from '../state/AuthContext'
 import { membershipAccess } from '../state/membershipAccess'
+import { membershipPurchaseEnabled, MEMBERSHIP_UNAVAILABLE_MSG } from '../config/platform'
 import { setPortfolioOrigin } from '../portfolio/origin'
 
 export default function Profile() {
@@ -27,6 +28,7 @@ export default function Profile() {
   const isPending = access.isPending
   const isActive = access.isActiveMember
   const isSuspended = access.isSuspended
+  const mpEnabled = membershipPurchaseEnabled()
 
   const name = state.name || (isGuest ? 'Guest' : 'Reshma Patra')
   const email = state.email || (isGuest ? 'Browsing as guest' : '')
@@ -89,16 +91,27 @@ export default function Profile() {
             <div className="mt-4 rounded-card border border-border bg-brand-soft p-4">
               <div className="flex items-center gap-2 text-brand-dark"><UserPlus className="h-5 w-5" strokeWidth={1.75} /><h3 className="font-serif text-[18px]">Become a creator</h3></div>
               <p className="mt-1.5 text-[13px] leading-relaxed text-[#6d3357]">Unlock portfolios, Archive videos, events and AI collaboration.</p>
-              <div className="mt-3"><PrimaryButton full onClick={() => navigate('/membership')}>Apply for IICA Membership</PrimaryButton></div>
+              {mpEnabled ? (
+                <div className="mt-3"><PrimaryButton full onClick={() => navigate('/membership')}>Apply for IICA Membership</PrimaryButton></div>
+              ) : (
+                <p className="mt-3 rounded-control bg-surface px-3.5 py-2.5 text-center text-[12.5px] font-medium text-muted">{MEMBERSHIP_UNAVAILABLE_MSG}</p>
+              )}
             </div>
           )}
           {/* Pending — IICA ID generated, membership not yet purchased. */}
           {isPending && (
-            <button onClick={() => navigate('/membership/purchase')} className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left">
-              <Clock className="h-5 w-5 shrink-0 text-warning" />
-              <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Complete Membership Purchase</span><span className="block text-[12.5px] text-[#7a5412]">Enter your IICA ID to activate creator access</span></span>
-              <ChevronRight className="h-5 w-5 text-warning" />
-            </button>
+            mpEnabled ? (
+              <button onClick={() => navigate('/membership/purchase')} className="tap mt-4 flex w-full items-center gap-3 rounded-card border border-warning/30 bg-[#F7F0E4] p-4 text-left">
+                <Clock className="h-5 w-5 shrink-0 text-warning" />
+                <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Complete Membership Purchase</span><span className="block text-[12.5px] text-[#7a5412]">Enter your IICA ID to activate creator access</span></span>
+                <ChevronRight className="h-5 w-5 text-warning" />
+              </button>
+            ) : (
+              <div className="mt-4 flex items-center gap-3 rounded-card border border-border bg-surface p-4">
+                <Clock className="h-5 w-5 shrink-0 text-muted" />
+                <span className="flex-1"><span className="block text-[14px] font-semibold text-ink">Membership paused</span><span className="block text-[12.5px] text-muted">{MEMBERSHIP_UNAVAILABLE_MSG} Your IICA ID {state.iicaId} is saved.</span></span>
+              </div>
+            )
           )}
           {/* Suspended / expired — data preserved, creator actions blocked. */}
           {isSuspended && (

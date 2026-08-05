@@ -3,6 +3,7 @@ import { Lock, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { membershipAccess, membershipCtaTarget } from './membershipAccess'
+import { membershipPurchaseEnabled, MEMBERSHIP_UNAVAILABLE_MSG } from '../config/platform'
 import PrimaryButton from '../components/PrimaryButton'
 
 interface GateContextValue {
@@ -62,15 +63,21 @@ export function GateProvider({ children }: { children: ReactNode }) {
             </p>
 
             <div className="mt-5 flex flex-col gap-2.5">
-              <PrimaryButton
-                full
-                onClick={() => {
-                  close()
-                  navigate(membershipCtaTarget(state))
-                }}
-              >
-                Activate Creator Membership
-              </PrimaryButton>
+              {/* Active memberships never hit this gate; when membership purchase
+                  is off we don't offer a new-purchase CTA, just a neutral note. */}
+              {membershipPurchaseEnabled() || membershipAccess(state).isActiveMember ? (
+                <PrimaryButton
+                  full
+                  onClick={() => {
+                    close()
+                    navigate(membershipCtaTarget(state))
+                  }}
+                >
+                  Activate Creator Membership
+                </PrimaryButton>
+              ) : (
+                <p className="rounded-control bg-bg px-3.5 py-2.5 text-center text-[12.5px] font-medium text-muted">{MEMBERSHIP_UNAVAILABLE_MSG}</p>
+              )}
               <button
                 onClick={close}
                 className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink"

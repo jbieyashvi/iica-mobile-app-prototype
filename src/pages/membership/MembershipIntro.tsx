@@ -9,6 +9,7 @@ import {
 import AuthShell from '../../components/AuthShell'
 import PrimaryButton from '../../components/PrimaryButton'
 import { useAuth } from '../../state/AuthContext'
+import { membershipPurchaseEnabled, MEMBERSHIP_UNAVAILABLE_MSG } from '../../config/platform'
 
 const benefits = [
   {
@@ -41,14 +42,21 @@ const benefits = [
 export default function MembershipIntro() {
   const navigate = useNavigate()
   const { continueAsGuest } = useAuth()
+  const enabled = membershipPurchaseEnabled()
 
   return (
     <AuthShell
       footer={
         <>
-          <PrimaryButton full onClick={() => navigate('/membership/application')}>
-            Become an IICA Creator
-          </PrimaryButton>
+          {enabled ? (
+            <PrimaryButton full onClick={() => navigate('/membership/application')}>
+              Become an IICA Creator
+            </PrimaryButton>
+          ) : (
+            <div className="rounded-control border border-border bg-surface px-4 py-3 text-center text-[13px] font-medium text-muted">
+              {MEMBERSHIP_UNAVAILABLE_MSG}
+            </div>
+          )}
           <button
             onClick={() => {
               continueAsGuest()

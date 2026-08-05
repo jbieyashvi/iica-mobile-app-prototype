@@ -30,17 +30,21 @@ function eventDateLabel(iso: string): string {
 function resolveCard(sel: SelectedListing, products: Product[], events: EventItem[]): RecommendedCard | null {
   const { listingId, listingType } = sel
 
-  if (listingType === 'physical_product' || listingType === 'digital_product' || listingType === 'masterclass') {
+  if (
+    listingType === 'physical_product' || listingType === 'digital_product' ||
+    listingType === 'masterclass' || listingType === 'secondhand_instrument'
+  ) {
     const p = products.find((x) => x.id === listingId)
     if (!p || !productAvailable(p)) return null
     if (listingType === 'masterclass' && p.type !== 'Masterclass') return null
     const isClass = p.type === 'Masterclass'
+    const typeLabel = listingType === 'secondhand_instrument' ? 'Second-hand' : (isClass ? 'Class' : p.type)
     return {
-      key: `${listingType}:${p.id}`, type: listingType, listingId: p.id,
+      key: `${sel.displayOrder}:${listingType}:${p.id}`, type: listingType, listingId: p.id,
       title: p.title,
       subtitle: isClass ? (p.instructor || p.sellerName) : p.sellerName,
       meta: p.free ? 'Free' : inr(p.price),
-      typeLabel: isClass ? 'Class' : p.type,
+      typeLabel,
       image: p.cover, free: p.free, price: p.free ? 0 : p.price,
       productId: p.id,
     }
@@ -51,7 +55,7 @@ function resolveCard(sel: SelectedListing, products: Product[], events: EventIte
     if (!ev || (ev.status && ev.status !== 'published')) return null
     const price = minTicketPrice(ev)
     return {
-      key: `event:${ev.id}`, type: 'event', listingId: ev.id,
+      key: `${sel.displayOrder}:event:${ev.id}`, type: 'event', listingId: ev.id,
       title: ev.title,
       subtitle: ev.organiserName || 'IICA',
       meta: [eventDateLabel(ev.startDate), ev.format === 'Online' ? 'Online' : (ev.city ?? '')].filter(Boolean).join(' · '),
@@ -68,7 +72,7 @@ function resolveCard(sel: SelectedListing, products: Product[], events: EventIte
   const opt = artist.support.options.find((o) => o.id === optionId && o.amount > 0)
   if (!opt) return null
   return {
-    key: `donation:${slug}:${optionId}`, type: 'donation', listingId,
+    key: `${sel.displayOrder}:donation:${slug}:${optionId}`, type: 'donation', listingId,
     title: opt.title || 'Support',
     subtitle: artist.name,
     meta: formatMoney(opt.amount, opt.currency),

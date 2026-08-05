@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext'
 import { usePortfolio } from '../state/PortfolioContext'
 import { membershipAccess } from '../state/membershipAccess'
+import { membershipPurchaseEnabled } from '../config/platform'
 import { setPortfolioOrigin } from '../portfolio/origin'
 
 interface QA {
@@ -23,6 +24,7 @@ export default function QuickActions() {
   const { state } = useAuth()
   const { portfolio } = usePortfolio()
   const access = membershipAccess(state)
+  const mpEnabled = membershipPurchaseEnabled()
 
   const findCollaborators: QA = {
     label: 'Find Collaborators', icon: Sparkles,
@@ -59,22 +61,23 @@ export default function QuickActions() {
       archive,
     ]
   } else if (access.isPending) {
+    // Membership purchase action only when the platform toggle allows it.
     actions = [
-      { label: 'Complete Membership', icon: Clock, highlight: true, onClick: () => navigate('/membership/purchase') },
+      ...(mpEnabled ? [{ label: 'Complete Membership', icon: Clock, highlight: true, onClick: () => navigate('/membership/purchase') } as QA] : []),
       findCollaborators,
       archive,
     ]
   } else if (access.isSuspended) {
-    // Suspended/expired: no new-content creation; offer renewal instead.
+    // Suspended/expired: no new-content creation; offer renewal (if enabled).
     actions = [
-      { label: 'Renew Membership', icon: AlertTriangle, highlight: true, onClick: () => navigate('/membership/status') },
+      ...(mpEnabled ? [{ label: 'Renew Membership', icon: AlertTriangle, highlight: true, onClick: () => navigate('/membership/status') } as QA] : []),
       findCollaborators,
       archive,
     ]
   } else {
-    // Guest or registered (no membership) — a single Apply CTA, no creator tools.
+    // Guest or registered (no membership) — a single Apply CTA when enabled.
     actions = [
-      { label: 'Apply for Membership', icon: BadgeCheck, highlight: true, onClick: () => navigate('/membership') },
+      ...(mpEnabled ? [{ label: 'Apply for Membership', icon: BadgeCheck, highlight: true, onClick: () => navigate('/membership') } as QA] : []),
       findCollaborators,
       archive,
     ]

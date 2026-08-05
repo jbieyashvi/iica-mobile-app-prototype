@@ -6,7 +6,9 @@ import SelectField from '../../components/form/SelectField'
 import Checkbox from '../../components/form/Checkbox'
 import PrimaryButton from '../../components/PrimaryButton'
 import SecondaryButton from '../../components/SecondaryButton'
+import MembershipUnavailable from '../../components/MembershipUnavailable'
 import { Application, useAuth } from '../../state/AuthContext'
+import { membershipPurchaseEnabled } from '../../config/platform'
 import { isEmail } from '../../lib/validation'
 import { MEMBERSHIP_CATEGORIES } from '../../config/categories'
 import { demoMembershipApplication } from '../../demo/demoData'
@@ -76,6 +78,9 @@ export default function MembershipApplication() {
     submitApplication(form)
     navigate('/membership/submitted')
   }
+
+  // Platform toggle: block new applications when membership purchase is off.
+  if (!membershipPurchaseEnabled()) return <MembershipUnavailable />
 
   return (
     <AuthShell

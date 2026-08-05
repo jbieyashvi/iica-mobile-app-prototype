@@ -10,7 +10,7 @@ import PrimaryButton from '../../components/PrimaryButton'
 import StatusBadge from '../../components/StatusBadge'
 import { usePublicArtist } from '../../data/usePublicArtist'
 import { useAuth } from '../../state/AuthContext'
-import { membershipAccess } from '../../state/membershipAccess'
+import { membershipAccess, messagingAccess } from '../../state/membershipAccess'
 
 const PROJECT_TYPES = ['Performance', 'Recording', 'Workshop', 'Installation', 'Film', 'Live show', 'Other']
 const MODES = ['In person', 'Remote', 'Either']
@@ -37,8 +37,9 @@ export default function ArtistCollaborate() {
 
   if (!artist) return <BackHeader title="Collaborate" />
 
-  // Non-members: explain the restriction (do not silently redirect).
+  // Non-members: member-networking messaging access rules (per state).
   if (!membershipAccess(state).canUseCreatorFeatures) {
+    const m = messagingAccess(state)
     return (
       <div className="flex h-full flex-col bg-bg">
         <BackHeader title="Collaborate" />
@@ -46,13 +47,10 @@ export default function ArtistCollaborate() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand">
             <Handshake className="h-8 w-8" strokeWidth={1.6} />
           </div>
-          <h1 className="mt-5 font-serif text-[26px] leading-tight text-ink">Collaborate through IICA</h1>
-          <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">
-            Sending collaboration requests is available to active IICA creators.
-            Become a member to connect and work with {artist.name.split(' ')[0]}.
-          </p>
+          <h1 className="mt-5 font-serif text-[26px] leading-tight text-ink">{m.title || 'Collaborate through IICA'}</h1>
+          <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">{m.message}</p>
           <div className="mt-7 flex w-full max-w-[300px] flex-col gap-2.5">
-            <PrimaryButton full onClick={() => navigate('/membership')}>Become a Member</PrimaryButton>
+            {m.cta && <PrimaryButton full onClick={() => navigate(m.cta!.target)}>{m.cta.label}</PrimaryButton>}
             <button onClick={() => navigate(`/artist/${artist.slug}`)} className="tap min-h-[44px] text-[14px] font-semibold text-muted hover:text-ink">
               Maybe Later
             </button>

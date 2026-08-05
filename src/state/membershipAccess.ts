@@ -10,6 +10,7 @@
 // successful in-app purchase (paymentDone + active/restored) does.
 
 import type { AuthState, MembershipStatus } from './AuthContext'
+import { membershipPurchaseEnabled, MEMBERSHIP_UNAVAILABLE_MSG } from '../config/platform'
 
 export type MemberStage =
   | 'guest' // not signed in
@@ -91,6 +92,64 @@ export function membershipAccess(state: AuthState): MembershipAccess {
     canViewOwnPortfolio: isActiveMember || isSuspended,
     canCreateListings: isActiveMember,
     canUseCreatorFeatures: isActiveMember,
+  }
+}
+
+// ---- Member networking / collaboration messaging access ----
+// Applies ONLY to creator-to-creator (member networking / collaboration)
+// messaging — never customer support, order contact or admin logs (none exist).
+export interface MessagingAccess {
+  canMessage: boolean
+  title: string
+  message: string
+  cta: { label: string; target: string } | null
+  readOnly: boolean // suspended/expired: keep existing history readable, no new
+}
+
+export function messagingAccess(state: AuthState): MessagingAccess {
+  const a = membershipAccess(state)
+  const mpOn = membershipPurchaseEnabled()
+
+  if (a.isActiveMember)
+    return { canMessage: true, title: '', message: '', cta: null, readOnly: false }
+
+  if (a.isGuest)
+    return {
+      canMessage: false, readOnly: false,
+      title: 'Sign in to connect',
+      message: 'Create an account or sign in to message and collaborate with IICA creators.',
+      cta: { label: 'Sign In', target: '/login' },
+    }
+
+  if (a.isSuspended)
+    return {
+      canMessage: false, readOnly: true,
+      title: 'Membership inactive',
+      message: 'You can’t start new conversations while your membership is inactive. Your existing messages are preserved.',
+      cta: null,
+    }
+
+  if (a.isPending)
+    return mpOn
+      ? {
+          canMessage: false, readOnly: false,
+          title: 'Complete your membership',
+          message: 'Messaging is available to active IICA Creator Members.',
+          cta: { label: 'Complete Membership Purchase', target: '/membership/purchase' },
+        }
+      : {
+          canMessage: false, readOnly: false,
+          title: 'Membership paused',
+          message: MEMBERSHIP_UNAVAILABLE_MSG,
+          cta: null,
+        }
+
+  // Registered user (no IICA ID)
+  return {
+    canMessage: false, readOnly: false,
+    title: 'For creator members',
+    message: 'Messaging is available to active IICA Creator Members.',
+    cta: mpOn ? { label: 'Apply for IICA Membership', target: '/membership' } : null,
   }
 }
 
