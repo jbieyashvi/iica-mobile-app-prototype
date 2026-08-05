@@ -45,6 +45,11 @@ export function openMusic(record: NewMusicRecord) {
   window.open(record.url, '_blank', 'noopener,noreferrer')
 }
 
+// "City · Country" identity line (either part optional).
+export function locationLabel(record: NewMusicRecord): string {
+  return [record.submittedByCity, record.submittedByCountry].filter(Boolean).join(', ')
+}
+
 export function addedLabel(iso: string): string {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return ''

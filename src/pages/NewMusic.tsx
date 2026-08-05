@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, X, Plus, Music2 } from 'lucide-react'
 import BackHeader from '../components/BackHeader'
 import PrimaryButton from '../components/PrimaryButton'
-import MusicThumb, { openMusic, addedLabel } from '../components/music/MusicThumb'
+import MusicThumb, { openMusic, locationLabel } from '../components/music/MusicThumb'
 import { useNewMusic } from '../state/NewMusicContext'
 
 const PAGE = 8
@@ -21,7 +21,7 @@ export default function NewMusic() {
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase()
     let r = featured.filter((m) =>
-      (!query || (m.title + ' ' + m.artist + ' ' + m.genre).toLowerCase().includes(query)) &&
+      (!query || (m.title + ' ' + m.artist + ' ' + m.submittedByName + ' ' + m.genre + ' ' + (m.submittedByCity ?? '')).toLowerCase().includes(query)) &&
       (!genre || m.genre === genre),
     )
     const ts = (m: typeof featured[number]) => new Date(m.featuredAt || m.submittedAt).getTime() || 0
@@ -45,7 +45,7 @@ export default function NewMusic() {
         {/* Search */}
         <div className="flex h-10 items-center gap-2 rounded-control border border-border bg-surface px-3">
           <Search className="h-4 w-4 text-muted" />
-          <input value={q} onChange={(e) => { setQ(e.target.value); setLimit(PAGE) }} placeholder="Search by title or artist" className="w-full bg-transparent text-[13.5px] text-ink placeholder:text-muted focus:outline-none" aria-label="Search music" />
+          <input value={q} onChange={(e) => { setQ(e.target.value); setLimit(PAGE) }} placeholder="Search by title or submitter" className="w-full bg-transparent text-[13.5px] text-ink placeholder:text-muted focus:outline-none" aria-label="Search music" />
           {q && <button onClick={() => setQ('')} aria-label="Clear search"><X className="h-4 w-4 text-muted" /></button>}
         </div>
 
@@ -84,8 +84,8 @@ export default function NewMusic() {
                 <div className="p-2.5">
                   <span className="text-[10.5px] font-semibold uppercase tracking-wide text-brand">{r.genre}</span>
                   <h3 className="mt-0.5 line-clamp-2 text-[13px] font-semibold leading-snug text-ink">{r.title}</h3>
-                  <p className="truncate text-[11.5px] text-muted">{r.artist}</p>
-                  <p className="mt-0.5 text-[10.5px] text-muted">Added {addedLabel(r.featuredAt || r.submittedAt)}</p>
+                  <p className="truncate text-[11.5px] font-medium text-ink/85">{r.artist}</p>
+                  {locationLabel(r) && <p className="truncate text-[10.5px] text-muted">{locationLabel(r)}</p>}
                 </div>
               </button>
             ))}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Copy, Youtube, Info } from 'lucide-react'
+import { CheckCircle2, Copy, Youtube, Info, Music2 } from 'lucide-react'
 import BackHeader from '../../components/BackHeader'
 import TextField from '../../components/form/TextField'
 import PrimaryButton from '../../components/PrimaryButton'
@@ -8,6 +8,15 @@ import SecondaryButton from '../../components/SecondaryButton'
 import { useAuth } from '../../state/AuthContext'
 import { useNewMusic } from '../../state/NewMusicContext'
 import { parseYouTubeId } from '../../lib/youtube'
+
+// City/country attached automatically for signed-in submitters (from Edit Profile).
+function accountLocation(): { city: string; country: string } {
+  try {
+    const r = localStorage.getItem('iica_account_extra_v1')
+    if (r) { const e = JSON.parse(r); return { city: e.city || '', country: e.country || 'India' } }
+  } catch { /* ignore */ }
+  return { city: '', country: 'India' }
+}
 
 // Phase 1 correction: ONE visible required field — the YouTube link. Title,
 // artist and genre are derived automatically (fallbacks used if unavailable).
@@ -35,11 +44,14 @@ export default function SubmitMusic() {
   const onSubmit = () => {
     setTouched(true)
     if (error) return
+    const loc = accountLocation()
     const rec = submit({
       url,
-      // Metadata is derived by the data layer; nothing is asked of the user.
-      submittedByName: signedIn ? (state.name || 'IICA Member') : 'Guest',
-      submittedByUserId: signedIn ? (state.iicaId || state.email || undefined) : undefined,
+      // Metadata + identity/location are derived automatically; nothing is asked.
+      submittedByName: state.name || 'IICA Member',
+      submittedByUserId: state.iicaId || state.email || undefined,
+      submittedByCity: loc.city,
+      submittedByCountry: loc.country,
     })
     setRef(rec.id)
   }
@@ -72,6 +84,25 @@ export default function SubmitMusic() {
           </div>
         </div>
         {toast && <div className="pointer-events-none absolute inset-x-0 bottom-8 z-50 flex justify-center"><span className="rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-subtle">{toast}</span></div>}
+      </div>
+    )
+  }
+
+  // ---- Guest gate: submissions attach to an identity, so ask guests to sign in.
+  // (A free account is enough — no membership/purchase.) ----
+  if (!signedIn) {
+    return (
+      <div className="flex h-full flex-col bg-bg">
+        <BackHeader title="Submit New Music" fallback="/music" />
+        <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft text-brand"><Music2 className="h-8 w-8" strokeWidth={1.6} /></span>
+          <h1 className="mt-5 font-serif text-[24px] leading-tight text-ink">Sign in to submit music</h1>
+          <p className="mt-2 max-w-[300px] text-[14px] leading-relaxed text-muted">Submissions are linked to your account so IICA knows who shared the link. A free account is all you need — no membership required.</p>
+          <div className="mt-6 flex w-full max-w-[300px] flex-col gap-2.5">
+            <PrimaryButton full onClick={() => navigate('/signup')}>Create a Free Account</PrimaryButton>
+            <SecondaryButton full onClick={() => navigate('/login')}>Sign In</SecondaryButton>
+          </div>
+        </div>
       </div>
     )
   }

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageContainer from '../PageContainer'
 import SectionHeader from '../SectionHeader'
 import RecommendCard from './RecommendCard'
 import { useRecommended } from '../../recommend/useRecommended'
+import { useRailScroll } from '../../lib/useRailScroll'
 
 const BATCH = 8
 
@@ -17,7 +18,7 @@ export default function RecommendedHome() {
   const { visible, config, cards } = useRecommended()
   const [count, setCount] = useState(BATCH)
   const [toast, setToast] = useState('')
-  const railRef = useRef<HTMLDivElement>(null)
+  const railRef = useRailScroll('rail:recommended')
   const flash = (m: string) => { setToast(m); setTimeout(() => setToast(''), 1600) }
 
   // Reset the progressive window if the published list changes.
@@ -44,7 +45,7 @@ export default function RecommendedHome() {
         <SectionHeader title={config.heading} action={showViewAll ? 'View All' : undefined} onAction={showViewAll ? () => navigate('/recommended') : undefined} />
         {config.description && <p className="-mt-1 mb-3 text-[12.5px] leading-relaxed text-muted">{config.description}</p>}
       </PageContainer>
-      <div ref={railRef} onScroll={onScroll} className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
+      <div ref={railRef} onScroll={onScroll} className="no-scrollbar flex snap-x gap-3 overflow-x-auto px-[18px] pb-1">
         {shown.map((c) => <RecommendCard key={c.key} card={c} flash={flash} />)}
         {hasMore && (
           <button

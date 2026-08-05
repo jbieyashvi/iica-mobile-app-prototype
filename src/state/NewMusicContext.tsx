@@ -18,6 +18,8 @@ export interface NewMusicRecord {
   note?: string
   submittedByUserId?: string // when the submitter is signed in
   submittedByName: string // display name
+  submittedByCity?: string // attached automatically for signed-in submitters
+  submittedByCountry?: string
   submittedAt: string
   featured: boolean // Featured on Home (Admin-controlled)
   featuredAt?: string
@@ -36,6 +38,7 @@ const KEY = 'iica_newmusic_v1'
 const seed = (): NewMusicRecord[] => {
   const mk = (
     i: number, videoId: string, title: string, artist: string, genre: string, order: number,
+    city: string, country: string,
   ): NewMusicRecord => ({
     id: `nm-seed-${i}`,
     videoId,
@@ -44,20 +47,22 @@ const seed = (): NewMusicRecord[] => {
     artist,
     genre,
     thumbnail: youTubeThumb(videoId),
-    submittedByName: 'IICA',
+    submittedByName: artist,
     submittedByUserId: 'iica-admin',
+    submittedByCity: city,
+    submittedByCountry: country,
     submittedAt: '2026-08-01T09:00:00.000Z',
     featured: true,
     featuredAt: '2026-08-01T09:00:00.000Z',
     order,
   })
   return [
-    mk(1, 'ScMzIvxBSi4', 'Mahakaal Ki Sawaari', 'Abhishek Singh Chouhan', 'Devotional', 1),
-    mk(2, 'kJQP7kiw5Fk', 'Indra Dev Aarti', 'Abhishek Singh Chouhan', 'Devotional', 2),
-    mk(3, 'RgKAFK5djSk', 'Rhythms in Motion', 'Ananya Rao', 'Fusion', 3),
-    mk(4, 'e-ORhEE9VVg', 'Malwa Nights (Live)', 'Mid Town Music', 'Contemporary', 4),
-    mk(5, 'fJ9rUzIMcZQ', 'Twilight Raga', 'Kabir Menon', 'Classical', 5),
-    mk(6, '3JZ_D3ELwOQ', 'Street Sessions Vol. 2', 'Rhythm House Collective', 'Indie', 6),
+    mk(1, 'ScMzIvxBSi4', 'Mahakaal Ki Sawaari', 'Abhishek Singh Chouhan', 'Devotional', 1, 'Ujjain', 'India'),
+    mk(2, 'kJQP7kiw5Fk', 'Indra Dev Aarti', 'Abhishek Singh Chouhan', 'Devotional', 2, 'Ujjain', 'India'),
+    mk(3, 'RgKAFK5djSk', 'Rhythms in Motion', 'Ananya Rao', 'Fusion', 3, 'Chennai', 'India'),
+    mk(4, 'e-ORhEE9VVg', 'Malwa Nights (Live)', 'Mid Town Music', 'Contemporary', 4, 'Indore', 'India'),
+    mk(5, 'fJ9rUzIMcZQ', 'Twilight Raga', 'Kabir Menon', 'Classical', 5, 'Mumbai', 'India'),
+    mk(6, '3JZ_D3ELwOQ', 'Street Sessions Vol. 2', 'Rhythm House Collective', 'Indie', 6, 'San Francisco', 'USA'),
   ]
 }
 
@@ -91,6 +96,8 @@ export interface SubmitInput {
   note?: string
   submittedByName: string
   submittedByUserId?: string
+  submittedByCity?: string
+  submittedByCountry?: string
 }
 
 // Neutral fallback when no title metadata can be derived.
@@ -142,6 +149,8 @@ export function NewMusicProvider({ children }: { children: ReactNode }) {
       note: input.note?.trim() || undefined,
       submittedByUserId: input.submittedByUserId,
       submittedByName: input.submittedByName.trim() || 'Guest',
+      submittedByCity: input.submittedByCity?.trim() || undefined,
+      submittedByCountry: input.submittedByCountry?.trim() || undefined,
       submittedAt: new Date().toISOString(),
       featured,
       featuredAt: featured ? new Date().toISOString() : undefined,
