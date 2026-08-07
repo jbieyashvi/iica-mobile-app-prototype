@@ -20,6 +20,7 @@ export const DEFAULT_RECOMMENDED: RecommendedConfig = {
   description: 'Handpicked classes, products, events and ways to support creators this festival week.',
   isVisible: true,
   infiniteLoop: true,
+  scrollDirection: 'horizontal',
   // No schedule window by default → always in-window. Schedule cases are
   // exercised in tests via a localStorage override.
   selectedListings: [
@@ -81,6 +82,7 @@ export function normalizeConfig(raw: unknown): RecommendedConfig | null {
     description: typeof c.description === 'string' ? c.description : undefined,
     isVisible: c.isVisible !== false, // default visible
     infiniteLoop: c.infiniteLoop !== false, // legacy default → true
+    scrollDirection: c.scrollDirection === 'vertical' ? 'vertical' : 'horizontal', // fallback → horizontal
     startAt: typeof c.startAt === 'string' ? c.startAt : undefined,
     endAt: typeof c.endAt === 'string' ? c.endAt : undefined,
     selectedListings,

@@ -11,6 +11,8 @@ export type ListingType =
   | 'secondhand_instrument'
   | 'donation'
 
+export type ScrollDirection = 'horizontal' | 'vertical'
+
 export interface SelectedListing {
   listingId: string // for donations: "<artistSlug>::<optionId>"
   listingType: ListingType
@@ -24,6 +26,8 @@ export interface RecommendedConfig {
   isVisible: boolean
   /** Home carousel loops seamlessly when true. Defaults to true for legacy configs. */
   infiniteLoop: boolean
+  /** Render as a horizontal carousel or a vertical list. Defaults to 'horizontal'. */
+  scrollDirection: ScrollDirection
   startAt?: string // ISO; section shows only at/after this time
   endAt?: string // ISO; section hides after this time
   selectedListings: SelectedListing[]
