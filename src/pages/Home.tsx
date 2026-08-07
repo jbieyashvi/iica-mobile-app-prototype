@@ -1,33 +1,22 @@
 import { useNavigate } from 'react-router-dom'
-import {
-  CalendarDays,
-  Music2,
-  GraduationCap,
-  Megaphone,
-  ArrowRight,
-  Clock,
-} from 'lucide-react'
+import { ArrowRight, Clock } from 'lucide-react'
 import PageContainer from '../components/PageContainer'
 import FeaturedCarousel from '../components/FeaturedCarousel'
 import QuickActions from '../components/QuickActions'
-import SectionHeader from '../components/SectionHeader'
 import HomeCatalogue from '../components/home/HomeCatalogue'
 import NewMusicToday from '../components/music/NewMusicToday'
 import TalkShowThisWeek from '../components/talkshow/TalkShowThisWeek'
 import RecommendedHome from '../components/recommend/RecommendedHome'
-import EventCard from '../components/EventCard'
-import { events } from '../data/events'
-import { whatsNew, UpdateKind } from '../data/whatsNew'
 import { useAuth } from '../state/AuthContext'
 import { membershipAccess } from '../state/membershipAccess'
 
-const kindIcon: Record<UpdateKind, typeof Music2> = {
-  performance: CalendarDays,
-  release: Music2,
-  workshop: GraduationCap,
-  announcement: Megaphone,
-}
-
+// Mobile Home order:
+//   1. Membership prompt (non-members) · 2. Featured carousel · 3. Quick actions
+//   4. Explore the Catalogue · 5. New Music Today · 6. Featured Talk Show
+//   7. Admin-curated Recommended Listings carousel
+// What's New, Talk Show "Previous Episodes" and the standalone Upcoming Events
+// section were removed per PM. Sections self-hide cleanly (no blank gaps); the
+// underlying products / classes / events / episodes are untouched.
 export default function Home() {
   const navigate = useNavigate()
   const { state } = useAuth()
@@ -106,71 +95,19 @@ export default function Home() {
         <HomeCatalogue />
       </div>
 
-      {/* What's New */}
-      <div className="mb-8">
-        <PageContainer>
-          <SectionHeader title="What's New" />
-        </PageContainer>
-        <div className="no-scrollbar flex gap-3 overflow-x-auto px-[18px] pb-1">
-          {whatsNew.map((u) => {
-            const Icon = kindIcon[u.kind]
-            return (
-              <button
-                key={u.id}
-                onClick={() => navigate('/explore')}
-                className="tap w-[220px] shrink-0 overflow-hidden rounded-card border border-border bg-surface text-left"
-              >
-                <div className="aspect-[16/9] w-full overflow-hidden bg-brand-soft">
-                  <img
-                    src={u.image}
-                    alt={u.title}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-3">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-brand">
-                    <Icon className="h-3.5 w-3.5" /> {u.label}
-                  </span>
-                  <h3 className="mt-1.5 line-clamp-2 text-[14px] font-semibold leading-snug text-ink">
-                    {u.title}
-                  </h3>
-                  <p className="mt-1 text-[12px] text-muted">{u.meta}</p>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
       {/* New Music Today (Admin-featured) */}
       <div className="mb-8">
         <NewMusicToday />
       </div>
 
-      {/* Talk Show This Week (Admin-featured) */}
+      {/* Talk Show This Week (Admin-featured; self-hides if none featured) */}
       <div className="mb-8">
         <TalkShowThisWeek />
       </div>
 
-      {/* Recommended Listings (Admin-curated; self-hides with no blank spacing) */}
+      {/* Recommended Listings (Admin-curated infinite carousel; self-hides with
+          no blank spacing when there's nothing valid to show) */}
       <RecommendedHome />
-
-      {/* Upcoming Events */}
-      <div className="mb-4">
-        <PageContainer>
-          <SectionHeader
-            title="Upcoming Events"
-            action="See all"
-            onAction={() => navigate('/events')}
-          />
-          <div className="flex flex-col gap-3">
-            {events.map((e) => (
-              <EventCard key={e.id} event={e} />
-            ))}
-          </div>
-        </PageContainer>
-      </div>
     </div>
   )
 }

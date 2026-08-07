@@ -1,18 +1,17 @@
 import { useNavigate } from 'react-router-dom'
-import { Play, FileUp, Mic, ChevronRight } from 'lucide-react'
+import { Play, FileUp, Mic } from 'lucide-react'
 import PageContainer from '../PageContainer'
 import SectionHeader from '../SectionHeader'
 import TalkShowThumb, { openEpisode, releaseLabel } from './TalkShowThumb'
 import { useTalkShow } from '../../state/TalkShowContext'
-import { useRailScroll } from '../../lib/useRailScroll'
 
-// Home section: current weekly Talk Show episode first, then previous episodes as
-// a horizontal rail. Header action opens the Upload Résumé (Guest Artist) flow.
-// Hidden entirely when nothing is featured.
+// Home section: only the current "Featured This Week" episode. Header action
+// opens the Upload Résumé (Guest Artist) flow. Hidden entirely (no blank space)
+// when nothing is featured. Previous episodes are NOT rendered on Home — they
+// remain stored and reachable through the Talk Show screen.
 export default function TalkShowThisWeek() {
   const navigate = useNavigate()
-  const { featuredEpisode, previousEpisodes } = useTalkShow()
-  const railRef = useRailScroll('rail:talkshow')
+  const { featuredEpisode } = useTalkShow()
 
   if (!featuredEpisode) return null
   const ep = featuredEpisode
@@ -49,38 +48,6 @@ export default function TalkShowThisWeek() {
           </div>
         </div>
       </PageContainer>
-
-      {/* Previous episodes — horizontally swipeable */}
-      {previousEpisodes.length > 0 && (
-        <>
-          <PageContainer><p className="mb-2 mt-3 text-[12px] font-semibold uppercase tracking-wide text-muted">Previous episodes</p></PageContainer>
-          <div ref={railRef} className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-[18px] pb-1">
-            {previousEpisodes.map((e) => (
-              <button
-                key={e.id}
-                onClick={() => openEpisode(e)}
-                aria-label={`Watch ${e.title} on YouTube`}
-                className="tap w-[210px] shrink-0 snap-start overflow-hidden rounded-card border border-border bg-surface text-left"
-              >
-                <TalkShowThumb episode={e} />
-                <div className="p-3">
-                  <h4 className="line-clamp-2 text-[13px] font-semibold leading-snug text-ink">{e.title}</h4>
-                  <p className="mt-0.5 truncate text-[11.5px] text-muted">{e.host}{e.guest ? ` · ${e.guest}` : ''}</p>
-                  <p className="mt-0.5 text-[10.5px] text-muted">{releaseLabel(e.releaseDate)}</p>
-                </div>
-              </button>
-            ))}
-            <button
-              onClick={() => navigate('/talk-show')}
-              aria-label="View all Talk Show episodes"
-              className="tap flex w-[120px] shrink-0 snap-start flex-col items-center justify-center gap-1.5 rounded-card border border-dashed border-border bg-surface text-brand"
-            >
-              <ChevronRight className="h-6 w-6" />
-              <span className="text-[12.5px] font-semibold">View All</span>
-            </button>
-          </div>
-        </>
-      )}
     </div>
   )
 }

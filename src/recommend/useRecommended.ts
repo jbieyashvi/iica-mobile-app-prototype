@@ -26,8 +26,16 @@ function eventDateLabel(iso: string): string {
   const d = new Date(iso + (iso?.length === 10 ? 'T00:00:00' : ''))
   return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
+// An event is expired once its end date (or start date, when no end) is before
+// today. Expired/cancelled/draft/past events are excluded from the carousel.
+function eventExpired(ev: EventItem, now: Date): boolean {
+  const iso = ev.endDate || ev.startDate
+  if (!iso) return false
+  const end = new Date(iso + (iso.length === 10 ? 'T23:59:59' : ''))
+  return !isNaN(end.getTime()) && end.getTime() < now.getTime()
+}
 
-function resolveCard(sel: SelectedListing, products: Product[], events: EventItem[]): RecommendedCard | null {
+function resolveCard(sel: SelectedListing, products: Product[], events: EventItem[], now: Date): RecommendedCard | null {
   const { listingId, listingType } = sel
 
   if (
@@ -53,6 +61,7 @@ function resolveCard(sel: SelectedListing, products: Product[], events: EventIte
   if (listingType === 'event') {
     const ev = events.find((x) => x.id === listingId)
     if (!ev || (ev.status && ev.status !== 'published')) return null
+    if (eventExpired(ev, now)) return null
     const price = minTicketPrice(ev)
     return {
       key: `${sel.displayOrder}:event:${ev.id}`, type: 'event', listingId: ev.id,
@@ -107,10 +116,19 @@ export function useRecommended(now: Date = new Date()): Resolved {
     if (config.endAt && !isNaN(Date.parse(config.endAt)) && nowT > Date.parse(config.endAt))
       return { config, visible: false, hiddenReason: 'expired', cards: [] }
 
+    const seen = new Set<string>()
     const cards = [...config.selectedListings]
       .sort((a, b) => a.displayOrder - b.displayOrder) // preserve Admin order
-      .map((s) => resolveCard(s, products, events))
+      .map((s) => resolveCard(s, products, events, now))
       .filter((c): c is RecommendedCard => c !== null)
+      // Drop duplicate listing identities so the same item can't appear twice
+      // in one carousel cycle (and never collides on a React key).
+      .filter((c) => {
+        const id = `${c.type}:${c.listingId}`
+        if (seen.has(id)) return false
+        seen.add(id)
+        return true
+      })
 
     if (cards.length === 0) return { config, visible: false, hiddenReason: 'no-listings', cards: [] }
     return { config, visible: true, hiddenReason: '', cards }

@@ -22,6 +22,8 @@ export interface RecommendedConfig {
   heading: string
   description?: string
   isVisible: boolean
+  /** Home carousel loops seamlessly when true. Defaults to true for legacy configs. */
+  infiniteLoop: boolean
   startAt?: string // ISO; section shows only at/after this time
   endAt?: string // ISO; section hides after this time
   selectedListings: SelectedListing[]
